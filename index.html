@@ -522,7 +522,7 @@
 
   <script>
     // URL DE WEBHOOK CLOUD ACTIVA
-    const appsScriptWebhookUrl = 'https://script.google.com/macros/s/AKfycbyTpiqn4-NtdAo6bVsuhem6ib3IJLXEKA6GpJ2u1HHm5ZN0n0V6gJazxJ114b_YS7BiZQ/exec';
+    const appsScriptWebhookUrl = 'https://script.google.com/macros/s/AKfycbz6VjJ9pWNajV8dftnceORj1wrKeHmPag1b-5MichvvzK4MlxjfhA1W9dEdTIc7ItdBhg/exec';
     const driveFolderId = '1pV04KdGZ1Bqt-f97hyfFIEoO_F4HYb8a';
 
     let currentRole = 'ADMIN'; 
@@ -543,23 +543,32 @@
     }
 
     // CARGAR DATOS EN VIVO DESDE GOOGLE SHEETS
+function showToast(text, icon = '🚀') {
+      const toast = document.getElementById('toast');
+      document.getElementById('toast-icon').innerText = icon;
+      document.getElementById('toast-text').innerText = text;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 3500);
+    }
+    // CARGA DIRECTA Y ULTRA-RÁPIDA JSONP DESDE GOOGLE SHEETS
     function fetchCloudData() {
-      showToast('Sincronizando con Google Sheets...', '🔄');
-      fetch(`${appsScriptWebhookUrl}?action=GET_ALL_DATA&_t=${Date.now()}`)
-        .then(res => res.json())
-        .then(data => {
-          if (data && data.status === 'success') {
-            if (data.assets && data.assets.length > 0) assets = data.assets;
-            if (data.loans && data.loans.length > 0) loans = data.loans;
-            if (data.users && data.users.length > 0) whitelistUsers = data.users;
-            renderAll();
-            showToast('✔ Datos sincronizados con Google Sheets', '📊');
-          }
-        })
-        .catch(err => {
-          console.warn('Cargando respaldo local:', err);
+      showToast('Cargando inventario desde Google Sheets...', '🔄');
+      window.handleCloudDataResponse = function(data) {
+        if (data && data.status === 'success') {
+          assets = data.assets || [];
+          loans = data.loans || [];
+          if (data.users && data.users.length > 0) whitelistUsers = data.users;
           renderAll();
-        });
+          showToast(`✔ ${assets.length} Activos cargados de Sheets`, '📊');
+        }
+      };
+      // Inyectar script para saltar bloqueos CORS
+      const oldScript = document.getElementById('jsonp-cloud-loader');
+      if (oldScript) oldScript.remove();
+      const script = document.createElement('script');
+      script.id = 'jsonp-cloud-loader';
+      script.src = `${appsScriptWebhookUrl}?action=GET_ALL_DATA&callback=handleCloudDataResponse&_t=${Date.now()}`;
+      document.body.appendChild(script);
     }
 
     // LOGIN
