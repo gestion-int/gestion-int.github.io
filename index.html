@@ -1,0 +1,1138 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interventoría TI - Gestión de Préstamos (Google Drive & Gmail)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #0b0f17;
+      --bg-card: rgba(18, 26, 43, 0.95);
+      --bg-glass: rgba(15, 23, 42, 0.9);
+      --border-color: rgba(255, 255, 255, 0.1);
+      --primary: #4285f4;
+      --primary-hover: #3367d6;
+      --primary-glow: rgba(66, 133, 244, 0.25);
+      --success: #34a853;
+      --success-bg: rgba(52, 168, 83, 0.18);
+      --warning: #fbbc04;
+      --warning-bg: rgba(251, 188, 4, 0.18);
+      --danger: #ea4335;
+      --danger-bg: rgba(234, 67, 53, 0.18);
+      --purple: #a142f4;
+      --purple-bg: rgba(161, 66, 244, 0.18);
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --input-bg: #070a10;
+      --input-color: #f8fafc;
+      --input-border: rgba(255, 255, 255, 0.15);
+      --table-th-bg: rgba(255, 255, 255, 0.04);
+      --table-hover: rgba(255, 255, 255, 0.03);
+      --modal-bg: #111827;
+      --banner-bg: linear-gradient(135deg, rgba(66,133,244,0.15), rgba(161,66,244,0.1));
+      --radius-sm: 6px;
+      --radius-md: 12px;
+      --radius-lg: 18px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      min-height: 100vh;
+      line-height: 1.5;
+      background-image: 
+        radial-gradient(at 0% 0%, var(--primary-glow) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(161, 66, 244, 0.08) 0px, transparent 50%);
+      transition: background-color 0.25s ease, color 0.25s ease;
+    }
+
+    h1, h2, h3, h4 { font-family: 'Outfit', sans-serif; font-weight: 700; letter-spacing: -0.02em; }
+
+    .navbar {
+      background: var(--bg-glass);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border-color);
+      position: sticky; top: 0; z-index: 100;
+      padding: 0.85rem 2rem;
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 1rem;
+    }
+    .brand-section { display: flex; align-items: center; gap: 0.75rem; }
+    .brand-logo {
+      width: 42px; height: 42px; border-radius: var(--radius-md);
+      background: linear-gradient(135deg, var(--primary), var(--purple));
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 800; font-size: 1.2rem; color: white;
+      box-shadow: 0 0 20px var(--primary-glow);
+    }
+    .brand-title { font-size: 1.15rem; color: var(--text-main); font-weight: 700; }
+    .brand-subtitle { font-size: 0.75rem; color: var(--text-muted); display: flex; align-items: center; gap: 0.35rem; }
+    .g-badge {
+      background: var(--primary-glow); color: var(--primary);
+      padding: 0.15rem 0.4rem; border-radius: var(--radius-sm); font-size: 0.7rem; font-weight: 700;
+      border: 1px solid var(--border-color);
+    }
+    
+    .role-switcher-box {
+      display: flex; align-items: center; gap: 0.5rem;
+      background: rgba(255,255,255,0.05); border: 1px solid var(--border-color);
+      padding: 0.4rem 0.75rem; border-radius: var(--radius-md);
+    }
+    .role-select {
+      background: var(--input-bg); border: 1px solid var(--primary);
+      color: var(--input-color); font-weight: 600; padding: 0.35rem 0.6rem;
+      border-radius: var(--radius-sm); font-size: 0.82rem; cursor: pointer; outline: none;
+    }
+
+    .main-wrapper { max-width: 1400px; margin: 0 auto; padding: 2rem; }
+
+    .stats-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;
+    }
+    .stat-card {
+      background: var(--bg-card); border: 1px solid var(--border-color);
+      padding: 1.1rem; border-radius: var(--radius-md); backdrop-filter: blur(12px);
+      display: flex; align-items: center; gap: 0.85rem;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+    }
+    .stat-icon {
+      width: 42px; height: 42px; border-radius: var(--radius-md);
+      display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0;
+    }
+    .stat-val { font-size: 1.35rem; font-weight: 700; color: var(--text-main); }
+    .stat-lbl { font-size: 0.75rem; color: var(--text-muted); font-weight: 500; }
+
+    .role-banner {
+      background: var(--banner-bg);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 1.25rem 1.5rem; margin-bottom: 1.5rem;
+      display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;
+    }
+
+    .tabs-header {
+      display: flex; gap: 0.5rem; border-bottom: 1px solid var(--border-color);
+      margin-bottom: 1.5rem; overflow-x: auto; padding-bottom: 0.25rem;
+    }
+    .tab-button {
+      background: transparent; border: none; color: var(--text-muted);
+      padding: 0.6rem 1.1rem; font-size: 0.9rem; font-weight: 600;
+      border-radius: var(--radius-sm); cursor: pointer; transition: all 0.2s;
+      white-space: nowrap; display: flex; align-items: center; gap: 0.4rem;
+    }
+    .tab-button:hover { color: var(--text-main); background: rgba(255,255,255,0.06); }
+    .tab-button.active { color: var(--primary); background: var(--primary-glow); border-bottom: 2px solid var(--primary); }
+
+    .glass-panel {
+      background: var(--bg-card); border: 1px solid var(--border-color);
+      border-radius: var(--radius-md); padding: 1.5rem; backdrop-filter: blur(12px);
+      box-shadow: 0 4px 25px rgba(0,0,0,0.06);
+    }
+    .panel-header {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 1.25rem; flex-wrap: wrap; gap: 0.75rem;
+    }
+    .panel-title { font-size: 1.15rem; display: flex; align-items: center; gap: 0.5rem; color: var(--text-main); }
+
+    .table-container { overflow-x: auto; }
+    .custom-table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.88rem; }
+    .custom-table th {
+      padding: 0.85rem 1rem; background: var(--table-th-bg);
+      color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase;
+      letter-spacing: 0.05em; border-bottom: 1px solid var(--border-color);
+    }
+    .custom-table td { padding: 0.9rem 1rem; border-bottom: 1px solid var(--border-color); color: var(--text-main); }
+    .custom-table tr:hover td { background: var(--table-hover); }
+
+    .badge {
+      display: inline-flex; align-items: center; padding: 0.25rem 0.6rem;
+      border-radius: 20px; font-size: 0.72rem; font-weight: 700; text-transform: uppercase;
+    }
+    .badge-disponible { background: var(--success-bg); color: var(--success); border: 1px solid var(--success); }
+    .badge-prestamo { background: var(--warning-bg); color: var(--warning); border: 1px solid var(--warning); }
+    .badge-mora { background: var(--danger-bg); color: var(--danger); border: 1px solid var(--danger); }
+    .badge-solicitado { background: var(--purple-bg); color: var(--purple); border: 1px solid var(--purple); }
+
+    .btn {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      padding: 0.55rem 1.1rem; border-radius: var(--radius-sm);
+      font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all 0.2s;
+      border: none; text-decoration: none;
+    }
+    .btn-primary { background: var(--primary); color: white; }
+    .btn-primary:hover { background: var(--primary-hover); box-shadow: 0 0 15px var(--primary-glow); }
+    .btn-secondary { background: rgba(255,255,255,0.08); color: var(--text-main); border: 1px solid var(--border-color); }
+    .btn-secondary:hover { background: rgba(255,255,255,0.15); }
+    .btn-success { background: var(--success); color: white; }
+    .btn-success:hover { opacity: 0.9; }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+    @media (max-width: 900px) { .grid-2 { grid-template-columns: 1fr; } }
+
+    .form-group { margin-bottom: 1.1rem; }
+    .form-label { display: block; font-size: 0.8rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.35rem; }
+    .form-input, .form-select, .form-textarea {
+      width: 100%; background: var(--input-bg); border: 1px solid var(--input-border);
+      color: var(--input-color); padding: 0.65rem 0.85rem; border-radius: var(--radius-sm);
+      font-size: 0.88rem; outline: none; transition: border-color 0.2s;
+    }
+    .form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--primary); }
+
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.75);
+      backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center;
+      z-index: 1000; padding: 1.5rem;
+    }
+    .modal-overlay.active { display: flex; }
+    .modal-content {
+      background: var(--modal-bg); border: 1px solid var(--border-color);
+      width: 100%; max-width: 540px; border-radius: var(--radius-md); padding: 1.75rem;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.5); color: var(--text-main);
+    }
+
+    .email-modal {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.8);
+      backdrop-filter: blur(10px); display: none; align-items: center; justify-content: center;
+      z-index: 1100; padding: 1.5rem;
+    }
+    .email-modal.active { display: flex; }
+    .email-modal-content {
+      background: var(--modal-bg); border: 1px solid var(--primary);
+      width: 100%; max-width: 680px; border-radius: var(--radius-md); padding: 1.75rem;
+      box-shadow: 0 10px 50px rgba(0,0,0,0.6); color: var(--text-main);
+    }
+    .gmail-header { display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-color); padding-bottom: 0.75rem; margin-bottom: 1rem; }
+
+    /* 🎨 PALETA DE COLORES COMPACTA EN LA ESQUINA INFERIOR DERECHA */
+    .theme-palette-widget {
+      position: fixed; bottom: 20px; right: 20px; z-index: 999;
+      background: var(--bg-card); border: 1px solid var(--border-color);
+      backdrop-filter: blur(16px); padding: 0.5rem 0.85rem; border-radius: 30px;
+      display: flex; align-items: center; gap: 0.65rem;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+    }
+    .theme-label { font-size: 0.72rem; font-weight: 700; color: var(--text-muted); display: flex; align-items: center; gap: 0.3rem; }
+    .color-swatch {
+      width: 22px; height: 22px; border-radius: 50%; cursor: pointer;
+      border: 2px solid rgba(255,255,255,0.25); transition: transform 0.2s, border-color 0.2s;
+    }
+    .color-swatch:hover { transform: scale(1.3); border-color: #fff; }
+
+    /* Notificación Toast Flotante */
+    .toast-msg {
+      position: fixed; top: 80px; right: 25px; z-index: 2000;
+      background: var(--bg-card); border: 1px solid var(--primary);
+      color: var(--text-main); padding: 0.85rem 1.25rem; border-radius: var(--radius-md);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.4); display: none; align-items: center; gap: 0.6rem;
+      font-size: 0.88rem; font-weight: 600;
+    }
+    .toast-msg.show { display: flex; animation: fadeIn 0.3s forwards; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+  </style>
+</head>
+<body>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="toast-msg">
+    <span id="toast-icon">⚡</span>
+    <span id="toast-text">Petición despachada a Google Apps Script</span>
+  </div>
+
+  <!-- Navbar -->
+  <header class="navbar">
+    <div class="brand-section">
+      <div class="brand-logo">💻</div>
+      <div>
+        <div class="brand-title">Interventoría TI</div>
+        <div class="brand-subtitle">
+          Gestión de Préstamos de Activos
+          <span class="g-badge">Google Drive & Gmail OK</span>
+          <span class="g-badge" id="role-badge">ADMIN: Jose Salas</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Selector de Rol para Pruebas -->
+    <div class="role-switcher-box">
+      <span style="font-size: 0.75rem; color: var(--text-muted);">Simular Usuario:</span>
+      <select class="role-select" id="user-switcher" onchange="changeRoleView(this.value)">
+        <option value="ADMIN">👤 Jose Salas (jsalas@sedic.com.co - ADMIN TI)</option>
+        <option value="USER">👤 Sebastian Posada (soportesistemasve@gmail.com - USUARIO)</option>
+      </select>
+    </div>
+
+    <div style="display: flex; align-items: center; gap: 0.85rem;">
+      <div style="text-align: right;">
+        <div style="font-size: 0.85rem; font-weight: 600;" id="nav-user-name">Jose Salas</div>
+        <div style="font-size: 0.72rem; color: var(--text-muted);" id="nav-user-email">jsalas@sedic.com.co</div>
+      </div>
+      <div style="width:36px; height:36px; border-radius:50%; background:var(--primary); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:0.85rem;" id="nav-user-avatar">JS</div>
+    </div>
+  </header>
+
+  <div class="main-wrapper">
+    <!-- Banner de Rol Activo -->
+    <div class="role-banner">
+      <div>
+        <h3 id="banner-role-title">VISTA ADMINISTRADOR TI: JOSE SALAS (jsalas@sedic.com.co)</h3>
+        <p style="font-size: 0.82rem; color: var(--text-muted); margin-top: 0.2rem;" id="banner-role-desc">
+          Administra el inventario de activos, aprueba solicitudes y gestiona actas en la carpeta única 02-PRESTAMOS DE ACTIVOS de Google Drive.
+        </p>
+      </div>
+      <div style="display: flex; gap: 0.75rem;">
+        <a href="https://drive.google.com/drive/u/0/folders/18VcH77p8rni7mP0eiKrxNB0uNt0uFNpr" target="_blank" class="btn btn-secondary" style="font-size: 0.8rem;">
+          📁 Abrir Carpeta en Google Drive ↗
+        </a>
+      </div>
+    </div>
+
+    <!-- Indicadores Generales (Admin) -->
+    <div class="stats-grid" id="stats-grid-container">
+      <div class="stat-card">
+        <div class="stat-icon" style="background: var(--primary-glow); color: var(--primary);">👥</div>
+        <div>
+          <div class="stat-val">~600</div>
+          <div class="stat-lbl">Usuarios Workspace</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon" style="background: var(--success-bg); color: var(--success);">✔</div>
+        <div>
+          <div class="stat-val" id="stat-available">1 / 5</div>
+          <div class="stat-lbl">Activos Disponibles</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon" style="background: var(--warning-bg); color: var(--warning);">💻</div>
+        <div>
+          <div class="stat-val" id="stat-loans">4</div>
+          <div class="stat-lbl">En Préstamo Activo</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon" style="background: var(--purple-bg); color: var(--purple);">⏳</div>
+        <div>
+          <div class="stat-val" id="stat-pending">0</div>
+          <div class="stat-lbl">Solicitudes Pendientes</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon" style="background: var(--danger-bg); color: var(--danger);">⚠️</div>
+        <div>
+          <div class="stat-val" id="stat-overdue">1</div>
+          <div class="stat-lbl">Préstamos en Mora</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Navegación por Pestañas -->
+    <div class="tabs-header" id="tabs-header-container">
+      <button class="tab-button active" onclick="switchTab('dashboard')">🏠 Dashboard</button>
+      <button class="tab-button" onclick="switchTab('solicitudes')">📋 Solicitudes & Aprobaciones TI</button>
+      <button class="tab-button" onclick="switchTab('inventario')">💻 Inventario & Equipos</button>
+      <button class="tab-button" onclick="switchTab('configuracion')">⚙️ Configuración Drive & Webhook</button>
+      <button class="tab-button" onclick="switchTab('perfil')">👤 Mi Perfil (Jose Salas)</button>
+    </div>
+
+    <!-- 1. 🏠 DASHBOARD -->
+    <div id="tab-dashboard" class="tab-content active glass-panel">
+      <div class="panel-header">
+        <div>
+          <h2 class="panel-title">📊 Resumen de Custodia & Préstamos de TI</h2>
+          <p style="font-size: 0.85rem; color: var(--text-muted);">Monitoreo integral de activos asignados en interventoría técnica.</p>
+        </div>
+        <button class="btn btn-primary" onclick="openModal('modal-loan')">+ Nueva Solicitud de Préstamo</button>
+      </div>
+
+      <div class="grid-2">
+        <div style="background: rgba(255,255,255,0.03); padding: 1.25rem; border-radius: 12px; border: 1px solid var(--border-color);">
+          <h4>📌 Procedimiento Oficial de Préstamo</h4>
+          <ol style="margin-left: 1.25rem; margin-top: 0.75rem; font-size: 0.85rem; color: var(--text-muted); line-height: 1.7;">
+            <li>El usuario (ej: <strong>Sebastian Posada</strong>) genera la solicitud especificando justificación técnica.</li>
+            <li>El Administrador TI (<strong>Jose Salas</strong>) valida disponibilidad y asigna el activo con su <strong>Placa y Serial</strong>.</li>
+            <li>El sistema genera el <strong>Acta de Entrega en PDF</strong> en Google Drive y envía notificación automática a <strong>Gmail</strong>.</li>
+            <li>Al devolver el equipo, el Administrador registra la recepción, cierra el acta y se envía confirmación de paz y salvo.</li>
+          </ol>
+        </div>
+
+        <div style="background: rgba(255,255,255,0.03); padding: 1.25rem; border-radius: 12px; border: 1px solid var(--border-color);">
+          <h4>⚡ Estado de la Integración Google Drive & Gmail</h4>
+          <div style="margin-top: 0.75rem; font-size: 0.85rem; line-height: 1.8;">
+            <div>• Carpeta Drive Conectada: <strong style="color: var(--primary);">02-PRESTAMOS DE ACTIVOS</strong></div>
+            <div>• Webhook Apps Script: <strong style="color: var(--success);">ACTIVO & CONECTADO</strong></div>
+            <div>• Total Activos Registrados: <strong id="dash-total-assets">5</strong></div>
+            <div>• Disponibles para Préstamo: <strong id="dash-avail-assets" style="color:var(--success);">1</strong></div>
+            <div>• En Préstamo Activo: <strong id="dash-loan-assets" style="color:var(--warning);">4</strong></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. 📋 SOLICITUDES & APROBACIONES -->
+    <div id="tab-solicitudes" class="tab-content glass-panel">
+      <div class="panel-header">
+        <div>
+          <h2 class="panel-title" id="solicitudes-title">📋 Solicitudes de Préstamo & Aprobaciones TI</h2>
+          <p style="font-size: 0.85rem; color: var(--text-muted);">Aprobaciones, generación y actualización de actas en Google Drive y correos automáticos.</p>
+        </div>
+        <button class="btn btn-primary" onclick="openModal('modal-loan')">+ Nueva Solicitud de Préstamo</button>
+      </div>
+
+      <div class="table-container">
+        <table class="custom-table">
+          <thead>
+            <tr>
+              <th>No. Solicitud</th>
+              <th>Solicitante / Correo</th>
+              <th>Categoría Requerida</th>
+              <th>Activo Asignado & Serial</th>
+              <th>Fechas</th>
+              <th>Estado</th>
+              <th>Acciones de TI</th>
+            </tr>
+          </thead>
+          <tbody id="tbody-solicitudes"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 3. 💻 INVENTARIO -->
+    <div id="tab-inventario" class="tab-content glass-panel">
+      <div class="panel-header">
+        <div>
+          <h2 class="panel-title">💻 Inventario General de Activos TI</h2>
+          <p style="font-size: 0.85rem; color: var(--text-muted);">Equipos registrados con placa de inventario y número de serie único.</p>
+        </div>
+        <button class="btn btn-primary" onclick="openModal('modal-asset')">+ Registrar Nuevo Activo Modo Prueba</button>
+      </div>
+
+      <div class="table-container">
+        <table class="custom-table">
+          <thead>
+            <tr>
+              <th>Placa (Asset Tag)</th>
+              <th>Número de Serie</th>
+              <th>Marca / Modelo</th>
+              <th>Especificaciones (JSONB)</th>
+              <th>Ubicación</th>
+              <th>Estado</th>
+              <th>Versión</th>
+            </tr>
+          </thead>
+          <tbody id="tbody-inventario"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 4. ⚙️ CONFIGURACIÓN -->
+    <div id="tab-configuracion" class="tab-content glass-panel">
+      <div class="panel-header">
+        <div>
+          <h2 class="panel-title">⚙️ Configuración & Conector Google Drive y Gmail</h2>
+          <p style="font-size: 0.85rem; color: var(--text-muted);">Configuración de la carpeta única enlazada de Google Drive y el Webhook de notificaciones.</p>
+        </div>
+        <button class="btn btn-primary" onclick="saveDriveFolderId()">Actualizar ID de Carpeta Drive</button>
+      </div>
+
+      <div class="grid-2">
+        <div style="background: rgba(255,255,255,0.03); padding: 1.25rem; border-radius: 12px; border: 1px solid var(--border-color);">
+          <h4>📁 ID de Carpeta en Google Drive (GOOGLE_DRIVE_FOLDER_ID)</h4>
+          <div class="form-group" style="margin-top: 1rem;">
+            <label class="form-label">ID de Carpeta Configurado</label>
+            <input type="text" class="form-input" id="input-drive-id" value="18VcH77p8rni7mP0eiKrxNB0uNt0uFNpr">
+          </div>
+          <div style="font-size: 0.78rem; color: var(--success);">
+            ✔ Enlazado a la carpeta real: <strong>02-PRESTAMOS DE ACTIVOS</strong>
+          </div>
+        </div>
+
+        <div style="background: rgba(255,255,255,0.03); padding: 1.25rem; border-radius: 12px; border: 1px solid var(--border-color);">
+          <h4>⚡ Webhook Google Apps Script (Envío Real Gmail)</h4>
+          <div class="form-group" style="margin-top: 0.75rem;">
+            <label class="form-label">URL Webhook Configurada</label>
+            <input type="text" class="form-input" id="input-webhook-url" value="https://script.google.com/macros/s/AKfycbxsUX6yF3YDbQdvYJx8-mNmlIWrsnL6Dy81rm7u9AARzysbVklYKTRrzGY85i_4TLEilA/exec">
+          </div>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-top:0.75rem; flex-wrap: wrap; gap: 0.5rem;">
+            <span style="font-size: 0.78rem; color: var(--success);">✔ Conectado a Apps Script</span>
+            <button class="btn btn-primary" style="padding: 0.35rem 0.85rem; font-size: 0.8rem;" onclick="testSendEmail()">📧 Probar Envío de Correo Real</button>
+          </div>
+        </div>
+
+        <div style="background: rgba(255,255,255,0.03); padding: 1.25rem; border-radius: 12px; border: 1px solid var(--border-color); grid-column: span 2;">
+          <h4>✉️ Cuentas de Correo Configuradas</h4>
+          <div style="font-size: 0.84rem; color: var(--text-muted); margin-top: 0.75rem; display: flex; gap: 2.5rem; flex-wrap: wrap;">
+            <div>• Remitente Administrador TI: <strong style="color: var(--primary);">jsalas@sedic.com.co</strong> (Jose Salas)</div>
+            <div>• Destinatario Empleado Prueba: <strong style="color: var(--success);">soportesistemasve@gmail.com</strong> (Sebastian Posada)</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5. 👤 MI PERFIL -->
+    <div id="tab-perfil" class="tab-content glass-panel">
+      <div class="panel-header">
+        <div>
+          <h2 class="panel-title">👤 Perfil Corporativo</h2>
+          <p style="font-size: 0.85rem; color: var(--text-muted);">Información personal de la cuenta en sesión.</p>
+        </div>
+      </div>
+      <div class="grid-2">
+        <div style="background: rgba(255,255,255,0.03); padding: 1.25rem; border-radius: 12px; border: 1px solid var(--border-color);">
+          <h4 id="perfil-name">Jose Salas</h4>
+          <p style="font-size: 0.85rem; color: var(--text-muted);" id="perfil-email">jsalas@sedic.com.co</p>
+          <p style="font-size: 0.85rem; color: var(--text-muted);" id="perfil-role">Rol: SUPER_ADMIN_TI</p>
+        </div>
+
+        <div style="background: rgba(255,255,255,0.03); padding: 1.25rem; border-radius: 12px; border: 1px solid var(--border-color);">
+          <h4>📦 Mis Activos Actualmente en Custodia</h4>
+          <div id="user-custody-list" style="margin-top: 0.5rem; font-size: 0.85rem;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 🎨 PALETA DE COLORES FLOTANTE (ESQUINA INFERIOR DERECHA) -->
+  <div class="theme-palette-widget">
+    <div class="theme-label">🎨 Tema:</div>
+    <div class="color-swatch" style="background: #4285f4;" onclick="applyTheme('blue')" title="1. Midnight Blue (Google TI)"></div>
+    <div class="color-swatch" style="background: #10b981;" onclick="applyTheme('emerald')" title="2. Cyber Emerald (Green Ops)"></div>
+    <div class="color-swatch" style="background: #a855f7;" onclick="applyTheme('purple')" title="3. Neon Cyberpunk (Violet TI)"></div>
+    <div class="color-swatch" style="background: #f59e0b;" onclick="applyTheme('amber')" title="4. Solar Amber (Dorado TI)"></div>
+    <div class="color-swatch" style="background: #ef4444;" onclick="applyTheme('crimson')" title="5. Crimson Security (Rojo Ópera)"></div>
+    <div class="color-swatch" style="background: #64748b;" onclick="applyTheme('slate')" title="6. Nordic Slate (Gris Espacial Mate)"></div>
+    <div class="color-swatch" style="background: #ffffff; border-color:#94a3b8;" onclick="applyTheme('light')" title="7. Light Corporate (Blanco Profesional)"></div>
+  </div>
+
+  <!-- Modales -->
+  <div id="modal-loan" class="modal-overlay">
+    <div class="modal-content">
+      <h3 style="margin-bottom: 1rem;">Nueva Solicitud de Préstamo de Activo TI</h3>
+      <form onsubmit="submitLoanForm(event)">
+        <div class="form-group">
+          <label class="form-label">Categoría de Activo</label>
+          <select class="form-select" id="loan-cat">
+            <option value="Laptop de Alto Rendimiento">Laptop de Alto Rendimiento</option>
+            <option value="Laptop de Desarrollo">Laptop de Desarrollo</option>
+            <option value="Monitor Portátil de Campo">Monitor Portátil de Campo</option>
+            <option value="Token de Seguridad Hardware">Token de Seguridad Hardware</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Justificación Operativa de Interventoría</label>
+          <textarea class="form-textarea" id="loan-just" rows="3" required placeholder="Ej: Inspección técnica en proyecto vías norte..."></textarea>
+        </div>
+        <div style="display:flex; justify-content:flex-end; gap:0.75rem; margin-top:1.5rem;">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('modal-loan')">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Enviar Solicitud</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="modal-asset" class="modal-overlay">
+    <div class="modal-content">
+      <h3 style="margin-bottom: 1rem;">Registrar Nuevo Activo (Jose Salas)</h3>
+      <form onsubmit="submitAssetForm(event)">
+        <div class="form-group">
+          <label class="form-label">Placa Inventario (Asset Tag)</label>
+          <input type="text" class="form-input" id="ast-tag" required placeholder="INV-TI-2026-999">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Número de Serie (SN)</label>
+          <input type="text" class="form-input" id="ast-sn" required placeholder="SN-DELL-991200">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Marca y Modelo</label>
+          <input type="text" class="form-input" id="ast-model" required placeholder="Dell Latitude 5550">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Categoría</label>
+          <select class="form-select" id="ast-cat">
+            <option value="Laptop de Alto Rendimiento">Laptop de Alto Rendimiento</option>
+            <option value="Laptop de Desarrollo">Laptop de Desarrollo</option>
+            <option value="Monitor Portátil de Campo">Monitor Portátil de Campo</option>
+            <option value="Token de Seguridad Hardware">Token de Seguridad Hardware</option>
+          </select>
+        </div>
+        <div style="display:flex; justify-content:flex-end; gap:0.75rem; margin-top:1.5rem;">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('modal-asset')">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Guardar Activo</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Vista Modal de Correo -->
+  <div id="email-modal" class="email-modal">
+    <div class="email-modal-content">
+      <div class="gmail-header">
+        <div>
+          <span style="background: #ea4335; color: white; padding: 0.15rem 0.5rem; border-radius: 4px; font-weight: 700; font-size: 0.75rem; margin-right: 0.5rem;">GMAIL & DRIVE</span>
+          <span style="font-weight: 700; font-size: 0.95rem;">Confirmación de Despacho en Vivo</span>
+        </div>
+        <button onclick="closeEmailModal()" class="btn btn-secondary" style="padding:0.2rem 0.6rem;">Cerrar ✕</button>
+      </div>
+
+      <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); padding: 1.25rem; border-radius: 10px; font-size: 0.88rem; line-height: 1.6;">
+        <div style="border-bottom: 1px solid var(--border-color); padding-bottom: 0.75rem; margin-bottom: 1rem;">
+          <div><strong>De:</strong> Jose Salas - Área de TI &lt;<span style="color:var(--primary);">jsalas@sedic.com.co</span>&gt;</div>
+          <div><strong>Para:</strong> Sebastian Posada &lt;<span style="color:var(--primary);" id="mail-modal-to">soportesistemasve@gmail.com</span>&gt;</div>
+          <div><strong>Asunto:</strong> <strong id="mail-modal-subject" style="color: var(--text-main);">Confirmación de Asignación</strong></div>
+          <div style="font-size: 0.75rem; color: var(--success); margin-top: 0.25rem;">✔ Petición ejecutada exitosamente hacia Google Apps Script (PDF en Drive + Correo enviado)</div>
+        </div>
+
+        <div id="mail-modal-body" style="white-space: pre-line; color: var(--text-main); background: var(--input-bg); padding: 1rem; border-radius: 8px; border: 1px solid var(--border-color);">
+          Cuerpo del mensaje...
+        </div>
+      </div>
+
+      <div style="margin-top: 1.25rem; display: flex; justify-content: space-between; align-items: center;">
+        <span style="font-size: 0.75rem; color: var(--text-muted);">Revisa en 10 seg tu Google Drive y tu Gmail</span>
+        <button onclick="closeEmailModal()" class="btn btn-primary">Entendido (Cerrar)</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let currentRole = 'ADMIN'; 
+    let driveFolderId = '18VcH77p8rni7mP0eiKrxNB0uNt0uFNpr';
+    let appsScriptWebhookUrl = 'https://script.google.com/macros/s/AKfycbxsUX6yF3YDbQdvYJx8-mNmlIWrsnL6Dy81rm7u9AARzysbVklYKTRrzGY85i_4TLEilA/exec';
+
+    const currentUserAdmin = { name: 'Jose Salas', email: 'jsalas@sedic.com.co', role: 'SUPER_ADMIN_TI' };
+    const currentUserUser = { name: 'Sebastian Posada', email: 'soportesistemasve@gmail.com', role: 'USUARIO_FINAL' };
+
+    let activeUser = currentUserAdmin;
+
+    const assets = [
+      { id: 'ast-101', tag: 'INV-TI-2026-089', sn: 'SN-DELL-883921', brand: 'Dell', model: 'Latitude 5540 i7', cat: 'Laptop de Alto Rendimiento', status: 'ASIGNADO_EN_PRESTAMO', specs: 'CPU: i7-13700H | RAM: 32GB', loc: 'Sede Principal TI', ver: 3 },
+      { id: 'ast-102', tag: 'INV-TI-2026-090', sn: 'SN-LENOVO-992182', brand: 'Lenovo', model: 'ThinkPad P16s Gen 2', cat: 'Laptop de Desarrollo', status: 'DISPONIBLE', specs: 'CPU: Ryzen 7 PRO | RAM: 64GB', loc: 'Almacén TI', ver: 1 },
+      { id: 'ast-103', tag: 'INV-TI-2026-112', sn: 'SN-MAC-M3-441299', brand: 'Apple', model: 'MacBook Pro 16" M3', cat: 'Laptop de Diseño & BIM', status: 'DISPONIBLE', specs: 'CPU: M3 Max | RAM: 36GB', loc: 'Caja Fuerte TI', ver: 1 },
+      { id: 'ast-104', tag: 'INV-TI-2026-304', sn: 'SN-LG-27-889102', brand: 'LG', model: 'Gram +view 16MQ70', cat: 'Monitor Portátil de Campo', status: 'ASIGNADO_EN_PRESTAMO', specs: 'Display 16" WQXGA', loc: 'Comisión Bogotá-Medellín', ver: 2 },
+      { id: 'ast-105', tag: 'INV-TI-2026-501', sn: 'SN-YUBI-9981273', brand: 'Yubico', model: 'YubiKey 5C NFC', cat: 'Token de Seguridad Hardware', status: 'DISPONIBLE', specs: 'FIDO2 / U2F', loc: 'Almacén TI', ver: 1 }
+    ];
+
+    const loans = [
+      { id: 'req-01', num: 'REQ-2026-00045', user: 'Sebastian Posada', email: 'soportesistemasve@gmail.com', dept: 'Interventoría de Obra Vías', cat: 'Laptop de Alto Rendimiento', tag: 'INV-TI-2026-089', model: 'Dell Latitude 5540 i7', sn: 'SN-DELL-883921', status: 'ENTREGADO', just: 'Inspección técnica en obra y procesamiento de planos en campo.', driveFile: 'Acta_Entrega_INV-TI-2026-089_Entregado al usuario.pdf', gcal: true },
+      { id: 'req-02', num: 'REQ-2026-00052', user: 'María Fernanda Gómez', email: 'maria.gomez@interventoria.gov.co', dept: 'Auditoría Financiera', cat: 'Monitor Portátil de Campo', tag: 'INV-TI-2026-304', model: 'LG Gram +view 16MQ70', sn: 'SN-LG-27-889102', status: 'EN_MORA', just: 'Revisión de matrices contables durante auditoría externa.', driveFile: 'Acta_Entrega_INV-TI-2026-304_Entregado al usuario.pdf', gcal: true },
+      { id: 'req-03', num: 'REQ-2026-00060', user: 'Sebastian Posada', email: 'soportesistemasve@gmail.com', dept: 'Sistemas TI', cat: 'Laptop de Desarrollo', tag: '', model: '', sn: '', status: 'SOLICITADO', just: 'Despliegue del módulo de reportes.', driveFile: '', gcal: false }
+    ];
+
+    function showToast(text, icon = '🚀') {
+      const toast = document.getElementById('toast');
+      document.getElementById('toast-icon').innerText = icon;
+      document.getElementById('toast-text').innerText = text;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 3500);
+    }
+
+    let isSendingEmail = false;
+
+    // DISPARO ÚNICO DIRECTO (SIN DUPLICADOS)
+    function sendRealEmail(payload) {
+      if (isSendingEmail) return; // Evita disparos dobles
+      isSendingEmail = true;
+      setTimeout(() => { isSendingEmail = false; }, 3000);
+
+      const baseUrl = (document.getElementById('input-webhook-url') ? document.getElementById('input-webhook-url').value.trim() : '') || appsScriptWebhookUrl;
+      if (!baseUrl) {
+        alert('Por favor verifica que la URL de Webhook esté configurada.');
+        return;
+      }
+
+      const params = new URLSearchParams({
+        to: payload.to || 'soportesistemasve@gmail.com',
+        recipientName: payload.recipientName || 'Sebastian Posada',
+        type: payload.type || 'ASIGNACION',
+        requestNumber: payload.requestNumber || 'REQ-2026-00045',
+        assetTag: payload.assetTag || 'INV-TI-2026-089',
+        model: payload.model || 'Dell Latitude 5540 i7',
+        sn: payload.sn || 'SN-DELL-883921',
+        category: payload.category || 'Laptop de Alto Rendimiento',
+        specs: payload.specs || 'CPU: i7-13700H | RAM: 32GB',
+        _t: Date.now()
+      });
+
+      const fullUrl = baseUrl + (baseUrl.includes('?') ? '&' : '?') + params.toString();
+      showToast('Despachando solicitud a Google Apps Script...', '📨');
+
+      // Un solo disparo controlado que se cierra automáticamente
+      const popup = window.open(fullUrl, 'gscript_bg_runner', 'width=350,height=250,left=2000,top=2000');
+      if (popup) {
+        setTimeout(() => { try { popup.close(); } catch(e){} }, 2500);
+      }
+    }
+
+    function testSendEmail() {
+      const url = document.getElementById('input-webhook-url').value.trim();
+      if (!url) {
+        alert('Por favor escribe primero la URL del Webhook.');
+        return;
+      }
+      appsScriptWebhookUrl = url;
+
+      sendRealEmail({
+        to: 'soportesistemasve@gmail.com',
+        recipientName: 'Sebastian Posada',
+        type: 'PRUEBA',
+        requestNumber: 'REQ-TEST-001',
+        assetTag: 'INV-TI-2026-089',
+        model: 'Dell Latitude 5540 i7',
+        sn: 'SN-DELL-883921',
+        category: 'Laptop de Alto Rendimiento',
+        specs: 'CPU: i7-13700H | RAM: 32GB'
+      });
+      showToast('¡Prueba enviada! Revisa en 10s Google Drive y Gmail.', '✔');
+    }
+
+    // 🎨 SISTEMA AVANZADO DE TEMAS VISUALES CON CONTRASTE TOTAL
+    function applyTheme(theme) {
+      const root = document.documentElement;
+
+      if (theme === 'blue') {
+        // 1. Midnight Blue (Google Dark TI)
+        root.style.setProperty('--primary', '#4285f4');
+        root.style.setProperty('--primary-hover', '#3367d6');
+        root.style.setProperty('--primary-glow', 'rgba(66, 133, 244, 0.25)');
+        root.style.setProperty('--bg-dark', '#0b0f17');
+        root.style.setProperty('--bg-card', 'rgba(18, 26, 43, 0.95)');
+        root.style.setProperty('--bg-glass', 'rgba(15, 23, 42, 0.9)');
+        root.style.setProperty('--border-color', 'rgba(255, 255, 255, 0.1)');
+        root.style.setProperty('--text-main', '#f8fafc');
+        root.style.setProperty('--text-muted', '#94a3b8');
+        root.style.setProperty('--input-bg', '#070a10');
+        root.style.setProperty('--input-color', '#f8fafc');
+        root.style.setProperty('--input-border', 'rgba(255, 255, 255, 0.15)');
+        root.style.setProperty('--table-th-bg', 'rgba(255, 255, 255, 0.04)');
+        root.style.setProperty('--table-hover', 'rgba(255, 255, 255, 0.03)');
+        root.style.setProperty('--modal-bg', '#111827');
+        root.style.setProperty('--banner-bg', 'linear-gradient(135deg, rgba(66,133,244,0.15), rgba(161,66,244,0.1))');
+      } else if (theme === 'emerald') {
+        // 2. Cyber Emerald (Green Ops)
+        root.style.setProperty('--primary', '#10b981');
+        root.style.setProperty('--primary-hover', '#059669');
+        root.style.setProperty('--primary-glow', 'rgba(16, 185, 129, 0.25)');
+        root.style.setProperty('--bg-dark', '#05140f');
+        root.style.setProperty('--bg-card', 'rgba(10, 35, 26, 0.95)');
+        root.style.setProperty('--bg-glass', 'rgba(8, 28, 21, 0.9)');
+        root.style.setProperty('--border-color', 'rgba(16, 185, 129, 0.2)');
+        root.style.setProperty('--text-main', '#f0fdf4');
+        root.style.setProperty('--text-muted', '#6ee7b7');
+        root.style.setProperty('--input-bg', '#020b08');
+        root.style.setProperty('--input-color', '#f0fdf4');
+        root.style.setProperty('--input-border', 'rgba(16, 185, 129, 0.3)');
+        root.style.setProperty('--table-th-bg', 'rgba(16, 185, 129, 0.1)');
+        root.style.setProperty('--table-hover', 'rgba(16, 185, 129, 0.06)');
+        root.style.setProperty('--modal-bg', '#082119');
+        root.style.setProperty('--banner-bg', 'linear-gradient(135deg, rgba(16,185,129,0.18), rgba(5,150,105,0.1))');
+      } else if (theme === 'purple') {
+        // 3. Neon Cyberpunk
+        root.style.setProperty('--primary', '#a855f7');
+        root.style.setProperty('--primary-hover', '#9333ea');
+        root.style.setProperty('--primary-glow', 'rgba(168, 85, 247, 0.25)');
+        root.style.setProperty('--bg-dark', '#11071c');
+        root.style.setProperty('--bg-card', 'rgba(30, 15, 48, 0.95)');
+        root.style.setProperty('--bg-glass', 'rgba(24, 11, 38, 0.9)');
+        root.style.setProperty('--border-color', 'rgba(168, 85, 247, 0.25)');
+        root.style.setProperty('--text-main', '#faf5ff');
+        root.style.setProperty('--text-muted', '#d8b4fe');
+        root.style.setProperty('--input-bg', '#09030f');
+        root.style.setProperty('--input-color', '#faf5ff');
+        root.style.setProperty('--input-border', 'rgba(168, 85, 247, 0.35)');
+        root.style.setProperty('--table-th-bg', 'rgba(168, 85, 247, 0.1)');
+        root.style.setProperty('--table-hover', 'rgba(168, 85, 247, 0.06)');
+        root.style.setProperty('--modal-bg', '#1b0c2e');
+        root.style.setProperty('--banner-bg', 'linear-gradient(135deg, rgba(168,85,247,0.18), rgba(236,72,153,0.1))');
+      } else if (theme === 'amber') {
+        // 4. Solar Amber (Dorado TI)
+        root.style.setProperty('--primary', '#f59e0b');
+        root.style.setProperty('--primary-hover', '#d97706');
+        root.style.setProperty('--primary-glow', 'rgba(245, 158, 11, 0.25)');
+        root.style.setProperty('--bg-dark', '#160f05');
+        root.style.setProperty('--bg-card', 'rgba(38, 27, 12, 0.95)');
+        root.style.setProperty('--bg-glass', 'rgba(30, 20, 8, 0.9)');
+        root.style.setProperty('--border-color', 'rgba(245, 158, 11, 0.25)');
+        root.style.setProperty('--text-main', '#fffbeb');
+        root.style.setProperty('--text-muted', '#fde68a');
+        root.style.setProperty('--input-bg', '#0c0702');
+        root.style.setProperty('--input-color', '#fffbeb');
+        root.style.setProperty('--input-border', 'rgba(245, 158, 11, 0.35)');
+        root.style.setProperty('--table-th-bg', 'rgba(245, 158, 11, 0.1)');
+        root.style.setProperty('--table-hover', 'rgba(245, 158, 11, 0.06)');
+        root.style.setProperty('--modal-bg', '#24180a');
+        root.style.setProperty('--banner-bg', 'linear-gradient(135deg, rgba(245,158,11,0.18), rgba(217,119,6,0.1))');
+      } else if (theme === 'crimson') {
+        // 5. Crimson Security (Rojo)
+        root.style.setProperty('--primary', '#ef4444');
+        root.style.setProperty('--primary-hover', '#dc2626');
+        root.style.setProperty('--primary-glow', 'rgba(239, 68, 68, 0.25)');
+        root.style.setProperty('--bg-dark', '#160606');
+        root.style.setProperty('--bg-card', 'rgba(38, 14, 14, 0.95)');
+        root.style.setProperty('--bg-glass', 'rgba(30, 10, 10, 0.9)');
+        root.style.setProperty('--border-color', 'rgba(239, 68, 68, 0.25)');
+        root.style.setProperty('--text-main', '#fef2f2');
+        root.style.setProperty('--text-muted', '#fca5a5');
+        root.style.setProperty('--input-bg', '#0c0202');
+        root.style.setProperty('--input-color', '#fef2f2');
+        root.style.setProperty('--input-border', 'rgba(239, 68, 68, 0.35)');
+        root.style.setProperty('--table-th-bg', 'rgba(239, 68, 68, 0.1)');
+        root.style.setProperty('--table-hover', 'rgba(239, 68, 68, 0.06)');
+        root.style.setProperty('--modal-bg', '#240a0a');
+        root.style.setProperty('--banner-bg', 'linear-gradient(135deg, rgba(239,68,68,0.18), rgba(185,28,28,0.1))');
+      } else if (theme === 'slate') {
+        // 6. Nordic Slate (Gris Espacial Mate)
+        root.style.setProperty('--primary', '#38bdf8');
+        root.style.setProperty('--primary-hover', '#0284c7');
+        root.style.setProperty('--primary-glow', 'rgba(56, 189, 248, 0.25)');
+        root.style.setProperty('--bg-dark', '#0f172a');
+        root.style.setProperty('--bg-card', '#1e293b');
+        root.style.setProperty('--bg-glass', 'rgba(30, 41, 59, 0.9)');
+        root.style.setProperty('--border-color', '#334155');
+        root.style.setProperty('--text-main', '#f8fafc');
+        root.style.setProperty('--text-muted', '#94a3b8');
+        root.style.setProperty('--input-bg', '#0b1120');
+        root.style.setProperty('--input-color', '#f8fafc');
+        root.style.setProperty('--input-border', '#475569');
+        root.style.setProperty('--table-th-bg', '#0f172a');
+        root.style.setProperty('--table-hover', 'rgba(255, 255, 255, 0.03)');
+        root.style.setProperty('--modal-bg', '#1e293b');
+        root.style.setProperty('--banner-bg', 'linear-gradient(135deg, rgba(56,189,248,0.15), rgba(99,102,241,0.1))');
+      } else if (theme === 'light') {
+        // 7. Light Corporate (Modo Blanco Impecable y Legible)
+        root.style.setProperty('--primary', '#2563eb');
+        root.style.setProperty('--primary-hover', '#1d4ed8');
+        root.style.setProperty('--primary-glow', 'rgba(37, 99, 235, 0.15)');
+        root.style.setProperty('--bg-dark', '#f1f5f9');
+        root.style.setProperty('--bg-card', '#ffffff');
+        root.style.setProperty('--bg-glass', 'rgba(255, 255, 255, 0.95)');
+        root.style.setProperty('--border-color', '#cbd5e1');
+        root.style.setProperty('--text-main', '#0f172a');
+        root.style.setProperty('--text-muted', '#475569');
+        root.style.setProperty('--input-bg', '#f8fafc');
+        root.style.setProperty('--input-color', '#0f172a');
+        root.style.setProperty('--input-border', '#94a3b8');
+        root.style.setProperty('--table-th-bg', '#f8fafc');
+        root.style.setProperty('--table-hover', '#f1f5f9');
+        root.style.setProperty('--modal-bg', '#ffffff');
+        root.style.setProperty('--banner-bg', 'linear-gradient(135deg, rgba(37,99,235,0.08), rgba(99,102,241,0.05))');
+      }
+
+      localStorage.setItem('TI_SELECTED_THEME', theme);
+    }
+
+    const savedTheme = localStorage.getItem('TI_SELECTED_THEME') || 'blue';
+    applyTheme(savedTheme);
+
+    function changeRoleView(role) {
+      currentRole = role;
+      if (role === 'ADMIN') {
+        activeUser = currentUserAdmin;
+        document.getElementById('role-badge').innerText = 'ADMIN: Jose Salas';
+        document.getElementById('banner-role-title').innerText = 'VISTA ADMINISTRADOR TI: JOSE SALAS (jsalas@sedic.com.co)';
+        document.getElementById('banner-role-desc').innerText = 'Administra el inventario de activos, aprueba solicitudes y gestiona actas en la carpeta única 02-PRESTAMOS DE ACTIVOS de Google Drive.';
+      } else {
+        activeUser = currentUserUser;
+        document.getElementById('role-badge').innerText = 'USUARIO: Sebastian Posada';
+        document.getElementById('banner-role-title').innerText = 'VISTA USUARIO FINAL: SEBASTIAN POSADA (soportesistemasve@gmail.com)';
+        document.getElementById('banner-role-desc').innerText = 'Vista de autoservicio de Sebastian Posada. Muestra sus solicitudes y los equipos bajo su custodia con su número de serie.';
+      }
+
+      document.getElementById('nav-user-name').innerText = activeUser.name;
+      document.getElementById('nav-user-email').innerText = activeUser.email;
+      document.getElementById('nav-user-avatar').innerText = activeUser.name.split(' ').map(n=>n[0]).join('');
+
+      document.getElementById('perfil-name').innerText = activeUser.name;
+      document.getElementById('perfil-email').innerText = activeUser.email;
+      document.getElementById('perfil-role').innerText = `Rol: ${activeUser.role}`;
+
+      renderTabsForRole();
+      renderAll();
+    }
+
+    function renderTabsForRole() {
+      const container = document.getElementById('tabs-header-container');
+      if (currentRole === 'ADMIN') {
+        document.getElementById('stats-grid-container').style.display = 'grid';
+        container.innerHTML = `
+          <button class="tab-button active" onclick="switchTab('dashboard')">🏠 Dashboard</button>
+          <button class="tab-button" onclick="switchTab('solicitudes')">📋 Solicitudes & Aprobaciones TI</button>
+          <button class="tab-button" onclick="switchTab('inventario')">💻 Inventario & Equipos</button>
+          <button class="tab-button" onclick="switchTab('configuracion')">⚙️ Configuración Drive & Webhook</button>
+          <button class="tab-button" onclick="switchTab('perfil')">👤 Mi Perfil (Jose Salas)</button>
+        `;
+        document.getElementById('solicitudes-title').innerText = '📋 Solicitudes de Préstamo & Aprobaciones TI';
+        switchTab('dashboard');
+      } else {
+        document.getElementById('stats-grid-container').style.display = 'none';
+        container.innerHTML = `
+          <button class="tab-button active" onclick="switchTab('solicitudes')">📋 Mis Solicitudes (Sebastian Posada)</button>
+          <button class="tab-button" onclick="switchTab('perfil')">👤 Mis Activos en Custodia & Perfil</button>
+        `;
+        document.getElementById('solicitudes-title').innerText = '📋 Mis Solicitudes de Préstamo (Sebastian Posada)';
+        switchTab('solicitudes');
+      }
+    }
+
+    function renderAll() {
+      renderStats();
+      renderSolicitudes();
+      renderInventario();
+      renderCustody();
+    }
+
+    function renderStats() {
+      const avail = assets.filter(a => a.status === 'DISPONIBLE').length;
+      const inLoan = assets.filter(a => a.status === 'ASIGNADO_EN_PRESTAMO').length;
+      const pending = loans.filter(l => l.status === 'SOLICITADO').length;
+      const overdue = loans.filter(l => l.status === 'EN_MORA').length;
+
+      document.getElementById('stat-available').innerText = `${avail} / ${assets.length}`;
+      document.getElementById('stat-loans').innerText = inLoan;
+      document.getElementById('stat-pending').innerText = pending;
+      document.getElementById('stat-overdue').innerText = overdue;
+
+      document.getElementById('dash-total-assets').innerText = assets.length;
+      document.getElementById('dash-avail-assets').innerText = avail;
+      document.getElementById('dash-loan-assets').innerText = inLoan;
+    }
+
+    function renderSolicitudes() {
+      const tbody = document.getElementById('tbody-solicitudes');
+      let filteredLoans = loans;
+      if (currentRole === 'USER') {
+        filteredLoans = loans.filter(l => l.email === activeUser.email || l.user === activeUser.name);
+      }
+
+      if (filteredLoans.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:var(--text-muted); padding:2rem;">No tienes ninguna solicitud registrada. Usa el botón "+ Nueva Solicitud".</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = filteredLoans.map(l => `
+        <tr>
+          <td style="font-weight:700; font-family:monospace; color:var(--primary);">${l.num}</td>
+          <td><div><strong>${l.user}</strong></div><div style="font-size:0.75rem; color:var(--text-muted);">${l.email}</div></td>
+          <td>${l.cat}</td>
+          <td>${l.tag ? `<div><strong>${l.tag}</strong></div><div style="font-size:0.75rem; color:var(--text-muted);">${l.model} (SN: <code>${l.sn}</code>)</div>` : '<span style="color:var(--warning);">No asignado</span>'}</td>
+          <td>2026-07-20 - 2026-08-05</td>
+          <td>${getStatusBadge(l.status)}</td>
+          <td>
+            ${currentRole === 'ADMIN' && l.status === 'SOLICITADO' ? `<button class="btn btn-primary" style="padding:0.35rem 0.7rem; font-size:0.75rem;" onclick="assignLoan('${l.id}')">Assign & Drive PDF</button>` : ''}
+            ${currentRole === 'ADMIN' && (l.status === 'ENTREGADO' || l.status === 'EN_MORA') ? `<button class="btn btn-success" style="padding:0.35rem 0.7rem; font-size:0.75rem;" onclick="returnLoan('${l.id}')">Registrar Devolución & Actualizar PDF</button>` : ''}
+            ${currentRole === 'USER' && l.status === 'SOLICITADO' ? '<span style="font-size:0.75rem; color:var(--purple);">En revisión por Jose Salas (TI)</span>' : ''}
+            ${l.status === 'DEVUELTO' ? '<span style="font-size:0.75rem; color:var(--text-muted);">Completado</span>' : ''}
+            ${l.driveFile ? `<br/><a href="https://drive.google.com/drive/u/0/folders/${driveFolderId}" target="_blank" style="color:var(--primary); font-size:0.72rem; text-decoration:none;">📄 Drive: ${l.driveFile} ↗</a>` : ''}
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function renderInventario() {
+      const tbody = document.getElementById('tbody-inventario');
+      tbody.innerHTML = assets.map(a => `
+        <tr>
+          <td style="font-weight:700; font-family:monospace; color:var(--primary);">${a.tag}</td>
+          <td style="font-family:monospace; font-size:0.8rem; font-weight:700;">${a.sn}</td>
+          <td><div><strong>${a.brand} ${a.model}</strong></div><div style="font-size:0.75rem; color:var(--text-muted);">${a.cat}</div></td>
+          <td style="font-size:0.75rem; font-family:monospace;">${a.specs}</td>
+          <td style="font-size:0.85rem;">${a.loc}</td>
+          <td><span class="badge ${a.status === 'DISPONIBLE' ? 'badge-disponible' : 'badge-prestamo'}">${a.status}</span></td>
+          <td style="text-align:center; font-family:monospace;">v${a.ver}</td>
+        </tr>
+      `).join('');
+    }
+
+    function renderCustody() {
+      const container = document.getElementById('user-custody-list');
+      const userActiveLoans = loans.filter(l => (l.email === activeUser.email || l.user === activeUser.name) && (l.status === 'ENTREGADO' || l.status === 'EN_MORA'));
+      
+      if (userActiveLoans.length === 0) {
+        container.innerHTML = `<span style="color:var(--success);">✔ No tienes ningún equipo físico bajo tu custodia en este momento.</span>`;
+      } else {
+        container.innerHTML = userActiveLoans.map(l => `
+          <div style="background:rgba(255,255,255,0.04); padding:0.85rem; border-radius:8px; border:1px solid var(--primary); margin-bottom:0.5rem;">
+            <div style="font-weight:700; color:var(--primary); font-size:0.95rem;">${l.tag} - ${l.model}</div>
+            <div style="font-size:0.82rem; color:var(--text-main); margin-top:0.2rem;">Número de Serie (SN): <code>${l.sn}</code></div>
+            <div style="font-size:0.78rem; color:var(--warning); margin-top:0.2rem;">Fecha límite de devolución: 2026-08-05</div>
+            <div style="margin-top:0.4rem;"><a href="https://drive.google.com/drive/u/0/folders/${driveFolderId}" target="_blank" style="color:var(--primary); font-size:0.75rem; text-decoration:none;">📄 Ver Acta PDF en Carpeta Drive 02-PRESTAMOS DE ACTIVOS ↗</a></div>
+          </div>
+        `).join('');
+      }
+    }
+
+    function getStatusBadge(status) {
+      if (status === 'ENTREGADO') return '<span class="badge badge-disponible">ENTREGADO</span>';
+      if (status === 'SOLICITADO') return '<span class="badge badge-solicitado">PENDIENTE TI</span>';
+      if (status === 'EN_MORA') return '<span class="badge badge-mora">VENCIDO EN MORA</span>';
+      if (status === 'DEVUELTO') return '<span class="badge badge-disponible">DEVUELTO</span>';
+      return `<span class="badge badge-prestamo">${status}</span>`;
+    }
+
+    function switchTab(tabName) {
+      document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      
+      const btn = Array.from(document.querySelectorAll('.tab-button')).find(b => b.getAttribute('onclick').includes(tabName));
+      if (btn) btn.classList.add('active');
+      
+      const tabEl = document.getElementById(`tab-${tabName}`);
+      if (tabEl) tabEl.classList.add('active');
+    }
+
+    function openModal(id) { document.getElementById(id).classList.add('active'); }
+    function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+
+    function saveDriveFolderId() {
+      const val = document.getElementById('input-drive-id').value;
+      if (!val) return;
+      driveFolderId = val;
+      showToast('ID de Carpeta actualizado: ' + val, '📁');
+    }
+
+    function submitLoanForm(e) {
+      e.preventDefault();
+      const cat = document.getElementById('loan-cat').value;
+      const just = document.getElementById('loan-just').value;
+
+      loans.unshift({
+        id: 'req-' + Date.now(),
+        num: 'REQ-2026-000' + (loans.length + 61),
+        user: activeUser.name,
+        email: activeUser.email,
+        dept: 'Interventoría de Obra Vías',
+        cat: cat,
+        tag: '',
+        model: '',
+        sn: '',
+        status: 'SOLICITADO',
+        just: just,
+        driveFile: '',
+        gcal: false
+      });
+
+      closeModal('modal-loan');
+      renderAll();
+      switchTab('solicitudes');
+      showToast('Solicitud enviada a TI con éxito', '✔');
+    }
+
+    function submitAssetForm(e) {
+      e.preventDefault();
+      const tag = document.getElementById('ast-tag').value;
+      const sn = document.getElementById('ast-sn').value;
+      const model = document.getElementById('ast-model').value;
+      const cat = document.getElementById('ast-cat').value;
+
+      assets.unshift({
+        id: 'ast-' + Date.now(),
+        tag: tag,
+        sn: sn,
+        brand: 'Dell',
+        model: model,
+        cat: cat,
+        status: 'DISPONIBLE',
+        specs: 'CPU: Core Ultra | RAM: 32GB',
+        loc: 'Almacén TI Principal',
+        ver: 1
+      });
+
+      closeModal('modal-asset');
+      renderAll();
+      switchTab('inventario');
+      showToast('Nuevo activo registrado en inventario', '💻');
+    }
+
+    // ASIGNAR EQUIPO Y DESPACHAR A GOOGLE APPS SCRIPT
+    function assignLoan(loanId) {
+      const loan = loans.find(l => l.id === loanId);
+      const availAsset = assets.find(a => a.status === 'DISPONIBLE');
+      if (!loan || !availAsset) { alert('No hay activos disponibles en esa categoría.'); return; }
+
+      availAsset.status = 'ASIGNADO_EN_PRESTAMO';
+      availAsset.ver += 1;
+
+      loan.tag = availAsset.tag;
+      loan.model = `${availAsset.brand} ${availAsset.model}`;
+      loan.sn = availAsset.sn;
+      loan.status = 'ENTREGADO';
+      loan.driveFile = `Acta_Entrega_${availAsset.tag}_Entregado al usuario.pdf`;
+      loan.gcal = true;
+
+      const subject = `[Interventoría TI] Confirmación de Asignación de Activo - ${loan.num}`;
+      const body = `Hola ${loan.user},\n\nEl área de Tecnología e Infraestructura (Jose Salas) ha procesado y APROBADO tu solicitud de préstamo (${loan.num}).\n\n📌 ESPECIFICACIÓN DEL ACTIVO ASIGNADO:\n--------------------------------------------------\n• Marca y Modelo: ${availAsset.brand} ${availAsset.model}\n• Placa de Inventario: ${availAsset.tag}\n• NÚMERO DE SERIE (SN): ${availAsset.sn}\n• Categoría: ${availAsset.cat}\n• Especificaciones: ${availAsset.specs}\n--------------------------------------------------\n\n📄 Tu Acta de Entrega en PDF guardada en la carpeta única Google Drive (02-PRESTAMOS DE ACTIVOS):\nhttps://drive.google.com/drive/u/0/folders/${driveFolderId}\n\n📅 Fecha Límite Agendada en tu Calendar: 2026-08-05.\n\nSaludos cordiales,\nJose Salas - Área de TI\njsalas@sedic.com.co`;
+
+      // Envío único y directo sin duplicados
+      sendRealEmail({
+        to: loan.email,
+        recipientName: loan.user,
+        type: 'ASIGNACION',
+        requestNumber: loan.num,
+        assetTag: availAsset.tag,
+        model: `${availAsset.brand} ${availAsset.model}`,
+        sn: availAsset.sn,
+        category: availAsset.cat,
+        specs: availAsset.specs
+      });
+
+      showEmailModal(loan.email, subject, body);
+      renderAll();
+    }
+
+    // DEVOLUCIÓN DE EQUIPO Y DESPACHO DE PAZ Y SALVO
+    function returnLoan(loanId) {
+      const loan = loans.find(l => l.id === loanId);
+      if (!loan) return;
+
+      const asset = assets.find(a => a.tag === loan.tag);
+      if (asset) {
+        asset.status = 'DISPONIBLE';
+        asset.ver += 1;
+      }
+
+      loan.status = 'DEVUELTO';
+      loan.driveFile = `Acta_Entrega_${loan.tag}_Devuelto.pdf`;
+
+      const subject = `[Interventoría TI] Confirmación de Recepción y Devolución de Activo - ${loan.num}`;
+      const body = `Hola ${loan.user},\n\nConfirmamos que el área de TI (Jose Salas) ha recibido A CONFORMIDAD el activo asignado a tu solicitud ${loan.num}.\n\n📌 DETALLES DEL ACTIVO RECIBIDO A CONFORMIDAD:\n--------------------------------------------------\n• Placa de Inventario: ${loan.tag}\n• Marca y Modelo: ${loan.model}\n• NÚMERO DE SERIE (SN): ${loan.sn}\n--------------------------------------------------\n\n📄 Tu Acta de Devolución en PDF actualizada en la carpeta única Drive (02-PRESTAMOS DE ACTIVOS):\nhttps://drive.google.com/drive/u/0/folders/${driveFolderId}\n\nEstado: DEVUELTO / CERRADO.\nEl activo ha sido liberado de tu custodia en el sistema.\n\nAtentamente,\nJose Salas - Área de TI\njsalas@sedic.com.co`;
+
+      // Envío único y directo sin duplicados
+      sendRealEmail({
+        to: loan.email,
+        recipientName: loan.user,
+        type: 'DEVOLUCION',
+        requestNumber: loan.num,
+        assetTag: loan.tag,
+        model: loan.model,
+        sn: loan.sn,
+        category: loan.cat || 'Equipo TI',
+        specs: 'Recibido a conformidad en área de TI'
+      });
+
+      showEmailModal(loan.email, subject, body);
+      renderAll();
+    }
+
+    function showEmailModal(to, subject, body) {
+      document.getElementById('mail-modal-to').innerText = to;
+      document.getElementById('mail-modal-subject').innerText = subject;
+      document.getElementById('mail-modal-body').innerText = body;
+
+      const modal = document.getElementById('email-modal');
+      modal.classList.add('active');
+    }
+
+    function closeEmailModal() {
+      document.getElementById('email-modal').classList.remove('active');
+    }
+
+    changeRoleView('ADMIN');
+  </script>
+</body>
+</html>
