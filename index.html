@@ -53,7 +53,7 @@
 
     h1, h2, h3, h4 { font-family: 'Outfit', sans-serif; font-weight: 700; letter-spacing: -0.02em; }
 
-    /* LOGIN OVERLAY */
+    /* PANTALLA DE BLOQUEO Y LOGIN */
     .login-overlay {
       position: fixed; inset: 0; background: rgba(5, 8, 15, 0.97);
       backdrop-filter: blur(25px); z-index: 9999;
@@ -467,8 +467,8 @@
         <div style="background: rgba(255,255,255,0.03); padding: 1.25rem; border-radius: 12px; border: 1px solid var(--border-color);">
           <h4>⚡ Webhook Google Apps Script</h4>
           <div class="form-group" style="margin-top: 0.75rem;">
-            <label class="form-label">URL Webhook</label>
-            <input type="text" class="form-input" id="input-webhook-url" value="https://script.google.com/macros/s/AKfycbxsUX6yF3YDbQdvYJx8-mNmlIWrsnL6Dy81rm7u9AARzysbVklYKTRrzGY85i_4TLEilA/exec">
+            <label class="form-label">URL Webhook Activa</label>
+            <input type="text" class="form-input" id="input-webhook-url" value="https://script.google.com/macros/s/AKfycbx2GS6g9We063A8Gmsqm1qCIdGYwe1F-OXIAEIrNU1jCMrjZ8rUJPA-Wf1a2pMC1eVERw/exec">
           </div>
           <div style="display:flex; justify-content:space-between; align-items:center; margin-top:0.75rem; flex-wrap: wrap; gap: 0.5rem;">
             <span style="font-size: 0.78rem; color: var(--success);">✔ Conectado a Apps Script</span>
@@ -582,7 +582,7 @@
     let currentRole = 'ADMIN'; 
     let activeUser = null;
     let driveFolderId = '1pV04KdGZ1Bqt-f97hyfFIEoO_F4HYb8a';
-    let appsScriptWebhookUrl = 'https://script.google.com/macros/s/AKfycbxRyCh0rwr-FBDNGLDW7wC9P1rL-0a0cCBLeEsX5nYVJRjRGrcmLDhTctaLsipjK7gLYQ/exec';
+    let appsScriptWebhookUrl = 'https://script.google.com/macros/s/AKfycbx2GS6g9We063A8Gmsqm1qCIdGYwe1F-OXIAEIrNU1jCMrjZ8rUJPA-Wf1a2pMC1eVERw/exec';
 
     const INITIAL_ASSETS = [
       { id: 'ast-101', tag: 'INV-TI-2026-089', sn: 'SN-DELL-883921', brand: 'Dell', model: 'Latitude 5540 i7', cat: 'Laptop de Alto Rendimiento', status: 'ASIGNADO_EN_PRESTAMO', specs: 'CPU: i7-13700H | RAM: 32GB', loc: 'Sede Principal TI', ver: 3 },
@@ -598,13 +598,13 @@
       { id: 'req-03', num: 'REQ-2026-00060', user: 'Sebastian Posada', email: 'soportesistemasve@gmail.com', dept: 'Sistemas TI', cat: 'Laptop de Desarrollo', tag: '', model: '', sn: '', status: 'SOLICITADO', just: 'Despliegue del módulo de reportes.', driveFile: '', gcal: false }
     ];
 
-    // Cargar datos persistentes de LocalStorage
-    let assets = JSON.parse(localStorage.getItem('TI_APP_ASSETS')) || INITIAL_ASSETS;
-    let loans = JSON.parse(localStorage.getItem('TI_APP_LOANS')) || INITIAL_LOANS;
+    // Cargar datos persistentes
+    let assets = JSON.parse(localStorage.getItem('TI_APP_ASSETS_V2')) || INITIAL_ASSETS;
+    let loans = JSON.parse(localStorage.getItem('TI_APP_LOANS_V2')) || INITIAL_LOANS;
 
     function saveState() {
-      localStorage.setItem('TI_APP_ASSETS', JSON.stringify(assets));
-      localStorage.setItem('TI_APP_LOANS', JSON.stringify(loans));
+      localStorage.setItem('TI_APP_ASSETS_V2', JSON.stringify(assets));
+      localStorage.setItem('TI_APP_LOANS_V2', JSON.stringify(loans));
     }
 
     function showToast(text, icon = '🚀') {
@@ -631,21 +631,21 @@
       errorMsg.style.display = 'none';
       activeUser = foundUser;
       currentRole = (foundUser.role === 'ADMIN_TI') ? 'ADMIN' : 'USER';
-      localStorage.setItem('LOGGED_USER_EMAIL', foundUser.email);
+      localStorage.setItem('LOGGED_USER_EMAIL_V2', foundUser.email);
 
       document.getElementById('login-screen').style.display = 'none';
       setupUIForLoggedUser();
     }
 
     function handleLogout() {
-      localStorage.removeItem('LOGGED_USER_EMAIL');
+      localStorage.removeItem('LOGGED_USER_EMAIL_V2');
       activeUser = null;
       document.getElementById('login-screen').style.display = 'flex';
       document.getElementById('login-email').value = '';
     }
 
     function checkExistingSession() {
-      const savedEmail = localStorage.getItem('LOGGED_USER_EMAIL');
+      const savedEmail = localStorage.getItem('LOGGED_USER_EMAIL_V2');
       if (savedEmail) {
         const found = WHITELIST_USERS.find(u => u.email.toLowerCase() === savedEmail.toLowerCase() && u.status === 'ACTIVO');
         if (found) {
@@ -713,17 +713,13 @@
 
     let isSendingEmail = false;
 
+    // DESPACHO DIRECTO CON TU NUEVA URL
     function sendRealEmail(payload) {
       if (isSendingEmail) return;
       isSendingEmail = true;
       setTimeout(() => { isSendingEmail = false; }, 3000);
 
-      const baseUrl = (document.getElementById('input-webhook-url') ? document.getElementById('input-webhook-url').value.trim() : '') || appsScriptWebhookUrl;
-      if (!baseUrl) {
-        alert('Por favor verifica que la URL de Webhook esté configurada.');
-        return;
-      }
-
+      const baseUrl = appsScriptWebhookUrl;
       const params = new URLSearchParams({
         to: payload.to || 'soportesistemasve@gmail.com',
         recipientName: payload.recipientName || 'Sebastian Posada',
@@ -903,7 +899,7 @@
         gcal: false
       });
 
-      saveState(); // Guardar en LocalStorage
+      saveState();
       closeModal('modal-loan');
       renderAll();
       switchTab('solicitudes');
@@ -930,7 +926,7 @@
         ver: 1
       });
 
-      saveState(); // Guardar en LocalStorage
+      saveState();
       closeModal('modal-asset');
       renderAll();
       switchTab('inventario');
@@ -952,7 +948,7 @@
       loan.driveFile = `Acta_Entrega_${availAsset.tag}_Entregado al usuario.pdf`;
       loan.gcal = true;
 
-      saveState(); // Guardar en LocalStorage
+      saveState();
 
       sendRealEmail({
         to: loan.email,
@@ -982,7 +978,7 @@
       loan.status = 'DEVUELTO';
       loan.driveFile = `Acta_Entrega_${loan.tag}_Devuelto.pdf`;
 
-      saveState(); // Guardar en LocalStorage
+      saveState();
 
       sendRealEmail({
         to: loan.email,
@@ -1021,7 +1017,7 @@
       } else if (theme === 'emerald') {
         root.style.setProperty('--primary', '#10b981');
         root.style.setProperty('--primary-hover', '#059669');
-        root.style.setProperty('--primary-glow', 'rgba(168, 85, 247, 0.25)');
+        root.style.setProperty('--primary-glow', 'rgba(16, 185, 129, 0.25)');
         root.style.setProperty('--bg-dark', '#05140f');
         root.style.setProperty('--bg-card', 'rgba(10, 35, 26, 0.95)');
         root.style.setProperty('--bg-glass', 'rgba(8, 28, 21, 0.9)');
