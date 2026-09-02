@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Interventoría TI - Gestión de Préstamos (Google Drive & Sheets)</title>
+  <title>Interventoría TI - Gestión Cloud de Préstamos (Google Drive & Sheets)</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
@@ -53,7 +53,6 @@
 
     h1, h2, h3, h4 { font-family: 'Outfit', sans-serif; font-weight: 700; letter-spacing: -0.02em; }
 
-    /* PANTALLA DE BLOQUEO Y LOGIN */
     .login-overlay {
       position: fixed; inset: 0; background: rgba(5, 8, 15, 0.97);
       backdrop-filter: blur(25px); z-index: 9999;
@@ -205,7 +204,6 @@
       box-shadow: 0 10px 40px rgba(0,0,0,0.5); color: var(--text-main);
     }
 
-    /* PALETA */
     .theme-palette-widget {
       position: fixed; bottom: 20px; right: 20px; z-index: 999;
       background: var(--bg-card); border: 1px solid var(--border-color);
@@ -220,7 +218,6 @@
     }
     .color-swatch:hover { transform: scale(1.3); border-color: #fff; }
 
-    /* Toast */
     .toast-msg {
       position: fixed; top: 80px; right: 25px; z-index: 2000;
       background: var(--bg-card); border: 1px solid var(--primary);
@@ -234,12 +231,12 @@
 </head>
 <body>
 
-  <!-- LOGIN OBLIGATORIO -->
+  <!-- LOGIN -->
   <div id="login-screen" class="login-overlay">
     <div class="login-box">
       <div class="login-logo">💻</div>
       <h2 style="font-size: 1.4rem; margin-bottom: 0.3rem;">Interventoría TI</h2>
-      <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 1.75rem;">Sistema de Préstamos de Activos & Custodia</p>
+      <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 1.75rem;">Sistema de Préstamos de Activos (Google Cloud)</p>
       
       <form onsubmit="handleUserLogin(event)">
         <div class="form-group">
@@ -255,14 +252,9 @@
           Ingresar al Sistema ➔
         </button>
       </form>
-
-      <div style="margin-top: 1.5rem; font-size: 0.72rem; color: var(--text-muted); border-top: 1px solid var(--border-color); padding-top: 1rem;">
-        🔐 Acceso controlado y auditado vía Google Sheets
-      </div>
     </div>
   </div>
 
-  <!-- Toast Notification -->
   <div id="toast" class="toast-msg">
     <span id="toast-icon">⚡</span>
     <span id="toast-text">Petición despachada</span>
@@ -275,8 +267,8 @@
       <div>
         <div class="brand-title">Interventoría TI</div>
         <div class="brand-subtitle">
-          Gestión de Préstamos de Activos
-          <span class="g-badge">Drive & Sheets OK</span>
+          Gestión Cloud de Activos & Custodia
+          <span class="g-badge">Google Sheets Cloud Sync</span>
           <span class="g-badge" id="role-badge">ADMIN</span>
         </div>
       </div>
@@ -293,7 +285,7 @@
   </header>
 
   <div class="main-wrapper">
-    <!-- Banner de Rol Activo -->
+    <!-- Banner -->
     <div class="role-banner">
       <div>
         <h3 id="banner-role-title">SESIÓN INICIADA</h3>
@@ -309,7 +301,7 @@
       </div>
     </div>
 
-    <!-- Indicadores Generales (Admin) -->
+    <!-- Indicadores -->
     <div class="stats-grid" id="stats-grid-container">
       <div class="stat-card">
         <div class="stat-icon" style="background: var(--primary-glow); color: var(--primary);">👥</div>
@@ -321,79 +313,81 @@
       <div class="stat-card">
         <div class="stat-icon" style="background: var(--success-bg); color: var(--success);">✔</div>
         <div>
-          <div class="stat-val" id="stat-available">1 / 5</div>
+          <div class="stat-val" id="stat-available">-</div>
           <div class="stat-lbl">Activos Disponibles</div>
         </div>
       </div>
       <div class="stat-card">
         <div class="stat-icon" style="background: var(--warning-bg); color: var(--warning);">💻</div>
         <div>
-          <div class="stat-val" id="stat-loans">4</div>
+          <div class="stat-val" id="stat-loans">-</div>
           <div class="stat-lbl">En Préstamo Activo</div>
         </div>
       </div>
       <div class="stat-card">
         <div class="stat-icon" style="background: var(--purple-bg); color: var(--purple);">⏳</div>
         <div>
-          <div class="stat-val" id="stat-pending">0</div>
+          <div class="stat-val" id="stat-pending">-</div>
           <div class="stat-lbl">Solicitudes Pendientes</div>
         </div>
       </div>
       <div class="stat-card">
         <div class="stat-icon" style="background: var(--danger-bg); color: var(--danger);">⚠️</div>
         <div>
-          <div class="stat-val" id="stat-overdue">1</div>
+          <div class="stat-val" id="stat-overdue">0</div>
           <div class="stat-lbl">Préstamos en Mora</div>
         </div>
       </div>
     </div>
 
-    <!-- Navegación por Pestañas -->
+    <!-- Pestañas -->
     <div class="tabs-header" id="tabs-header-container"></div>
 
     <!-- 1. 🏠 DASHBOARD -->
     <div id="tab-dashboard" class="tab-content active glass-panel">
       <div class="panel-header">
         <div>
-          <h2 class="panel-title">📊 Resumen de Custodia & Préstamos de TI</h2>
-          <p style="font-size: 0.85rem; color: var(--text-muted);">Monitoreo integral de activos asignados en interventoría técnica.</p>
+          <h2 class="panel-title">📊 Resumen Cloud de Custodia & Préstamos TI</h2>
+          <p style="font-size: 0.85rem; color: var(--text-muted);">Sincronización en vivo con la Base de Datos central en Google Sheets.</p>
         </div>
         <button class="btn btn-primary" onclick="openModal('modal-loan')">+ Nueva Solicitud de Préstamo</button>
       </div>
 
       <div class="grid-2">
         <div style="background: rgba(255,255,255,0.03); padding: 1.25rem; border-radius: 12px; border: 1px solid var(--border-color);">
-          <h4>📌 Procedimiento Oficial de Préstamo</h4>
+          <h4>📌 Procedimiento Oficial Multi-Sede TI</h4>
           <ol style="margin-left: 1.25rem; margin-top: 0.75rem; font-size: 0.85rem; color: var(--text-muted); line-height: 1.7;">
-            <li>El usuario genera la solicitud especificando justificación técnica.</li>
-            <li>El Administrador TI valida disponibilidad y asigna el activo con su <strong>Placa y Serial</strong>.</li>
-            <li>El sistema genera el <strong>Acta de Entrega en PDF</strong> en Drive, registra la fila en <strong>Google Sheets</strong> y envía notificación a <strong>Gmail</strong>.</li>
-            <li>Al devolver el equipo, TI registra la devolución, actualiza el acta y registra el paz y salvo en Sheets.</li>
+            <li>Cualquier empleado solicita un activo desde su casa o sede técnica.</li>
+            <li>La solicitud se guarda en la pestaña <strong>02_Solicitudes_Prestamos</strong> de Google Sheets.</li>
+            <li>Jose Salas (TI) aprueba y asigna la placa/serial con el botón <strong>Assign & Drive PDF</strong>.</li>
+            <li>El sistema genera el PDF único en Drive y envía notificación automática a Gmail.</li>
           </ol>
         </div>
 
         <div style="background: rgba(255,255,255,0.03); padding: 1.25rem; border-radius: 12px; border: 1px solid var(--border-color);">
-          <h4>⚡ Estado de la Integración Google Drive, Sheets & Gmail</h4>
+          <h4>⚡ Estado de la Conexión Cloud</h4>
           <div style="margin-top: 0.75rem; font-size: 0.85rem; line-height: 1.8;">
-            <div>• Carpeta Actas Drive: <strong style="color: var(--primary);">01-Actas de Entregas y devoluciones</strong></div>
             <div>• Base de Datos Sheets: <strong style="color: var(--success);">BD_Gestion_Prestamos_TI</strong></div>
-            <div>• Webhook Apps Script: <strong style="color: var(--success);">ACTIVO & CONECTADO</strong></div>
-            <div>• Total Activos Registrados: <strong id="dash-total-assets">5</strong></div>
-            <div>• Disponibles para Préstamo: <strong id="dash-avail-assets" style="color:var(--success);">1</strong></div>
-            <div>• En Préstamo Activo: <strong id="dash-loan-assets" style="color:var(--warning);">4</strong></div>
+            <div>• Carpeta Actas Drive: <strong style="color: var(--primary);">01-Actas de Entregas y devoluciones</strong></div>
+            <div>• Total Activos Registrados: <strong id="dash-total-assets">-</strong></div>
+            <div>• Activos Disponibles: <strong id="dash-avail-assets" style="color:var(--success);">-</strong></div>
+            <div>• En Préstamo Activo: <strong id="dash-loan-assets" style="color:var(--warning);">-</strong></div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- 2. 📋 SOLICITUDES & APROBACIONES -->
+    <!-- 2. 📋 SOLICITUDES -->
     <div id="tab-solicitudes" class="tab-content glass-panel">
       <div class="panel-header">
         <div>
           <h2 class="panel-title" id="solicitudes-title">📋 Solicitudes de Préstamo</h2>
-          <p style="font-size: 0.85rem; color: var(--text-muted);">Aprobaciones, actas en PDF y registros automáticos en Google Sheets.</p>
+          <p style="font-size: 0.85rem; color: var(--text-muted);">Sincronizadas en vivo con Google Sheets.</p>
         </div>
-        <button class="btn btn-primary" onclick="openModal('modal-loan')">+ Nueva Solicitud de Préstamo</button>
+        <div style="display:flex; gap:0.5rem;">
+          <button class="btn btn-secondary" onclick="fetchCloudData()">🔄 Actualizar Datos Cloud</button>
+          <button class="btn btn-primary" onclick="openModal('modal-loan')">+ Nueva Solicitud</button>
+        </div>
       </div>
 
       <div class="table-container">
@@ -404,7 +398,7 @@
               <th>Solicitante / Correo</th>
               <th>Categoría Requerida</th>
               <th>Activo Asignado & Serial</th>
-              <th>Fechas</th>
+              <th>Fecha Registro</th>
               <th>Estado</th>
               <th>Acciones</th>
             </tr>
@@ -414,14 +408,16 @@
       </div>
     </div>
 
-    <!-- 3. 💻 INVENTARIO -->
+    <!-- 3. 💻 INVENTARIO (300+ ACTIVOS EN SHEETS) -->
     <div id="tab-inventario" class="tab-content glass-panel">
       <div class="panel-header">
         <div>
-          <h2 class="panel-title">💻 Inventario General de Activos TI</h2>
-          <p style="font-size: 0.85rem; color: var(--text-muted);">Equipos registrados con placa de inventario y número de serie único.</p>
+          <h2 class="panel-title">💻 Inventario de Activos TI (Desde Google Sheets)</h2>
+          <p style="font-size: 0.85rem; color: var(--text-muted);">Gestiona tus más de 300 activos directamente en la pestaña <strong>01_Inventario_Activos</strong> de Google Sheets.</p>
         </div>
-        <button class="btn btn-primary" onclick="openModal('modal-asset')">+ Registrar Nuevo Activo</button>
+        <a href="https://docs.google.com/spreadsheets/d/13Bci4AhSslwPWHsYoG09yRymXSDOcNhgrsOxNIi7jcY/edit" target="_blank" class="btn btn-primary">
+          📝 Editar / Importar Activos en Sheets ↗
+        </a>
       </div>
 
       <div class="table-container">
@@ -434,7 +430,6 @@
               <th>Especificaciones</th>
               <th>Ubicación</th>
               <th>Estado</th>
-              <th>Versión</th>
             </tr>
           </thead>
           <tbody id="tbody-inventario"></tbody>
@@ -446,34 +441,21 @@
     <div id="tab-configuracion" class="tab-content glass-panel">
       <div class="panel-header">
         <div>
-          <h2 class="panel-title">⚙️ Configuración & Conector Google Drive, Sheets y Gmail</h2>
-          <p style="font-size: 0.85rem; color: var(--text-muted);">Configuración de conectores cloud.</p>
+          <h2 class="panel-title">⚙️ Configuración Cloud</h2>
+          <p style="font-size: 0.85rem; color: var(--text-muted);">Conexión a Google Drive y Sheets.</p>
         </div>
-        <button class="btn btn-primary" onclick="saveDriveFolderId()">Guardar Configuración</button>
       </div>
-
       <div class="grid-2">
         <div style="background: rgba(255,255,255,0.03); padding: 1.25rem; border-radius: 12px; border: 1px solid var(--border-color);">
-          <h4>📁 ID de Carpeta en Google Drive (GOOGLE_DRIVE_FOLDER_ID)</h4>
-          <div class="form-group" style="margin-top: 1rem;">
-            <label class="form-label">ID de Carpeta Actas</label>
-            <input type="text" class="form-input" id="input-drive-id" value="1pV04KdGZ1Bqt-f97hyfFIEoO_F4HYb8a">
-          </div>
-          <div style="font-size: 0.78rem; color: var(--success);">
-            ✔ Enlazado a: <strong>01-Actas de Entregas y devoluciones activos TI</strong>
-          </div>
+          <h4>📁 ID de Carpeta Actas (Drive)</h4>
+          <p style="font-family:monospace; color:var(--primary); margin-top:0.5rem;">1pV04KdGZ1Bqt-f97hyfFIEoO_F4HYb8a</p>
+          <div style="font-size: 0.78rem; color: var(--success); margin-top:0.5rem;">✔ Enlazado a 01-Actas de Entregas y devoluciones</div>
         </div>
 
         <div style="background: rgba(255,255,255,0.03); padding: 1.25rem; border-radius: 12px; border: 1px solid var(--border-color);">
-          <h4>⚡ Webhook Google Apps Script</h4>
-          <div class="form-group" style="margin-top: 0.75rem;">
-            <label class="form-label">URL Webhook Activa</label>
-            <input type="text" class="form-input" id="input-webhook-url" value="https://script.google.com/macros/s/AKfycbx2GS6g9We063A8Gmsqm1qCIdGYwe1F-OXIAEIrNU1jCMrjZ8rUJPA-Wf1a2pMC1eVERw/exec">
-          </div>
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-top:0.75rem; flex-wrap: wrap; gap: 0.5rem;">
-            <span style="font-size: 0.78rem; color: var(--success);">✔ Conectado a Apps Script</span>
-            <button class="btn btn-primary" style="padding: 0.35rem 0.85rem; font-size: 0.8rem;" onclick="testSendEmail()">📧 Probar Flujo Real</button>
-          </div>
+          <h4>📊 Base de Datos Google Sheets</h4>
+          <p style="font-family:monospace; color:var(--success); margin-top:0.5rem;">13Bci4AhSslwPWHsYoG09yRymXSDOcNhgrsOxNIi7jcY</p>
+          <div style="font-size: 0.78rem; color: var(--text-muted); margin-top:0.5rem;">Pestañas: 01_Inventario_Activos | 02_Solicitudes_Prestamos</div>
         </div>
       </div>
     </div>
@@ -483,7 +465,6 @@
       <div class="panel-header">
         <div>
           <h2 class="panel-title">👤 Perfil de Usuario</h2>
-          <p style="font-size: 0.85rem; color: var(--text-muted);">Información de la cuenta en sesión.</p>
         </div>
       </div>
       <div class="grid-2">
@@ -513,10 +494,10 @@
     <div class="color-swatch" style="background: #ffffff; border-color:#94a3b8;" onclick="applyTheme('light')" title="Light Corporate"></div>
   </div>
 
-  <!-- Modales -->
+  <!-- Modal Solicitud -->
   <div id="modal-loan" class="modal-overlay">
     <div class="modal-content">
-      <h3 style="margin-bottom: 1rem;">Nueva Solicitud de Préstamo de Activo TI</h3>
+      <h3 style="margin-bottom: 1rem;">Nueva Solicitud de Préstamo (Cloud)</h3>
       <form onsubmit="submitLoanForm(event)">
         <div class="form-group">
           <label class="form-label">Categoría de Activo</label>
@@ -533,79 +514,25 @@
         </div>
         <div style="display:flex; justify-content:flex-end; gap:0.75rem; margin-top:1.5rem;">
           <button type="button" class="btn btn-secondary" onclick="closeModal('modal-loan')">Cancelar</button>
-          <button type="submit" class="btn btn-primary">Enviar Solicitud</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <div id="modal-asset" class="modal-overlay">
-    <div class="modal-content">
-      <h3 style="margin-bottom: 1rem;">Registrar Nuevo Activo (Jose Salas)</h3>
-      <form onsubmit="submitAssetForm(event)">
-        <div class="form-group">
-          <label class="form-label">Placa Inventario (Asset Tag)</label>
-          <input type="text" class="form-input" id="ast-tag" required placeholder="INV-TI-2026-999">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Número de Serie (SN)</label>
-          <input type="text" class="form-input" id="ast-sn" required placeholder="SN-DELL-991200">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Marca y Modelo</label>
-          <input type="text" class="form-input" id="ast-model" required placeholder="Dell Latitude 5550">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Categoría</label>
-          <select class="form-select" id="ast-cat">
-            <option value="Laptop de Alto Rendimiento">Laptop de Alto Rendimiento</option>
-            <option value="Laptop de Desarrollo">Laptop de Desarrollo</option>
-            <option value="Monitor Portátil de Campo">Monitor Portátil de Campo</option>
-            <option value="Token de Seguridad Hardware">Token de Seguridad Hardware</option>
-          </select>
-        </div>
-        <div style="display:flex; justify-content:flex-end; gap:0.75rem; margin-top:1.5rem;">
-          <button type="button" class="btn btn-secondary" onclick="closeModal('modal-asset')">Cancelar</button>
-          <button type="submit" class="btn btn-primary">Guardar Activo</button>
+          <button type="submit" class="btn btn-primary">Enviar Solicitud a Sheets</button>
         </div>
       </form>
     </div>
   </div>
 
   <script>
-    // LISTA BLANCA DE ACCESO
-    const WHITELIST_USERS = [
-      { email: 'jsalas@sedic.com.co', name: 'Jose Salas', role: 'ADMIN_TI', status: 'ACTIVO' },
-      { email: 'soportesistemasve@gmail.com', name: 'Sebastian Posada', role: 'USUARIO', status: 'ACTIVO' }
-    ];
+    // URL DE WEBHOOK CLOUD ACTIVA
+    const appsScriptWebhookUrl = 'https://script.google.com/macros/s/AKfycbyTpiqn4-NtdAo6bVsuhem6ib3IJLXEKA6GpJ2u1HHm5ZN0n0V6gJazxJ114b_YS7BiZQ/exec';
+    const driveFolderId = '1pV04KdGZ1Bqt-f97hyfFIEoO_F4HYb8a';
 
     let currentRole = 'ADMIN'; 
     let activeUser = null;
-    let driveFolderId = '1pV04KdGZ1Bqt-f97hyfFIEoO_F4HYb8a';
-    let appsScriptWebhookUrl = 'https://script.google.com/macros/s/AKfycbx2GS6g9We063A8Gmsqm1qCIdGYwe1F-OXIAEIrNU1jCMrjZ8rUJPA-Wf1a2pMC1eVERw/exec';
-
-    const INITIAL_ASSETS = [
-      { id: 'ast-101', tag: 'INV-TI-2026-089', sn: 'SN-DELL-883921', brand: 'Dell', model: 'Latitude 5540 i7', cat: 'Laptop de Alto Rendimiento', status: 'ASIGNADO_EN_PRESTAMO', specs: 'CPU: i7-13700H | RAM: 32GB', loc: 'Sede Principal TI', ver: 3 },
-      { id: 'ast-102', tag: 'INV-TI-2026-090', sn: 'SN-LENOVO-992182', brand: 'Lenovo', model: 'ThinkPad P16s Gen 2', cat: 'Laptop de Desarrollo', status: 'DISPONIBLE', specs: 'CPU: Ryzen 7 PRO | RAM: 64GB', loc: 'Almacén TI', ver: 1 },
-      { id: 'ast-103', tag: 'INV-TI-2026-112', sn: 'SN-MAC-M3-441299', brand: 'Apple', model: 'MacBook Pro 16" M3', cat: 'Laptop de Diseño & BIM', status: 'DISPONIBLE', specs: 'CPU: M3 Max | RAM: 36GB', loc: 'Caja Fuerte TI', ver: 1 },
-      { id: 'ast-104', tag: 'INV-TI-2026-304', sn: 'SN-LG-27-889102', brand: 'LG', model: 'Gram +view 16MQ70', cat: 'Monitor Portátil de Campo', status: 'ASIGNADO_EN_PRESTAMO', specs: 'Display 16" WQXGA', loc: 'Comisión Bogotá-Medellín', ver: 2 },
-      { id: 'ast-105', tag: 'INV-TI-2026-501', sn: 'SN-YUBI-9981273', brand: 'Yubico', model: 'YubiKey 5C NFC', cat: 'Token de Seguridad Hardware', status: 'DISPONIBLE', specs: 'FIDO2 / U2F', loc: 'Almacén TI', ver: 1 }
+    let assets = [];
+    let loans = [];
+    let whitelistUsers = [
+      { email: 'jsalas@sedic.com.co', name: 'Jose Salas', role: 'ADMIN_TI', status: 'ACTIVO' },
+      { email: 'soportesistemasve@gmail.com', name: 'Sebastian Posada', role: 'USUARIO', status: 'ACTIVO' }
     ];
-
-    const INITIAL_LOANS = [
-      { id: 'req-01', num: 'REQ-2026-00045', user: 'Sebastian Posada', email: 'soportesistemasve@gmail.com', dept: 'Interventoría de Obra Vías', cat: 'Laptop de Alto Rendimiento', tag: 'INV-TI-2026-089', model: 'Dell Latitude 5540 i7', sn: 'SN-DELL-883921', status: 'ENTREGADO', just: 'Inspección técnica en obra.', driveFile: 'Acta_Entrega_INV-TI-2026-089_Entregado al usuario.pdf', gcal: true },
-      { id: 'req-02', num: 'REQ-2026-00052', user: 'María Fernanda Gómez', email: 'maria.gomez@interventoria.gov.co', dept: 'Auditoría Financiera', cat: 'Monitor Portátil de Campo', tag: 'INV-TI-2026-304', model: 'LG Gram +view 16MQ70', sn: 'SN-LG-27-889102', status: 'EN_MORA', just: 'Revisión contable.', driveFile: 'Acta_Entrega_INV-TI-2026-304_Entregado al usuario.pdf', gcal: true },
-      { id: 'req-03', num: 'REQ-2026-00060', user: 'Sebastian Posada', email: 'soportesistemasve@gmail.com', dept: 'Sistemas TI', cat: 'Laptop de Desarrollo', tag: '', model: '', sn: '', status: 'SOLICITADO', just: 'Despliegue del módulo de reportes.', driveFile: '', gcal: false }
-    ];
-
-    // Cargar datos persistentes
-    let assets = JSON.parse(localStorage.getItem('TI_APP_ASSETS_V2')) || INITIAL_ASSETS;
-    let loans = JSON.parse(localStorage.getItem('TI_APP_LOANS_V2')) || INITIAL_LOANS;
-
-    function saveState() {
-      localStorage.setItem('TI_APP_ASSETS_V2', JSON.stringify(assets));
-      localStorage.setItem('TI_APP_LOANS_V2', JSON.stringify(loans));
-    }
 
     function showToast(text, icon = '🚀') {
       const toast = document.getElementById('toast');
@@ -615,13 +542,33 @@
       setTimeout(() => toast.classList.remove('show'), 3500);
     }
 
+    // CARGAR DATOS EN VIVO DESDE GOOGLE SHEETS
+    function fetchCloudData() {
+      showToast('Sincronizando con Google Sheets...', '🔄');
+      fetch(`${appsScriptWebhookUrl}?action=GET_ALL_DATA&_t=${Date.now()}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data && data.status === 'success') {
+            if (data.assets && data.assets.length > 0) assets = data.assets;
+            if (data.loans && data.loans.length > 0) loans = data.loans;
+            if (data.users && data.users.length > 0) whitelistUsers = data.users;
+            renderAll();
+            showToast('✔ Datos sincronizados con Google Sheets', '📊');
+          }
+        })
+        .catch(err => {
+          console.warn('Cargando respaldo local:', err);
+          renderAll();
+        });
+    }
+
     // LOGIN
     function handleUserLogin(e) {
       e.preventDefault();
       const emailInput = document.getElementById('login-email').value.trim().toLowerCase();
       const errorMsg = document.getElementById('login-error-msg');
 
-      const foundUser = WHITELIST_USERS.find(u => u.email.toLowerCase() === emailInput && u.status === 'ACTIVO');
+      const foundUser = whitelistUsers.find(u => u.email.toLowerCase() === emailInput && u.status === 'ACTIVO');
 
       if (!foundUser) {
         errorMsg.style.display = 'block';
@@ -631,28 +578,30 @@
       errorMsg.style.display = 'none';
       activeUser = foundUser;
       currentRole = (foundUser.role === 'ADMIN_TI') ? 'ADMIN' : 'USER';
-      localStorage.setItem('LOGGED_USER_EMAIL_V2', foundUser.email);
+      localStorage.setItem('LOGGED_USER_EMAIL_CLOUD', foundUser.email);
 
       document.getElementById('login-screen').style.display = 'none';
       setupUIForLoggedUser();
+      fetchCloudData(); // Consulta la base de datos central
     }
 
     function handleLogout() {
-      localStorage.removeItem('LOGGED_USER_EMAIL_V2');
+      localStorage.removeItem('LOGGED_USER_EMAIL_CLOUD');
       activeUser = null;
       document.getElementById('login-screen').style.display = 'flex';
       document.getElementById('login-email').value = '';
     }
 
     function checkExistingSession() {
-      const savedEmail = localStorage.getItem('LOGGED_USER_EMAIL_V2');
+      const savedEmail = localStorage.getItem('LOGGED_USER_EMAIL_CLOUD');
       if (savedEmail) {
-        const found = WHITELIST_USERS.find(u => u.email.toLowerCase() === savedEmail.toLowerCase() && u.status === 'ACTIVO');
+        const found = whitelistUsers.find(u => u.email.toLowerCase() === savedEmail.toLowerCase() && u.status === 'ACTIVO');
         if (found) {
           activeUser = found;
           currentRole = (found.role === 'ADMIN_TI') ? 'ADMIN' : 'USER';
           document.getElementById('login-screen').style.display = 'none';
           setupUIForLoggedUser();
+          fetchCloudData();
           return;
         }
       }
@@ -675,7 +624,7 @@
 
       if (currentRole === 'ADMIN') {
         bannerTitle.innerText = `ADMINISTRADOR TI: ${activeUser.name.toUpperCase()}`;
-        bannerDesc.innerText = 'Administra el inventario de activos, aprueba solicitudes y gestiona actas en Google Drive y Sheets.';
+        bannerDesc.innerText = 'Administra el inventario de 300+ activos, aprueba solicitudes y gestiona actas en Google Drive y Sheets.';
         actionLinks.style.display = 'flex';
       } else {
         bannerTitle.innerText = `PANEL DE USUARIO: ${activeUser.name.toUpperCase()}`;
@@ -684,7 +633,6 @@
       }
 
       renderTabsForRole();
-      renderAll();
     }
 
     function renderTabsForRole() {
@@ -695,7 +643,7 @@
           <button class="tab-button active" onclick="switchTab('dashboard')">🏠 Dashboard</button>
           <button class="tab-button" onclick="switchTab('solicitudes')">📋 Solicitudes & Aprobaciones TI</button>
           <button class="tab-button" onclick="switchTab('inventario')">💻 Inventario & Equipos</button>
-          <button class="tab-button" onclick="switchTab('configuracion')">⚙️ Configuración Drive & Webhook</button>
+          <button class="tab-button" onclick="switchTab('configuracion')">⚙️ Configuración Cloud</button>
           <button class="tab-button" onclick="switchTab('perfil')">👤 Mi Perfil</button>
         `;
         document.getElementById('solicitudes-title').innerText = '📋 Solicitudes de Préstamo & Aprobaciones TI';
@@ -711,51 +659,81 @@
       }
     }
 
-    let isSendingEmail = false;
+    // CREAR SOLICITUD EN GOOGLE SHEETS
+    function submitLoanForm(e) {
+      e.preventDefault();
+      const cat = document.getElementById('loan-cat').value;
+      const just = document.getElementById('loan-just').value;
 
-    // DESPACHO DIRECTO CON TU NUEVA URL
-    function sendRealEmail(payload) {
-      if (isSendingEmail) return;
-      isSendingEmail = true;
-      setTimeout(() => { isSendingEmail = false; }, 3000);
+      showToast('Enviando solicitud a Google Sheets...', '📨');
 
-      const baseUrl = appsScriptWebhookUrl;
       const params = new URLSearchParams({
-        to: payload.to || 'soportesistemasve@gmail.com',
-        recipientName: payload.recipientName || 'Sebastian Posada',
-        type: payload.type || 'ASIGNACION',
-        requestNumber: payload.requestNumber || 'REQ-2026-00045',
-        assetTag: payload.assetTag || 'INV-TI-2026-089',
-        model: payload.model || 'Dell Latitude 5540 i7',
-        sn: payload.sn || 'SN-DELL-883921',
-        category: payload.category || 'Laptop de Alto Rendimiento',
-        specs: payload.specs || 'CPU: i7-13700H | RAM: 32GB',
-        driveFolderId: driveFolderId,
+        action: 'CREAR_SOLICITUD',
+        user: activeUser ? activeUser.name : 'Usuario',
+        email: activeUser ? activeUser.email : 'correo@sedic.com.co',
+        cat: cat,
+        just: just,
         _t: Date.now()
       });
 
-      const fullUrl = baseUrl + (baseUrl.includes('?') ? '&' : '?') + params.toString();
-      showToast('Despachando a Google Drive y Sheets...', '📨');
+      const popup = window.open(`${appsScriptWebhookUrl}?${params.toString()}`, 'gscript_runner', 'width=350,height=250,left=2000,top=2000');
+      if (popup) setTimeout(() => { try { popup.close(); } catch(e){} }, 2500);
 
-      const popup = window.open(fullUrl, 'gscript_bg_runner', 'width=350,height=250,left=2000,top=2000');
-      if (popup) {
-        setTimeout(() => { try { popup.close(); } catch(e){} }, 2500);
-      }
+      closeModal('modal-loan');
+      setTimeout(fetchCloudData, 2000); // Recarga datos en vivo de Sheets
     }
 
-    function testSendEmail() {
-      sendRealEmail({
-        to: activeUser ? activeUser.email : 'soportesistemasve@gmail.com',
-        recipientName: activeUser ? activeUser.name : 'Sebastian Posada',
-        type: 'PRUEBA',
-        requestNumber: 'REQ-TEST-001',
-        assetTag: 'INV-TI-2026-089',
-        model: 'Dell Latitude 5540 i7',
-        sn: 'SN-DELL-883921',
-        category: 'Laptop de Alto Rendimiento',
-        specs: 'CPU: i7-13700H | RAM: 32GB'
+    // ASIGNAR EQUIPO (PDF EN DRIVE + SHEETS + GMAIL)
+    function assignLoan(loanId) {
+      const loan = loans.find(l => l.id === loanId);
+      const availAsset = assets.find(a => a.status === 'DISPONIBLE');
+      if (!loan || !availAsset) { alert('No hay activos disponibles en esa categoría.'); return; }
+
+      showToast('Generando Acta en Drive y notificando por Gmail...', '📨');
+
+      const params = new URLSearchParams({
+        action: 'ASIGNAR_PRESTAMO',
+        to: loan.email,
+        recipientName: loan.user,
+        requestNumber: loan.num,
+        assetTag: availAsset.tag,
+        model: `${availAsset.brand} ${availAsset.model}`,
+        sn: availAsset.sn,
+        category: availAsset.cat,
+        specs: availAsset.specs,
+        _t: Date.now()
       });
-      showToast('¡Prueba enviada! Revisa en 10s Google Drive, Sheets y Gmail.', '✔');
+
+      const popup = window.open(`${appsScriptWebhookUrl}?${params.toString()}`, 'gscript_runner', 'width=350,height=250,left=2000,top=2000');
+      if (popup) setTimeout(() => { try { popup.close(); } catch(e){} }, 2500);
+
+      setTimeout(fetchCloudData, 3000);
+    }
+
+    // DEVOLVER EQUIPO
+    function returnLoan(loanId) {
+      const loan = loans.find(l => l.id === loanId);
+      if (!loan) return;
+
+      showToast('Actualizando acta de devolución en Drive y Sheets...', '📨');
+
+      const params = new URLSearchParams({
+        action: 'REGISTRAR_DEVOLUCION',
+        to: loan.email,
+        recipientName: loan.user,
+        requestNumber: loan.num,
+        assetTag: loan.tag,
+        model: loan.model,
+        sn: loan.sn,
+        category: loan.cat || 'Equipo TI',
+        specs: 'Recibido a conformidad en área de TI',
+        _t: Date.now()
+      });
+
+      const popup = window.open(`${appsScriptWebhookUrl}?${params.toString()}`, 'gscript_runner', 'width=350,height=250,left=2000,top=2000');
+      if (popup) setTimeout(() => { try { popup.close(); } catch(e){} }, 2500);
+
+      setTimeout(fetchCloudData, 3000);
     }
 
     function renderAll() {
@@ -769,14 +747,12 @@
       const avail = assets.filter(a => a.status === 'DISPONIBLE').length;
       const inLoan = assets.filter(a => a.status === 'ASIGNADO_EN_PRESTAMO').length;
       const pending = loans.filter(l => l.status === 'SOLICITADO').length;
-      const overdue = loans.filter(l => l.status === 'EN_MORA').length;
 
       const availEl = document.getElementById('stat-available');
       if (availEl) {
         availEl.innerText = `${avail} / ${assets.length}`;
         document.getElementById('stat-loans').innerText = inLoan;
         document.getElementById('stat-pending').innerText = pending;
-        document.getElementById('stat-overdue').innerText = overdue;
         document.getElementById('dash-total-assets').innerText = assets.length;
         document.getElementById('dash-avail-assets').innerText = avail;
         document.getElementById('dash-loan-assets').innerText = inLoan;
@@ -791,7 +767,7 @@
       }
 
       if (filteredLoans.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:var(--text-muted); padding:2rem;">No tienes ninguna solicitud registrada. Usa el botón "+ Nueva Solicitud".</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:var(--text-muted); padding:2rem;">No hay solicitudes registradas en Google Sheets.</td></tr>`;
         return;
       }
 
@@ -801,7 +777,7 @@
           <td><div><strong>${l.user}</strong></div><div style="font-size:0.75rem; color:var(--text-muted);">${l.email}</div></td>
           <td>${l.cat}</td>
           <td>${l.tag ? `<div><strong>${l.tag}</strong></div><div style="font-size:0.75rem; color:var(--text-muted);">${l.model} (SN: <code>${l.sn}</code>)</div>` : '<span style="color:var(--warning);">No asignado</span>'}</td>
-          <td>2026-07-20 - 2026-08-05</td>
+          <td>${l.date || '2026-08-01'}</td>
           <td>${getStatusBadge(l.status)}</td>
           <td>
             ${currentRole === 'ADMIN' && l.status === 'SOLICITADO' ? `<button class="btn btn-primary" style="padding:0.35rem 0.7rem; font-size:0.75rem;" onclick="assignLoan('${l.id}')">Assign & Drive PDF</button>` : ''}
@@ -817,6 +793,10 @@
     function renderInventario() {
       const tbody = document.getElementById('tbody-inventario');
       if (!tbody) return;
+      if (assets.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:2rem; color:var(--text-muted);">Cargando inventario desde Google Sheets...</td></tr>`;
+        return;
+      }
       tbody.innerHTML = assets.map(a => `
         <tr>
           <td style="font-weight:700; font-family:monospace; color:var(--primary);">${a.tag}</td>
@@ -825,7 +805,6 @@
           <td style="font-size:0.75rem; font-family:monospace;">${a.specs}</td>
           <td style="font-size:0.85rem;">${a.loc}</td>
           <td><span class="badge ${a.status === 'DISPONIBLE' ? 'badge-disponible' : 'badge-prestamo'}">${a.status}</span></td>
-          <td style="text-align:center; font-family:monospace;">v${a.ver}</td>
         </tr>
       `).join('');
     }
@@ -842,7 +821,6 @@
           <div style="background:rgba(255,255,255,0.04); padding:0.85rem; border-radius:8px; border:1px solid var(--primary); margin-bottom:0.5rem;">
             <div style="font-weight:700; color:var(--primary); font-size:0.95rem;">${l.tag} - ${l.model}</div>
             <div style="font-size:0.82rem; color:var(--text-main); margin-top:0.2rem;">Número de Serie (SN): <code>${l.sn}</code></div>
-            <div style="font-size:0.78rem; color:var(--warning); margin-top:0.2rem;">Fecha límite de devolución: 2026-08-05</div>
             <div style="margin-top:0.4rem;"><a href="https://drive.google.com/drive/u/0/folders/${driveFolderId}" target="_blank" style="color:var(--primary); font-size:0.75rem; text-decoration:none;">📄 Ver Acta PDF en Carpeta Drive ↗</a></div>
           </div>
         `).join('');
@@ -870,130 +848,6 @@
 
     function openModal(id) { document.getElementById(id).classList.add('active'); }
     function closeModal(id) { document.getElementById(id).classList.remove('active'); }
-
-    function saveDriveFolderId() {
-      const val = document.getElementById('input-drive-id').value;
-      if (!val) return;
-      driveFolderId = val;
-      showToast('Configuración guardada', '📁');
-    }
-
-    function submitLoanForm(e) {
-      e.preventDefault();
-      const cat = document.getElementById('loan-cat').value;
-      const just = document.getElementById('loan-just').value;
-
-      loans.unshift({
-        id: 'req-' + Date.now(),
-        num: 'REQ-2026-000' + (loans.length + 61),
-        user: activeUser ? activeUser.name : 'Usuario Solicitante',
-        email: activeUser ? activeUser.email : 'solicitante@sedic.com.co',
-        dept: 'Interventoría de Obra Vías',
-        cat: cat,
-        tag: '',
-        model: '',
-        sn: '',
-        status: 'SOLICITADO',
-        just: just,
-        driveFile: '',
-        gcal: false
-      });
-
-      saveState();
-      closeModal('modal-loan');
-      renderAll();
-      switchTab('solicitudes');
-      showToast('Solicitud enviada a TI con éxito', '✔');
-    }
-
-    function submitAssetForm(e) {
-      e.preventDefault();
-      const tag = document.getElementById('ast-tag').value;
-      const sn = document.getElementById('ast-sn').value;
-      const model = document.getElementById('ast-model').value;
-      const cat = document.getElementById('ast-cat').value;
-
-      assets.unshift({
-        id: 'ast-' + Date.now(),
-        tag: tag,
-        sn: sn,
-        brand: 'Dell',
-        model: model,
-        cat: cat,
-        status: 'DISPONIBLE',
-        specs: 'CPU: Core Ultra | RAM: 32GB',
-        loc: 'Almacén TI Principal',
-        ver: 1
-      });
-
-      saveState();
-      closeModal('modal-asset');
-      renderAll();
-      switchTab('inventario');
-      showToast('Nuevo activo registrado en inventario', '💻');
-    }
-
-    function assignLoan(loanId) {
-      const loan = loans.find(l => l.id === loanId);
-      const availAsset = assets.find(a => a.status === 'DISPONIBLE');
-      if (!loan || !availAsset) { alert('No hay activos disponibles en esa categoría.'); return; }
-
-      availAsset.status = 'ASIGNADO_EN_PRESTAMO';
-      availAsset.ver += 1;
-
-      loan.tag = availAsset.tag;
-      loan.model = `${availAsset.brand} ${availAsset.model}`;
-      loan.sn = availAsset.sn;
-      loan.status = 'ENTREGADO';
-      loan.driveFile = `Acta_Entrega_${availAsset.tag}_Entregado al usuario.pdf`;
-      loan.gcal = true;
-
-      saveState();
-
-      sendRealEmail({
-        to: loan.email,
-        recipientName: loan.user,
-        type: 'ASIGNACION',
-        requestNumber: loan.num,
-        assetTag: availAsset.tag,
-        model: `${availAsset.brand} ${availAsset.model}`,
-        sn: availAsset.sn,
-        category: availAsset.cat,
-        specs: availAsset.specs
-      });
-
-      renderAll();
-    }
-
-    function returnLoan(loanId) {
-      const loan = loans.find(l => l.id === loanId);
-      if (!loan) return;
-
-      const asset = assets.find(a => a.tag === loan.tag);
-      if (asset) {
-        asset.status = 'DISPONIBLE';
-        asset.ver += 1;
-      }
-
-      loan.status = 'DEVUELTO';
-      loan.driveFile = `Acta_Entrega_${loan.tag}_Devuelto.pdf`;
-
-      saveState();
-
-      sendRealEmail({
-        to: loan.email,
-        recipientName: loan.user,
-        type: 'DEVOLUCION',
-        requestNumber: loan.num,
-        assetTag: loan.tag,
-        model: loan.model,
-        sn: loan.sn,
-        category: loan.cat || 'Equipo TI',
-        specs: 'Recibido a conformidad en área de TI'
-      });
-
-      renderAll();
-    }
 
     function applyTheme(theme) {
       const root = document.documentElement;
