@@ -364,8 +364,8 @@
           <h4>📌 Procedimiento Oficial Multi-Sede TI</h4>
           <ol style="margin-left: 1.25rem; margin-top: 0.75rem; font-size: 0.85rem; color: var(--text-muted); line-height: 1.7;">
             <li>El usuario solicita un activo específico (Portátil, Pantalla, Mouse, Cable HDMI, etc.).</li>
-            <li>Jose Salas valida disponibilidad y el sistema <strong>asigna automáticamente el serial correspondiente</strong>.</li>
-            <li>En caso de no haber disponibilidad, Jose Salas puede <strong>Rechazar con un motivo</strong>.</li>
+            <li>El Administrador TI valida disponibilidad y el sistema <strong>asigna automáticamente el serial correspondiente</strong>.</li>
+            <li>En caso de no haber disponibilidad, se puede <strong>Rechazar con un motivo</strong>.</li>
             <li>El sistema genera el acta oficial en PDF y notifica automáticamente al solicitante por Gmail.</li>
           </ol>
         </div>
@@ -504,7 +504,7 @@
     <div class="color-swatch" style="background: #ffffff; border-color:#94a3b8;" onclick="applyTheme('light')" title="Light Corporate"></div>
   </div>
 
-  <!-- Modal Solicitud con Categorías Claras y Predeterminadas -->
+  <!-- Modal Solicitud -->
   <div id="modal-loan" class="modal-overlay">
     <div class="modal-content">
       <h3 style="margin-bottom: 1rem;">Nueva Solicitud de Préstamo</h3>
@@ -535,7 +535,7 @@
   </div>
 
   <script>
-    const appsScriptWebhookUrl = 'https://script.google.com/macros/s/AKfycbxJSPkshz17EOwadvSL7WL_-DpEzflTxjSNz1wC0avPurVQTcDDXJ_YQexwBYUSLF5-tw/exec';
+    const appsScriptWebhookUrl = 'https://script.google.com/macros/s/AKfycby60E3AvP1treVa5aWIlLXwPtWh7G8YnQB5kW0bXlWruMvOn7yiVWIha-hDOJ0dxRaG6w/exec';
     const driveFolderId = '1pV04KdGZ1Bqt-f97hyfFIEoO_F4HYb8a';
 
     let currentRole = 'ADMIN'; 
@@ -545,8 +545,8 @@
     
     let whitelistUsers = [
       { email: 'jsalas@sedic.com.co', name: 'Jose Salas', role: 'ADMIN_TI', status: 'ACTIVO' },
-      { email: 'soportesistemasve@gmail.com', name: 'Sebastian Posada', role: 'USUARIO', status: 'ACTIVO' },
-      { email: 'carambitave@gmail.com', name: 'Leonardo', role: 'USUARIO', status: 'ACTIVO' },
+      { email: 'soportesistemasve@gmail.com', name: 'Sebastian Posada', role: 'ADMIN_TI', status: 'ACTIVO' },
+      { email: 'carambitave@gmail.com', name: 'Leonardo', role: 'ADMIN_TI', status: 'ACTIVO' },
       { email: 'financierave@gmail.com', name: 'Patricia Vellojin', role: 'USUARIO', status: 'ACTIVO' }
     ];
 
@@ -558,7 +558,7 @@
       setTimeout(() => toast.classList.remove('show'), 3500);
     }
 
-    // CARGA DIRECTA JSONP
+    // CARGA DIRECTA Y ACTUALIZACIÓN DE ROLES EN TIEMPO REAL
     function fetchCloudData() {
       window.handleCloudDataResponse = function(data) {
         if (data && data.status === 'success') {
@@ -566,6 +566,18 @@
           loans = data.loans || [];
           if (data.users && data.users.length > 0) {
             whitelistUsers = data.users;
+            
+            // Actualizar el rol del usuario en sesión en vivo
+            if (activeUser) {
+              const freshUser = whitelistUsers.find(u => u.email.toLowerCase() === activeUser.email.toLowerCase());
+              if (freshUser) {
+                activeUser = freshUser;
+                const isAdmin = freshUser.role.toUpperCase().includes('ADMIN');
+                currentRole = isAdmin ? 'ADMIN' : 'USER';
+                setupUIForLoggedUser();
+              }
+            }
+
             const loginStatus = document.getElementById('login-status-text');
             if (loginStatus) loginStatus.innerText = `🔐 ${whitelistUsers.length} Usuarios sincronizados con Google Sheets`;
             const statUsers = document.getElementById('stat-total-users');
@@ -600,7 +612,8 @@
 
       errorMsg.style.display = 'none';
       activeUser = foundUser;
-      currentRole = (foundUser.role.toUpperCase() === 'ADMIN_TI') ? 'ADMIN' : 'USER';
+      const isAdmin = foundUser.role.toUpperCase().includes('ADMIN');
+      currentRole = isAdmin ? 'ADMIN' : 'USER';
       localStorage.setItem('LOGGED_USER_EMAIL_CLOUD', foundUser.email);
 
       document.getElementById('login-screen').style.display = 'none';
@@ -621,7 +634,8 @@
         const found = whitelistUsers.find(u => u.email.toLowerCase() === savedEmail.toLowerCase() && u.status.toUpperCase() === 'ACTIVO');
         if (found) {
           activeUser = found;
-          currentRole = (found.role.toUpperCase() === 'ADMIN_TI') ? 'ADMIN' : 'USER';
+          const isAdmin = found.role.toUpperCase().includes('ADMIN');
+          currentRole = isAdmin ? 'ADMIN' : 'USER';
           document.getElementById('login-screen').style.display = 'none';
           setupUIForLoggedUser();
           fetchCloudData();
@@ -706,19 +720,17 @@
       setTimeout(fetchCloudData, 2000);
     }
 
-    // ASIGNACIÓN INTELIGENTE CON FILTRO ESTRICTO DE CATEGORÍA
+    // ASIGNAR EQUIPO
     function assignLoan(loanId) {
       const loan = loans.find(l => l.id === loanId);
       if (!loan) return;
 
-      // Buscar coincidencia exacta o compatible por categoría
       const loanCatLower = (loan.cat || '').toLowerCase();
       
       const matchingAssets = assets.filter(a => {
         if (a.status !== 'DISPONIBLE') return false;
         const assetCatLower = (a.cat || '').toLowerCase();
         
-        // Coincidencias inteligentes
         if (loanCatLower.includes('portátil') || loanCatLower.includes('laptop')) {
           return assetCatLower.includes('portátil') || assetCatLower.includes('laptop') || assetCatLower.includes('desarrollo') || assetCatLower.includes('rendimiento');
         }
@@ -740,7 +752,6 @@
         return;
       }
 
-      // Tomar el primer activo disponible que cumple la categoría exacta
       const selectedAsset = matchingAssets[0];
 
       if (!confirm(`¿Confirmas asignar el siguiente equipo a ${loan.user}?\n\n• Equipo: ${selectedAsset.brand} ${selectedAsset.model}\n• Placa: ${selectedAsset.tag}\n• Serial: ${selectedAsset.sn}`)) {
