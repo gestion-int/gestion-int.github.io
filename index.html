@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Interventoría TI - Gestión Cloud de Préstamos (Google Drive & Sheets)</title>
+  <title>Interventoría TI - Consorcio Ingetec / SEDIC</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
@@ -53,6 +53,46 @@
 
     h1, h2, h3, h4 { font-family: 'Outfit', sans-serif; font-weight: 700; letter-spacing: -0.02em; }
 
+    /* ESTILOS DEL LOGO CORPORATIVO */
+    .login-logo-container {
+      background: #ffffff;
+      padding: 10px 20px;
+      border-radius: 14px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1.25rem;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      max-width: 240px;
+    }
+    .login-logo-img {
+      height: 48px;
+      width: auto;
+      max-width: 200px;
+      object-fit: contain;
+      display: block;
+    }
+
+    .brand-logo-container {
+      background: #ffffff;
+      padding: 5px 14px;
+      border-radius: 10px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.25);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      height: 44px;
+    }
+    .brand-logo-img {
+      height: 32px;
+      width: auto;
+      max-width: 140px;
+      object-fit: contain;
+      display: block;
+    }
+
     .login-overlay {
       position: fixed; inset: 0; background: rgba(5, 8, 15, 0.97);
       backdrop-filter: blur(25px); z-index: 9999;
@@ -62,12 +102,6 @@
       background: var(--bg-card); border: 1px solid var(--border-color);
       width: 100%; max-width: 440px; border-radius: var(--radius-lg); padding: 2.5rem;
       box-shadow: 0 20px 60px rgba(0,0,0,0.7); text-align: center;
-    }
-    .login-logo {
-      width: 60px; height: 60px; border-radius: 16px; margin: 0 auto 1.25rem;
-      background: linear-gradient(135deg, var(--primary), var(--purple));
-      display: flex; align-items: center; justify-content: center; font-size: 1.8rem;
-      box-shadow: 0 0 30px var(--primary-glow);
     }
 
     .navbar {
@@ -79,14 +113,7 @@
       display: flex; align-items: center; justify-content: space-between;
       flex-wrap: wrap; gap: 1rem;
     }
-    .brand-section { display: flex; align-items: center; gap: 0.75rem; }
-    .brand-logo {
-      width: 42px; height: 42px; border-radius: var(--radius-md);
-      background: linear-gradient(135deg, var(--primary), var(--purple));
-      display: flex; align-items: center; justify-content: center;
-      font-weight: 800; font-size: 1.2rem; color: white;
-      box-shadow: 0 0 20px var(--primary-glow);
-    }
+    .brand-section { display: flex; align-items: center; gap: 1rem; }
     .brand-title { font-size: 1.15rem; color: var(--text-main); font-weight: 700; }
     .brand-subtitle { font-size: 0.75rem; color: var(--text-muted); display: flex; align-items: center; gap: 0.35rem; }
     .g-badge {
@@ -234,11 +261,15 @@
 </head>
 <body>
 
-  <!-- LOGIN -->
+  <!-- LOGIN CON LOGO INSTITUCIONAL -->
   <div id="login-screen" class="login-overlay">
     <div class="login-box">
-      <div class="login-logo">💻</div>
-      <h2 style="font-size: 1.4rem; margin-bottom: 0.3rem;">Interventoría TI</h2>
+      <div class="login-logo-container">
+        <img src="logo.png" alt="Consorcio Ingetec / SEDIC" class="login-logo-img" onerror="this.style.display='none'; document.getElementById('alt-login-logo').style.display='block';">
+        <span id="alt-login-logo" style="display:none; font-weight:800; color:#1e293b; font-size:0.9rem;">CONSORCIO INGETEC / SEDIC</span>
+      </div>
+      
+      <h2 style="font-size: 1.35rem; margin-bottom: 0.3rem;">Interventoría TI</h2>
       <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 1.75rem;">Sistema de Préstamos de Activos (Google Cloud)</p>
       
       <form onsubmit="handleUserLogin(event)">
@@ -248,7 +279,7 @@
         </div>
 
         <div id="login-error-msg" style="display:none; color:var(--danger); font-size:0.8rem; margin-bottom:1rem; background:var(--danger-bg); padding:0.6rem; border-radius:6px; border:1px solid var(--danger);">
-          ⛔ Correo no autorizado. Comunícate con Jose Salas (jsalas@sedic.com.co).
+          ⛔ Correo no autorizado. Comunícate con el Administrador de TI.
         </div>
 
         <button type="submit" class="btn btn-primary" id="btn-login-submit" style="width:100%; justify-content:center; padding:0.75rem; font-size:0.95rem; margin-top:0.5rem;">
@@ -266,10 +297,13 @@
     <span id="toast-text">Petición despachada</span>
   </div>
 
-  <!-- Navbar -->
+  <!-- Navbar Con Logo Estratégico -->
   <header class="navbar">
     <div class="brand-section">
-      <div class="brand-logo">💻</div>
+      <div class="brand-logo-container">
+        <img src="logo.png" alt="Consorcio Ingetec / SEDIC" class="brand-logo-img" onerror="this.style.display='none'; document.getElementById('alt-nav-logo').style.display='block';">
+        <span id="alt-nav-logo" style="display:none; font-weight:800; color:#1e293b; font-size:0.78rem;">INGETEC / SEDIC</span>
+      </div>
       <div>
         <div class="brand-title">Interventoría TI</div>
         <div class="brand-subtitle">
@@ -312,7 +346,7 @@
       <div class="stat-card">
         <div class="stat-icon" style="background: var(--primary-glow); color: var(--primary);">👥</div>
         <div>
-          <div class="stat-val" id="stat-total-users">4</div>
+          <div class="stat-val" id="stat-total-users">6</div>
           <div class="stat-lbl">Usuarios Autorizados</div>
         </div>
       </div>
@@ -364,7 +398,7 @@
           <h4>📌 Procedimiento Oficial Multi-Sede TI</h4>
           <ol style="margin-left: 1.25rem; margin-top: 0.75rem; font-size: 0.85rem; color: var(--text-muted); line-height: 1.7;">
             <li>El usuario solicita un activo específico (Portátil, Pantalla, Mouse, Cable HDMI, etc.).</li>
-            <li>El ADMINISTRADOR TI valida disponibilidad y el sistema <strong>asigna automáticamente el serial correspondiente</strong>.</li>
+            <li>El Administrador TI valida disponibilidad y el sistema <strong>asigna automáticamente el serial correspondiente</strong>.</li>
             <li>En caso de no haber disponibilidad, se puede <strong>Rechazar con un motivo</strong>.</li>
             <li>El sistema genera el acta oficial en PDF y notifica automáticamente al solicitante por Gmail.</li>
           </ol>
@@ -414,7 +448,7 @@
       </div>
     </div>
 
-    <!-- 3. 💻 INVENTARIO (300+ ACTIVOS EN SHEETS) -->
+    <!-- 3. 💻 INVENTARIO -->
     <div id="tab-inventario" class="tab-content glass-panel">
       <div class="panel-header">
         <div>
@@ -535,7 +569,7 @@
   </div>
 
   <script>
-    const appsScriptWebhookUrl = 'https://script.google.com/macros/s/AKfycbww3-snEOxLhAh9Bywum-_Mqswtkpk6pUtW7yWBNZ3M5uZoS_1jsI2iKzxzY1jSSjwrfg/exec';
+    const appsScriptWebhookUrl = 'https://script.google.com/macros/s/AKfycbyWjXMst7Dccho7l7ewAftsyveEZgFbi2A8xaqan0s-Dl2ff-09gl0fwMI7XhsxYq5AWg/exec';
     const driveFolderId = '1pV04KdGZ1Bqt-f97hyfFIEoO_F4HYb8a';
 
     let currentRole = 'ADMIN'; 
@@ -567,7 +601,6 @@
           if (data.users && data.users.length > 0) {
             whitelistUsers = data.users;
             
-            // Actualizar el rol del usuario en sesión en vivo
             if (activeUser) {
               const freshUser = whitelistUsers.find(u => u.email.toLowerCase() === activeUser.email.toLowerCase());
               if (freshUser) {
@@ -720,7 +753,7 @@
       setTimeout(fetchCloudData, 2000);
     }
 
-    // ASIGNAR EQUIPO
+    // ASIGNAR EQUIPO CON RESPONSABLE DINÁMICO
     function assignLoan(loanId) {
       const loan = loans.find(l => l.id === loanId);
       if (!loan) return;
@@ -758,7 +791,7 @@
         return;
       }
 
-      showToast(`Asignando ${selectedAsset.tag} y generando PDF...`, '📨');
+      showToast(`Asignando ${selectedAsset.tag} por ${activeUser.name}...`, '📨');
 
       const params = new URLSearchParams({
         action: 'ASIGNAR_PRESTAMO',
@@ -770,6 +803,8 @@
         sn: selectedAsset.sn,
         category: selectedAsset.cat || loan.cat,
         specs: selectedAsset.specs,
+        adminName: activeUser ? activeUser.name : 'Administrador TI',
+        adminEmail: activeUser ? activeUser.email : 'ti@sedic.com.co',
         _t: Date.now()
       });
 
@@ -796,6 +831,8 @@
         requestNumber: loan.num,
         category: loan.cat,
         reason: reason,
+        adminName: activeUser ? activeUser.name : 'Administrador TI',
+        adminEmail: activeUser ? activeUser.email : 'ti@sedic.com.co',
         _t: Date.now()
       });
 
@@ -824,6 +861,8 @@
         sn: loan.sn,
         category: loan.cat || 'Equipo TI',
         specs: 'Recibido a conformidad en área de TI',
+        adminName: activeUser ? activeUser.name : 'Administrador TI',
+        adminEmail: activeUser ? activeUser.email : 'ti@sedic.com.co',
         _t: Date.now()
       });
 
