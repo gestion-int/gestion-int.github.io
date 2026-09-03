@@ -287,7 +287,7 @@
         </button>
       </form>
       <div style="margin-top: 1.2rem; font-size: 0.72rem; color: var(--text-muted);" id="login-status-text">
-        🔐 Sincronizando usuarios desde Google Sheets...
+        🔐 6 Usuarios autorizados listos
       </div>
     </div>
   </div>
@@ -484,7 +484,7 @@
       </div>
     </div>
 
-    <!-- 4. 👥 GESTIÓN DE USUARIOS (NUEVO) -->
+    <!-- 4. 👥 GESTIÓN DE USUARIOS -->
     <div id="tab-usuarios" class="tab-content glass-panel">
       <div class="panel-header">
         <div>
@@ -567,7 +567,7 @@
     <div class="color-swatch" style="background: #ffffff; border-color:#94a3b8;" onclick="applyTheme('light')" title="Light Corporate"></div>
   </div>
 
-  <!-- MODAL 1: Solicitud con BUSCADOR PREDICTIVO INTELIGENTE -->
+  <!-- MODAL 1: Solicitud con BUSCADOR PREDICTIVO -->
   <div id="modal-loan" class="modal-overlay">
     <div class="modal-content">
       <h3 style="margin-bottom: 1rem;">Nueva Solicitud de Préstamo</h3>
@@ -577,7 +577,7 @@
           <input type="text" class="form-input" id="loan-cat" list="dynamic-categories-list" required placeholder="Escribe: Portátil, Monitor, Mouse, Teclado..." autocomplete="off">
           <datalist id="dynamic-categories-list"></datalist>
           <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 0.3rem;">
-            💡 Se autocompleta automáticamente con las categorías de tu hoja de inventario.
+            💡 Se autocompleta automáticamente con las categorías de tu inventario.
           </div>
         </div>
 
@@ -594,7 +594,7 @@
     </div>
   </div>
 
-  <!-- MODAL 2: Registrar Nuevo Usuario con Invitación Automática -->
+  <!-- MODAL 2: Registrar Nuevo Usuario -->
   <div id="modal-add-user" class="modal-overlay">
     <div class="modal-content">
       <h3 style="margin-bottom: 1rem;">➕ Registrar Nuevo Usuario Autorizado</h3>
@@ -640,14 +640,23 @@
   </div>
 
   <script>
-    const appsScriptWebhookUrl = 'https://script.google.com/macros/s/AKfycbwBoU7IcRyd5RH2k7lCXWuz1Gi9GaQnmfNZbsRdz8DENhUaw3oJZg-awwXhUPTGYOLdrw/exec';
+    const appsScriptWebhookUrl = 'https://script.google.com/macros/s/AKfycbx819USt-3eFFHi5CHE3Cg0N4CtylCteO-WheEvCFrLkfcImH321T1IX1XFzXunUzHH1w/exec';
     const driveFolderId = '1pV04KdGZ1Bqt-f97hyfFIEoO_F4HYb8a';
 
     let currentRole = 'ADMIN'; 
     let activeUser = null;
     let assets = [];
     let loans = [];
-    let whitelistUsers = [];
+
+    // LISTA DE RESPALDO INMEDIATA PARA ACCESO 100% GARANTIZADO
+    let whitelistUsers = [
+      { email: 'jsalas@sedic.com.co', name: 'Jose Salas', role: 'ADMIN_TI', status: 'ACTIVO' },
+      { email: 'soportesistemasve@gmail.com', name: 'Sebastian Posada Moreno', role: 'ADMIN_TI', status: 'ACTIVO' },
+      { email: 'carambitave@gmail.com', name: 'Leonardo', role: 'ADMIN_TI', status: 'ACTIVO' },
+      { email: 'financierave@gmail.com', name: 'Patricia Vellojin', role: 'USUARIO', status: 'ACTIVO' },
+      { email: 'jnavarro@sedic.com.co', name: 'Jorge Alfonso Navarro Illias', role: 'USUARIO', status: 'ACTIVO' },
+      { email: 'scatano@sedic.com.co', name: 'Sebastian Alejandro Cataño Velasquez', role: 'ADMIN_TI', status: 'ACTIVO' }
+    ];
 
     function showToast(text, icon = '🚀') {
       const toast = document.getElementById('toast');
@@ -697,7 +706,6 @@
       document.body.appendChild(script);
     }
 
-    // EXTRAER CATEGORÍAS DINÁMICAS DE LA HOJA DE INVENTARIO PARA EL BUSCADOR
     function updateDynamicCategoriesDatalist() {
       const datalist = document.getElementById('dynamic-categories-list');
       if (!datalist) return;
@@ -709,7 +717,6 @@
         }
       });
 
-      // Fallbacks estándar si la hoja estuviese vacía
       if (uniqueCategories.length === 0) {
         uniqueCategories.push("Portátil", "Laptop de Desarrollo", "Monitor", "Mouse", "Teclado", "Cargador portátil", "Control Video beam", "Diadema", "Memoria USB / Token");
       }
@@ -717,7 +724,7 @@
       datalist.innerHTML = uniqueCategories.map(cat => `<option value="${cat}">`).join('');
     }
 
-    // LOGIN
+    // LOGIN DIRECTO E INSTANTÁNEO
     function handleUserLogin(e) {
       e.preventDefault();
       const emailInput = document.getElementById('login-email').value.trim().toLowerCase();
