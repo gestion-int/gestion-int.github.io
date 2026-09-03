@@ -364,7 +364,7 @@
           <h4>📌 Procedimiento Oficial Multi-Sede TI</h4>
           <ol style="margin-left: 1.25rem; margin-top: 0.75rem; font-size: 0.85rem; color: var(--text-muted); line-height: 1.7;">
             <li>El usuario solicita un activo específico (Portátil, Pantalla, Mouse, Cable HDMI, etc.).</li>
-            <li>El Administrador TI valida disponibilidad y el sistema <strong>asigna automáticamente el serial correspondiente</strong>.</li>
+            <li>El Gestión TI valida disponibilidad y el sistema <strong>asigna automáticamente el serial correspondiente</strong>.</li>
             <li>En caso de no haber disponibilidad, se puede <strong>Rechazar con un motivo</strong>.</li>
             <li>El sistema genera el acta oficial en PDF y notifica automáticamente al solicitante por Gmail.</li>
           </ol>
@@ -660,7 +660,7 @@
       const actionLinks = document.getElementById('admin-action-links');
 
       if (currentRole === 'ADMIN') {
-        bannerTitle.innerText = `ADMINISTRADOR TI: ${activeUser.name.toUpperCase()}`;
+        bannerTitle.innerText = `Gestión TI: ${activeUser.name.toUpperCase()}`;
         bannerDesc.innerText = 'Administra el inventario de 300+ activos, aprueba solicitudes y gestiona actas en Google Drive y Sheets.';
         actionLinks.style.display = 'flex';
       } else {
