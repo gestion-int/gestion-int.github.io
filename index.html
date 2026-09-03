@@ -163,6 +163,7 @@
     .badge-prestamo { background: var(--warning-bg); color: var(--warning); border: 1px solid var(--warning); }
     .badge-mora { background: var(--danger-bg); color: var(--danger); border: 1px solid var(--danger); }
     .badge-solicitado { background: var(--purple-bg); color: var(--purple); border: 1px solid var(--purple); }
+    .badge-rechazado { background: var(--danger-bg); color: var(--danger); border: 1px solid var(--danger); }
 
     .btn {
       display: inline-flex; align-items: center; gap: 0.4rem;
@@ -176,6 +177,8 @@
     .btn-secondary:hover { background: rgba(255,255,255,0.15); }
     .btn-success { background: var(--success); color: white; }
     .btn-success:hover { opacity: 0.9; }
+    .btn-danger { background: var(--danger); color: white; }
+    .btn-danger:hover { opacity: 0.9; }
 
     .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
     @media (max-width: 900px) { .grid-2 { grid-template-columns: 1fr; } }
@@ -253,7 +256,7 @@
         </button>
       </form>
       <div style="margin-top: 1.2rem; font-size: 0.72rem; color: var(--text-muted);" id="login-status-text">
-        🔄 Sincronizando usuarios desde Google Sheets...
+        🔐 Sincronizando usuarios desde Google Sheets...
       </div>
     </div>
   </div>
@@ -304,7 +307,7 @@
       </div>
     </div>
 
-    <!-- Indicadores en Vivo -->
+    <!-- Indicadores -->
     <div class="stats-grid" id="stats-grid-container">
       <div class="stat-card">
         <div class="stat-icon" style="background: var(--primary-glow); color: var(--primary);">👥</div>
@@ -360,10 +363,10 @@
         <div style="background: rgba(255,255,255,0.03); padding: 1.25rem; border-radius: 12px; border: 1px solid var(--border-color);">
           <h4>📌 Procedimiento Oficial Multi-Sede TI</h4>
           <ol style="margin-left: 1.25rem; margin-top: 0.75rem; font-size: 0.85rem; color: var(--text-muted); line-height: 1.7;">
-            <li>Cualquier empleado solicita un activo desde su casa o sede técnica.</li>
-            <li>La solicitud se guarda en la pestaña <strong>02_Solicitudes_Prestamos</strong> de Google Sheets.</li>
-            <li>Jose Salas (TI) aprueba y asigna la placa/serial con el botón <strong>Assign & Drive PDF</strong>.</li>
-            <li>El sistema genera el PDF único en Drive y envía notificación automática a Gmail.</li>
+            <li>El usuario solicita un activo específico (Portátil, Pantalla, Mouse, Cable HDMI, etc.).</li>
+            <li>Jose Salas valida disponibilidad y el sistema <strong>asigna automáticamente el serial correspondiente</strong>.</li>
+            <li>En caso de no haber disponibilidad, Jose Salas puede <strong>Rechazar con un motivo</strong>.</li>
+            <li>El sistema genera el acta oficial en PDF y notifica automáticamente al solicitante por Gmail.</li>
           </ol>
         </div>
 
@@ -399,7 +402,7 @@
             <tr>
               <th>No. Solicitud</th>
               <th>Solicitante / Correo</th>
-              <th>Categoría Requerida</th>
+              <th>Categoría Solicitada</th>
               <th>Activo Asignado & Serial</th>
               <th>Fecha Registro</th>
               <th>Estado</th>
@@ -433,6 +436,7 @@
               <th>Placa (Asset Tag)</th>
               <th>Número de Serie</th>
               <th>Marca / Modelo</th>
+              <th>Categoría</th>
               <th>Especificaciones</th>
               <th>Ubicación</th>
               <th>Estado</th>
@@ -500,18 +504,22 @@
     <div class="color-swatch" style="background: #ffffff; border-color:#94a3b8;" onclick="applyTheme('light')" title="Light Corporate"></div>
   </div>
 
-  <!-- Modal Solicitud -->
+  <!-- Modal Solicitud con Categorías Claras y Predeterminadas -->
   <div id="modal-loan" class="modal-overlay">
     <div class="modal-content">
-      <h3 style="margin-bottom: 1rem;">Nueva Solicitud de Préstamo (Cloud)</h3>
+      <h3 style="margin-bottom: 1rem;">Nueva Solicitud de Préstamo</h3>
       <form onsubmit="submitLoanForm(event)">
         <div class="form-group">
-          <label class="form-label">Categoría de Activo</label>
-          <select class="form-select" id="loan-cat">
-            <option value="Laptop de Alto Rendimiento">Laptop de Alto Rendimiento</option>
-            <option value="Laptop de Desarrollo">Laptop de Desarrollo</option>
-            <option value="Monitor Portátil de Campo">Monitor Portátil de Campo</option>
-            <option value="Token de Seguridad Hardware">Token de Seguridad Hardware</option>
+          <label class="form-label">Tipo de Activo Requerido</label>
+          <select class="form-select" id="loan-cat" required>
+            <option value="Portátil">💻 Portátil (Laptop)</option>
+            <option value="Pantalla">🖥️ Pantalla (Monitor)</option>
+            <option value="Mouse">🖱️ Mouse</option>
+            <option value="Cable HDMI">🔌 Cable HDMI / Adaptador</option>
+            <option value="Teclado">⌨️ Teclado</option>
+            <option value="Memoria USB / Token">🔐 Memoria USB / Token de Seguridad</option>
+            <option value="Cargador">⚡ Cargador de Portátil</option>
+            <option value="Diadema / Auriculares">🎧 Diadema / Auriculares</option>
           </select>
         </div>
         <div class="form-group">
@@ -527,7 +535,7 @@
   </div>
 
   <script>
-    const appsScriptWebhookUrl = 'https://script.google.com/macros/s/AKfycbyraCNUSjMtDFo-ycjLBBGpOahCCxEw5fghxR1LK4Cm0x4LPRll4CGJtSTOPYbYd1om/exec';
+    const appsScriptWebhookUrl = 'https://script.google.com/macros/s/AKfycbxJSPkshz17EOwadvSL7WL_-DpEzflTxjSNz1wC0avPurVQTcDDXJ_YQexwBYUSLF5-tw/exec';
     const driveFolderId = '1pV04KdGZ1Bqt-f97hyfFIEoO_F4HYb8a';
 
     let currentRole = 'ADMIN'; 
@@ -535,7 +543,6 @@
     let assets = [];
     let loans = [];
     
-    // Lista inicial con soporte a tus nuevos correos mientras sincroniza en vivo
     let whitelistUsers = [
       { email: 'jsalas@sedic.com.co', name: 'Jose Salas', role: 'ADMIN_TI', status: 'ACTIVO' },
       { email: 'soportesistemasve@gmail.com', name: 'Sebastian Posada', role: 'USUARIO', status: 'ACTIVO' },
@@ -551,7 +558,7 @@
       setTimeout(() => toast.classList.remove('show'), 3500);
     }
 
-    // CARGA DIRECTA Y ULTRA-RÁPIDA JSONP DESDE GOOGLE SHEETS
+    // CARGA DIRECTA JSONP
     function fetchCloudData() {
       window.handleCloudDataResponse = function(data) {
         if (data && data.status === 'success') {
@@ -565,7 +572,7 @@
             if (statUsers) statUsers.innerText = whitelistUsers.length;
           }
           renderAll();
-          showToast(`✔ Sincronizado (${assets.length} Activos, ${whitelistUsers.length} Usuarios)`, '📊');
+          showToast(`✔ Sincronizado (${assets.length} Activos)`, '📊');
         }
       };
 
@@ -578,7 +585,7 @@
       document.body.appendChild(script);
     }
 
-    // LOGIN CON VERIFICACIÓN EN VIVO
+    // LOGIN
     function handleUserLogin(e) {
       e.preventDefault();
       const emailInput = document.getElementById('login-email').value.trim().toLowerCase();
@@ -675,7 +682,7 @@
       }
     }
 
-    // CREAR SOLICITUD EN GOOGLE SHEETS
+    // CREAR SOLICITUD
     function submitLoanForm(e) {
       e.preventDefault();
       const cat = document.getElementById('loan-cat').value;
@@ -699,24 +706,59 @@
       setTimeout(fetchCloudData, 2000);
     }
 
-    // ASIGNAR EQUIPO
+    // ASIGNACIÓN INTELIGENTE CON FILTRO ESTRICTO DE CATEGORÍA
     function assignLoan(loanId) {
       const loan = loans.find(l => l.id === loanId);
-      const availAsset = assets.find(a => a.status === 'DISPONIBLE');
-      if (!loan || !availAsset) { alert('No hay activos disponibles en esa categoría.'); return; }
+      if (!loan) return;
 
-      showToast('Generando Acta en Drive y notificando por Gmail...', '📨');
+      // Buscar coincidencia exacta o compatible por categoría
+      const loanCatLower = (loan.cat || '').toLowerCase();
+      
+      const matchingAssets = assets.filter(a => {
+        if (a.status !== 'DISPONIBLE') return false;
+        const assetCatLower = (a.cat || '').toLowerCase();
+        
+        // Coincidencias inteligentes
+        if (loanCatLower.includes('portátil') || loanCatLower.includes('laptop')) {
+          return assetCatLower.includes('portátil') || assetCatLower.includes('laptop') || assetCatLower.includes('desarrollo') || assetCatLower.includes('rendimiento');
+        }
+        if (loanCatLower.includes('pantalla') || loanCatLower.includes('monitor')) {
+          return assetCatLower.includes('pantalla') || assetCatLower.includes('monitor');
+        }
+        if (loanCatLower.includes('mouse')) return assetCatLower.includes('mouse');
+        if (loanCatLower.includes('teclado')) return assetCatLower.includes('teclado');
+        if (loanCatLower.includes('hdmi')) return assetCatLower.includes('hdmi') || assetCatLower.includes('cable');
+        if (loanCatLower.includes('usb') || loanCatLower.includes('token')) return assetCatLower.includes('usb') || assetCatLower.includes('token') || assetCatLower.includes('yubi');
+        if (loanCatLower.includes('cargador')) return assetCatLower.includes('cargador') || assetCatLower.includes('adaptador');
+        if (loanCatLower.includes('diadema') || loanCatLower.includes('auricular')) return assetCatLower.includes('diadema') || assetCatLower.includes('auricular');
+
+        return assetCatLower === loanCatLower;
+      });
+
+      if (matchingAssets.length === 0) {
+        alert(`⚠️ No hay ningún activo de tipo "${loan.cat}" disponible en el inventario.\n\nPuedes agregar uno en Google Sheets o Rechazar la solicitud indicando el motivo.`);
+        return;
+      }
+
+      // Tomar el primer activo disponible que cumple la categoría exacta
+      const selectedAsset = matchingAssets[0];
+
+      if (!confirm(`¿Confirmas asignar el siguiente equipo a ${loan.user}?\n\n• Equipo: ${selectedAsset.brand} ${selectedAsset.model}\n• Placa: ${selectedAsset.tag}\n• Serial: ${selectedAsset.sn}`)) {
+        return;
+      }
+
+      showToast(`Asignando ${selectedAsset.tag} y generando PDF...`, '📨');
 
       const params = new URLSearchParams({
         action: 'ASIGNAR_PRESTAMO',
         to: loan.email,
         recipientName: loan.user,
         requestNumber: loan.num,
-        assetTag: availAsset.tag,
-        model: `${availAsset.brand} ${availAsset.model}`,
-        sn: availAsset.sn,
-        category: availAsset.cat,
-        specs: availAsset.specs,
+        assetTag: selectedAsset.tag,
+        model: `${selectedAsset.brand} ${selectedAsset.model}`,
+        sn: selectedAsset.sn,
+        category: selectedAsset.cat || loan.cat,
+        specs: selectedAsset.specs,
         _t: Date.now()
       });
 
@@ -726,10 +768,38 @@
       setTimeout(fetchCloudData, 3000);
     }
 
+    // RECHAZAR SOLICITUD
+    function rejectLoan(loanId) {
+      const loan = loans.find(l => l.id === loanId);
+      if (!loan) return;
+
+      const reason = prompt(`Indica el motivo del rechazo para ${loan.user} (${loan.num}):`, 'No hay disponibilidad de equipos en bodega en este momento.');
+      if (!reason) return;
+
+      showToast('Registrando rechazo y notificando por correo...', '📨');
+
+      const params = new URLSearchParams({
+        action: 'RECHAZAR_SOLICITUD',
+        to: loan.email,
+        recipientName: loan.user,
+        requestNumber: loan.num,
+        category: loan.cat,
+        reason: reason,
+        _t: Date.now()
+      });
+
+      const popup = window.open(`${appsScriptWebhookUrl}?${params.toString()}`, 'gscript_runner', 'width=350,height=250,left=2000,top=2000');
+      if (popup) setTimeout(() => { try { popup.close(); } catch(e){} }, 2500);
+
+      setTimeout(fetchCloudData, 2500);
+    }
+
     // DEVOLVER EQUIPO
     function returnLoan(loanId) {
       const loan = loans.find(l => l.id === loanId);
       if (!loan) return;
+
+      if (!confirm(`¿Confirmas la devolución del equipo ${loan.tag} de ${loan.user}?`)) return;
 
       showToast('Actualizando acta de devolución en Drive y Sheets...', '📨');
 
@@ -791,16 +861,22 @@
         <tr>
           <td style="font-weight:700; font-family:monospace; color:var(--primary);">${l.num}</td>
           <td><div><strong>${l.user}</strong></div><div style="font-size:0.75rem; color:var(--text-muted);">${l.email}</div></td>
-          <td>${l.cat}</td>
+          <td><strong>${l.cat}</strong></td>
           <td>${l.tag ? `<div><strong>${l.tag}</strong></div><div style="font-size:0.75rem; color:var(--text-muted);">${l.model} (SN: <code>${l.sn}</code>)</div>` : '<span style="color:var(--warning);">No asignado</span>'}</td>
           <td>${l.date || '2026-08-01'}</td>
           <td>${getStatusBadge(l.status)}</td>
           <td>
-            ${currentRole === 'ADMIN' && l.status === 'SOLICITADO' ? `<button class="btn btn-primary" style="padding:0.35rem 0.7rem; font-size:0.75rem;" onclick="assignLoan('${l.id}')">Assign & Drive PDF</button>` : ''}
+            ${currentRole === 'ADMIN' && l.status === 'SOLICITADO' ? `
+              <div style="display:flex; gap:0.4rem; flex-wrap:wrap;">
+                <button class="btn btn-primary" style="padding:0.35rem 0.65rem; font-size:0.75rem;" onclick="assignLoan('${l.id}')">Assign & Drive PDF</button>
+                <button class="btn btn-danger" style="padding:0.35rem 0.65rem; font-size:0.75rem;" onclick="rejectLoan('${l.id}')">⛔ Rechazar</button>
+              </div>
+            ` : ''}
             ${currentRole === 'ADMIN' && (l.status === 'ENTREGADO' || l.status === 'EN_MORA') ? `<button class="btn btn-success" style="padding:0.35rem 0.7rem; font-size:0.75rem;" onclick="returnLoan('${l.id}')">Registrar Devolución & Actualizar PDF</button>` : ''}
             ${currentRole === 'USER' && l.status === 'SOLICITADO' ? '<span style="font-size:0.75rem; color:var(--purple);">En revisión por TI</span>' : ''}
+            ${l.status === 'RECHAZADO' ? '<span style="font-size:0.75rem; color:var(--danger);">Solicitud no aprobada</span>' : ''}
             ${l.status === 'DEVUELTO' ? '<span style="font-size:0.75rem; color:var(--text-muted);">Completado</span>' : ''}
-            ${l.driveFile ? `<br/><a href="https://drive.google.com/drive/u/0/folders/${driveFolderId}" target="_blank" style="color:var(--primary); font-size:0.72rem; text-decoration:none;">📄 Drive: ${l.driveFile} ↗</a>` : ''}
+            ${l.driveFile && !l.driveFile.startsWith('Motivo') ? `<br/><a href="https://drive.google.com/drive/u/0/folders/${driveFolderId}" target="_blank" style="color:var(--primary); font-size:0.72rem; text-decoration:none;">📄 Drive: ${l.driveFile} ↗</a>` : ''}
           </td>
         </tr>
       `).join('');
@@ -810,14 +886,15 @@
       const tbody = document.getElementById('tbody-inventario');
       if (!tbody) return;
       if (assets.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:2rem; color:var(--text-muted);">No hay activos registrados en Google Sheets.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:2rem; color:var(--text-muted);">No hay activos registrados en Google Sheets.</td></tr>`;
         return;
       }
       tbody.innerHTML = assets.map(a => `
         <tr>
           <td style="font-weight:700; font-family:monospace; color:var(--primary);">${a.tag}</td>
           <td style="font-family:monospace; font-size:0.8rem; font-weight:700;">${a.sn}</td>
-          <td><div><strong>${a.brand} ${a.model}</strong></div><div style="font-size:0.75rem; color:var(--text-muted);">${a.cat}</div></td>
+          <td><div><strong>${a.brand} ${a.model}</strong></div></td>
+          <td><span class="g-badge">${a.cat}</span></td>
           <td style="font-size:0.75rem; font-family:monospace;">${a.specs}</td>
           <td style="font-size:0.85rem;">${a.loc}</td>
           <td><span class="badge ${a.status === 'DISPONIBLE' ? 'badge-disponible' : 'badge-prestamo'}">${a.status}</span></td>
@@ -848,6 +925,7 @@
       if (status === 'SOLICITADO') return '<span class="badge badge-solicitado">PENDIENTE TI</span>';
       if (status === 'EN_MORA') return '<span class="badge badge-mora">VENCIDO EN MORA</span>';
       if (status === 'DEVUELTO') return '<span class="badge badge-disponible">DEVUELTO</span>';
+      if (status === 'RECHAZADO') return '<span class="badge badge-rechazado">RECHAZADO</span>';
       return `<span class="badge badge-prestamo">${status}</span>`;
     }
 
@@ -993,7 +1071,6 @@
     const savedTheme = localStorage.getItem('TI_SELECTED_THEME') || 'blue';
     applyTheme(savedTheme);
 
-    // Consulta Google Sheets INMEDIATAMENTE al abrir la web
     fetchCloudData();
     checkExistingSession();
   </script>
