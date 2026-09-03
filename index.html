@@ -248,10 +248,13 @@
           ⛔ Correo no autorizado. Comunícate con Jose Salas (jsalas@sedic.com.co).
         </div>
 
-        <button type="submit" class="btn btn-primary" style="width:100%; justify-content:center; padding:0.75rem; font-size:0.95rem; margin-top:0.5rem;">
+        <button type="submit" class="btn btn-primary" id="btn-login-submit" style="width:100%; justify-content:center; padding:0.75rem; font-size:0.95rem; margin-top:0.5rem;">
           Ingresar al Sistema ➔
         </button>
       </form>
+      <div style="margin-top: 1.2rem; font-size: 0.72rem; color: var(--text-muted);" id="login-status-text">
+        🔄 Sincronizando usuarios desde Google Sheets...
+      </div>
     </div>
   </div>
 
@@ -268,7 +271,7 @@
         <div class="brand-title">Interventoría TI</div>
         <div class="brand-subtitle">
           Gestión Cloud de Activos & Custodia
-          <span class="g-badge">Google Sheets Cloud Sync</span>
+          <span class="g-badge">Google Sheets Live</span>
           <span class="g-badge" id="role-badge">ADMIN</span>
         </div>
       </div>
@@ -301,13 +304,13 @@
       </div>
     </div>
 
-    <!-- Indicadores -->
+    <!-- Indicadores en Vivo -->
     <div class="stats-grid" id="stats-grid-container">
       <div class="stat-card">
         <div class="stat-icon" style="background: var(--primary-glow); color: var(--primary);">👥</div>
         <div>
-          <div class="stat-val">~600</div>
-          <div class="stat-lbl">Usuarios Workspace</div>
+          <div class="stat-val" id="stat-total-users">4</div>
+          <div class="stat-lbl">Usuarios Autorizados</div>
         </div>
       </div>
       <div class="stat-card">
@@ -415,9 +418,12 @@
           <h2 class="panel-title">💻 Inventario de Activos TI (Desde Google Sheets)</h2>
           <p style="font-size: 0.85rem; color: var(--text-muted);">Gestiona tus más de 300 activos directamente en la pestaña <strong>01_Inventario_Activos</strong> de Google Sheets.</p>
         </div>
-        <a href="https://docs.google.com/spreadsheets/d/13Bci4AhSslwPWHsYoG09yRymXSDOcNhgrsOxNIi7jcY/edit" target="_blank" class="btn btn-primary">
-          📝 Editar / Importar Activos en Sheets ↗
-        </a>
+        <div style="display:flex; gap:0.5rem;">
+          <button class="btn btn-secondary" onclick="fetchCloudData()">🔄 Actualizar Datos Cloud</button>
+          <a href="https://docs.google.com/spreadsheets/d/13Bci4AhSslwPWHsYoG09yRymXSDOcNhgrsOxNIi7jcY/edit" target="_blank" class="btn btn-primary">
+            📝 Editar / Importar Activos en Sheets ↗
+          </a>
+        </div>
       </div>
 
       <div class="table-container">
@@ -455,7 +461,7 @@
         <div style="background: rgba(255,255,255,0.03); padding: 1.25rem; border-radius: 12px; border: 1px solid var(--border-color);">
           <h4>📊 Base de Datos Google Sheets</h4>
           <p style="font-family:monospace; color:var(--success); margin-top:0.5rem;">13Bci4AhSslwPWHsYoG09yRymXSDOcNhgrsOxNIi7jcY</p>
-          <div style="font-size: 0.78rem; color: var(--text-muted); margin-top:0.5rem;">Pestañas: 01_Inventario_Activos | 02_Solicitudes_Prestamos</div>
+          <div style="font-size: 0.78rem; color: var(--text-muted); margin-top:0.5rem;">Pestañas: 01_Inventario_Activos | 02_Solicitudes_Prestamos | 04_Usuarios_Permisos</div>
         </div>
       </div>
     </div>
@@ -521,17 +527,20 @@
   </div>
 
   <script>
-    // URL DE WEBHOOK CLOUD ACTIVA
-    const appsScriptWebhookUrl = 'https://script.google.com/macros/s/AKfycbz6VjJ9pWNajV8dftnceORj1wrKeHmPag1b-5MichvvzK4MlxjfhA1W9dEdTIc7ItdBhg/exec';
+    const appsScriptWebhookUrl = 'https://script.google.com/macros/s/AKfycbyraCNUSjMtDFo-ycjLBBGpOahCCxEw5fghxR1LK4Cm0x4LPRll4CGJtSTOPYbYd1om/exec';
     const driveFolderId = '1pV04KdGZ1Bqt-f97hyfFIEoO_F4HYb8a';
 
     let currentRole = 'ADMIN'; 
     let activeUser = null;
     let assets = [];
     let loans = [];
+    
+    // Lista inicial con soporte a tus nuevos correos mientras sincroniza en vivo
     let whitelistUsers = [
       { email: 'jsalas@sedic.com.co', name: 'Jose Salas', role: 'ADMIN_TI', status: 'ACTIVO' },
-      { email: 'soportesistemasve@gmail.com', name: 'Sebastian Posada', role: 'USUARIO', status: 'ACTIVO' }
+      { email: 'soportesistemasve@gmail.com', name: 'Sebastian Posada', role: 'USUARIO', status: 'ACTIVO' },
+      { email: 'carambitave@gmail.com', name: 'Leonardo', role: 'USUARIO', status: 'ACTIVO' },
+      { email: 'financierave@gmail.com', name: 'Patricia Vellojin', role: 'USUARIO', status: 'ACTIVO' }
     ];
 
     function showToast(text, icon = '🚀') {
@@ -542,42 +551,40 @@
       setTimeout(() => toast.classList.remove('show'), 3500);
     }
 
-    // CARGAR DATOS EN VIVO DESDE GOOGLE SHEETS
-function showToast(text, icon = '🚀') {
-      const toast = document.getElementById('toast');
-      document.getElementById('toast-icon').innerText = icon;
-      document.getElementById('toast-text').innerText = text;
-      toast.classList.add('show');
-      setTimeout(() => toast.classList.remove('show'), 3500);
-    }
     // CARGA DIRECTA Y ULTRA-RÁPIDA JSONP DESDE GOOGLE SHEETS
     function fetchCloudData() {
-      showToast('Cargando inventario desde Google Sheets...', '🔄');
       window.handleCloudDataResponse = function(data) {
         if (data && data.status === 'success') {
           assets = data.assets || [];
           loans = data.loans || [];
-          if (data.users && data.users.length > 0) whitelistUsers = data.users;
+          if (data.users && data.users.length > 0) {
+            whitelistUsers = data.users;
+            const loginStatus = document.getElementById('login-status-text');
+            if (loginStatus) loginStatus.innerText = `🔐 ${whitelistUsers.length} Usuarios sincronizados con Google Sheets`;
+            const statUsers = document.getElementById('stat-total-users');
+            if (statUsers) statUsers.innerText = whitelistUsers.length;
+          }
           renderAll();
-          showToast(`✔ ${assets.length} Activos cargados de Sheets`, '📊');
+          showToast(`✔ Sincronizado (${assets.length} Activos, ${whitelistUsers.length} Usuarios)`, '📊');
         }
       };
-      // Inyectar script para saltar bloqueos CORS
+
       const oldScript = document.getElementById('jsonp-cloud-loader');
       if (oldScript) oldScript.remove();
+
       const script = document.createElement('script');
       script.id = 'jsonp-cloud-loader';
       script.src = `${appsScriptWebhookUrl}?action=GET_ALL_DATA&callback=handleCloudDataResponse&_t=${Date.now()}`;
       document.body.appendChild(script);
     }
 
-    // LOGIN
+    // LOGIN CON VERIFICACIÓN EN VIVO
     function handleUserLogin(e) {
       e.preventDefault();
       const emailInput = document.getElementById('login-email').value.trim().toLowerCase();
       const errorMsg = document.getElementById('login-error-msg');
 
-      const foundUser = whitelistUsers.find(u => u.email.toLowerCase() === emailInput && u.status === 'ACTIVO');
+      const foundUser = whitelistUsers.find(u => u.email.toLowerCase() === emailInput && u.status.toUpperCase() === 'ACTIVO');
 
       if (!foundUser) {
         errorMsg.style.display = 'block';
@@ -586,12 +593,12 @@ function showToast(text, icon = '🚀') {
 
       errorMsg.style.display = 'none';
       activeUser = foundUser;
-      currentRole = (foundUser.role === 'ADMIN_TI') ? 'ADMIN' : 'USER';
+      currentRole = (foundUser.role.toUpperCase() === 'ADMIN_TI') ? 'ADMIN' : 'USER';
       localStorage.setItem('LOGGED_USER_EMAIL_CLOUD', foundUser.email);
 
       document.getElementById('login-screen').style.display = 'none';
       setupUIForLoggedUser();
-      fetchCloudData(); // Consulta la base de datos central
+      fetchCloudData();
     }
 
     function handleLogout() {
@@ -604,10 +611,10 @@ function showToast(text, icon = '🚀') {
     function checkExistingSession() {
       const savedEmail = localStorage.getItem('LOGGED_USER_EMAIL_CLOUD');
       if (savedEmail) {
-        const found = whitelistUsers.find(u => u.email.toLowerCase() === savedEmail.toLowerCase() && u.status === 'ACTIVO');
+        const found = whitelistUsers.find(u => u.email.toLowerCase() === savedEmail.toLowerCase() && u.status.toUpperCase() === 'ACTIVO');
         if (found) {
           activeUser = found;
-          currentRole = (found.role === 'ADMIN_TI') ? 'ADMIN' : 'USER';
+          currentRole = (found.role.toUpperCase() === 'ADMIN_TI') ? 'ADMIN' : 'USER';
           document.getElementById('login-screen').style.display = 'none';
           setupUIForLoggedUser();
           fetchCloudData();
@@ -689,10 +696,10 @@ function showToast(text, icon = '🚀') {
       if (popup) setTimeout(() => { try { popup.close(); } catch(e){} }, 2500);
 
       closeModal('modal-loan');
-      setTimeout(fetchCloudData, 2000); // Recarga datos en vivo de Sheets
+      setTimeout(fetchCloudData, 2000);
     }
 
-    // ASIGNAR EQUIPO (PDF EN DRIVE + SHEETS + GMAIL)
+    // ASIGNAR EQUIPO
     function assignLoan(loanId) {
       const loan = loans.find(l => l.id === loanId);
       const availAsset = assets.find(a => a.status === 'DISPONIBLE');
@@ -803,7 +810,7 @@ function showToast(text, icon = '🚀') {
       const tbody = document.getElementById('tbody-inventario');
       if (!tbody) return;
       if (assets.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:2rem; color:var(--text-muted);">Cargando inventario desde Google Sheets...</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:2rem; color:var(--text-muted);">No hay activos registrados en Google Sheets.</td></tr>`;
         return;
       }
       tbody.innerHTML = assets.map(a => `
@@ -986,6 +993,8 @@ function showToast(text, icon = '🚀') {
     const savedTheme = localStorage.getItem('TI_SELECTED_THEME') || 'blue';
     applyTheme(savedTheme);
 
+    // Consulta Google Sheets INMEDIATAMENTE al abrir la web
+    fetchCloudData();
     checkExistingSession();
   </script>
 </body>
