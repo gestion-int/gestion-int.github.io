@@ -669,7 +669,7 @@
   </div>
 
   <script>
-    const appsScriptWebhookUrl = 'https://script.google.com/macros/s/AKfycbxcZYQu7vOABhV58kOgBqsPQMr81t74VzafF82axlcuRP0_Wy-eqByMpFE8m9Ro9wdGHg/exec';
+    const appsScriptWebhookUrl = 'https://script.google.com/macros/s/AKfycbx40UNjco8Ik2LASO_-SCO-ub3WDc0PqucvSlizZe94rcKfDEkElHrdRzTgZhbEQOIkIg/exec';
     const driveFolderId = '1pV04KdGZ1Bqt-f97hyfFIEoO_F4HYb8a';
 
     let currentRole = 'ADMIN'; 
@@ -696,7 +696,7 @@
       setTimeout(() => toast.classList.remove('show'), 3500);
     }
 
-    // DESPACHADOR DIRECTO Y SILENCIOSO JSONP (SIN POPUPS ABOUT:BLANK)
+        // DESPACHADOR DIRECTO JSONP CON VALIDACIÓN DE RESPUESTA REAL
     function dispatchCloudAction(params, onDone) {
       const scriptId = 'jsonp-act-' + Date.now();
       const callbackName = 'cb_act_' + Date.now();
@@ -705,7 +705,12 @@
         delete window[callbackName];
         const s = document.getElementById(scriptId);
         if (s) s.remove();
-        if (onDone) onDone(resp);
+
+        if (resp && resp.status === 'error') {
+          alert('⚠️ Error en Google Apps Script:\n\n' + resp.message);
+        } else {
+          if (onDone) onDone(resp);
+        }
       };
 
       params.set('callback', callbackName);
