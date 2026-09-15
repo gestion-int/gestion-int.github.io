@@ -1,39 +1,2672 @@
-// Obtener lista completa de personal desde la base de datos externa
-function getPersonnelDirectory() {
-  try {
-    var ss = SpreadsheetApp.openById("1JCORZBlWL0DPs9DuZQsvd1VFuMy1ZVBT8RgM1S_eNZ0");
-    var sheet = ss.getSheetByName("ACTIVOS") || ss.getSheets()[0];
-    var data = sheet.getDataRange().getValues();
-    var list = [];
-    
-    // Asumiendo fila 1 de encabezados
-    for (var i = 1; i < data.length; i++) {
-      var row = data[i];
-      var nombre = row[1] || row[0]; // Columna B (o A)
-      var cedula = row[2] ? String(row[2]) : ""; // Columna C
-      var correo = row[14] || row[3] || ""; // Columna O (o D)
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Gestión TI · Mesa de Ayuda & Reportes</title>
+  
+  <!-- Tipografía Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Chart.js para generación automática de gráficas mensuales -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    /* ==========================================================================
+       01. VARIABLES DE TEMA Y ESTILOS GLOBALES
+       ========================================================================== */
+    :root {
+      --font-main: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --primary-light: #eff6ff;
+      --accent: #0284c7;
       
-      if (nombre && String(nombre).trim() !== "") {
-        list.push({
-          nombre: String(nombre).trim(),
-          cedula: cedula.trim(),
-          correo: String(correo).trim()
+      --bg-body: #f1f5f9;
+      --bg-card: #ffffff;
+      --bg-card-glass: rgba(255, 255, 255, 0.96);
+      --bg-subtle: #f8fafc;
+      --bg-input: #ffffff;
+      
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --text-light: #94a3b8;
+      
+      --border-color: #e2e8f0;
+      --border-subtle: #f1f5f9;
+      --border-focus: #3b82f6;
+      
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
+      --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.12), 0 8px 10px -6px rgba(0, 0, 0, 0.06);
+      
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --radius-full: 9999px;
+      
+      --status-open: #ef4444;
+      --status-process: #f59e0b;
+      --status-closed: #10b981;
+      --status-cancelled: #6b7280;
+    }
+
+    body[data-theme="dark"] {
+      --bg-body: #0b1120;
+      --bg-card: #131d33;
+      --bg-card-glass: rgba(19, 29, 51, 0.96);
+      --bg-subtle: #0f172a;
+      --bg-input: #1e293b;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --text-light: #64748b;
+      --border-color: #1e293b;
+      --border-subtle: #172339;
+      --primary: #3b82f6;
+      --primary-light: #1e293b;
+    }
+
+    body[data-theme="mint"] {
+      --bg-body: #f0fdf4;
+      --bg-card: #ffffff;
+      --primary: #059669;
+      --primary-hover: #047857;
+      --primary-light: #ecfdf5;
+      --border-color: #d1fae5;
+    }
+
+    body[data-theme="blue"] {
+      --bg-body: #f0f9ff;
+      --bg-card: #ffffff;
+      --primary: #0284c7;
+      --primary-hover: #0369a1;
+      --primary-light: #e0f2fe;
+      --border-color: #bae6fd;
+    }
+
+    body[data-theme="navy"] {
+      --bg-body: #0a1128;
+      --bg-card: #101c3d;
+      --bg-subtle: #0c1630;
+      --bg-input: #15254f;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --border-color: #1c3168;
+      --primary: #4f7cff;
+      --primary-light: #162854;
+    }
+
+    /* ==========================================================================
+       02. RESET & LAYOUT GENERAL
+       ========================================================================== */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { min-height: 100%; }
+    body {
+      background-color: var(--bg-body);
+      color: var(--text-main);
+      font-family: var(--font-main);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      transition: background-color 0.25s ease, color 0.25s ease;
+    }
+
+    .app-container {
+      max-width: 1720px;
+      margin: 0 auto;
+      padding: 12px 20px 40px;
+    }
+
+    /* ==========================================================================
+       03. NAVBAR & HEADER CORPORATIVO
+       ========================================================================== */
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      background: var(--bg-card-glass);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-color);
+      padding: 10px 20px;
+      margin-bottom: 16px;
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .topbar-content {
+      max-width: 1720px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .brand-section {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .brand-logo-wrap {
+      display: flex;
+      align-items: center;
+      background: #ffffff;
+      padding: 4px 10px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-color);
+    }
+
+    .brand-logo {
+      height: 38px;
+      width: auto;
+      object-fit: contain;
+    }
+
+    .brand-title {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .brand-title h1 {
+      font-size: 1.15rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .brand-badge {
+      font-size: 0.68rem;
+      font-weight: 700;
+      background: var(--primary-light);
+      color: var(--primary);
+      padding: 2px 8px;
+      border-radius: var(--radius-full);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .brand-title span {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .topbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    /* Selector de Analista Activo */
+    .analyst-active-wrap {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--bg-subtle);
+      border: 1px solid var(--border-color);
+      padding: 4px 10px;
+      border-radius: var(--radius-full);
+    }
+
+    .user-avatar {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: var(--primary);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 800;
+    }
+
+    .analyst-select-top {
+      border: none;
+      background: transparent;
+      font-size: 0.84rem;
+      font-weight: 700;
+      color: var(--text-main);
+      outline: none;
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    /* Botón Informe Mensual en Topbar */
+    .btn-report-nav {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      color: #1d4ed8;
+      font-size: 0.82rem;
+      font-weight: 700;
+      padding: 6px 14px;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .btn-report-nav:hover {
+      background: #dbeafe;
+      transform: translateY(-1px);
+    }
+
+    .theme-select {
+      background: var(--bg-subtle);
+      color: var(--text-main);
+      border: 1px solid var(--border-color);
+      padding: 6px 10px;
+      border-radius: var(--radius-md);
+      font-size: 0.82rem;
+      font-weight: 500;
+      cursor: pointer;
+      outline: none;
+    }
+
+    /* ==========================================================================
+       04. GRID PRINCIPAL (FORMULARIO + TABLA)
+       ========================================================================== */
+    .main-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 20px;
+      align-items: start;
+    }
+
+    @media (min-width: 1200px) {
+      .main-grid {
+        grid-template-columns: 500px 1fr;
+      }
+    }
+
+    @media (min-width: 1500px) {
+      .main-grid {
+        grid-template-columns: 540px 1fr;
+      }
+    }
+
+    /* ==========================================================================
+       05. CARDS & SECCIONES
+       ========================================================================== */
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-sm);
+      transition: box-shadow 0.2s ease;
+      overflow: hidden;
+    }
+    .card:hover {
+      box-shadow: var(--shadow-md);
+    }
+
+    .card-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--bg-subtle);
+    }
+
+    .card-header-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .card-header-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: var(--radius-sm);
+      background: var(--primary-light);
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .card-header h2 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--text-main);
+      letter-spacing: -0.01em;
+    }
+
+    .card-body {
+      padding: 20px;
+    }
+
+    #cardForm {
+      position: sticky;
+      top: 76px;
+      max-height: calc(100vh - 96px);
+      overflow-y: auto;
+      scrollbar-width: thin;
+    }
+
+    /* ==========================================================================
+       06. FORMULARIOS & CONTROLES
+       ========================================================================== */
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 14px;
+    }
+
+    @media (min-width: 540px) {
+      .form-grid.cols-2 {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .form-group.full-width {
+      grid-column: 1 / -1;
+    }
+
+    label {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .required-star {
+      color: #ef4444;
+      font-weight: 700;
+    }
+
+    .form-control, select, textarea {
+      width: 100%;
+      padding: 9px 12px;
+      font-size: 0.88rem;
+      font-family: inherit;
+      color: var(--text-main);
+      background: var(--bg-input);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      outline: none;
+      transition: all 0.15s ease;
+    }
+
+    .form-control:focus, select:focus, textarea:focus {
+      border-color: var(--border-focus);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 20%, transparent);
+    }
+
+    textarea {
+      min-height: 90px;
+      resize: vertical;
+      line-height: 1.45;
+    }
+
+    .input-hint {
+      font-size: 0.75rem;
+      color: var(--text-light);
+      margin-top: 2px;
+    }
+
+    /* Radio Pills */
+    .radio-pill-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--bg-subtle);
+      padding: 4px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-color);
+    }
+
+    .radio-pill-label {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 6px 12px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      border-radius: var(--radius-sm);
+      transition: all 0.15s;
+      color: var(--text-muted);
+    }
+
+    .radio-pill-label:has(input:checked) {
+      background: var(--bg-card);
+      color: var(--primary);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .radio-pill-label input {
+      display: none;
+    }
+
+    /* Autocomplete */
+    .ac-wrapper {
+      position: relative;
+    }
+
+    .ac-dropdown {
+      position: absolute;
+      top: calc(100% + 4px);
+      left: 0;
+      right: 0;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-lg);
+      max-height: 220px;
+      overflow-y: auto;
+      z-index: 50;
+      padding: 4px;
+      list-style: none;
+    }
+
+    .ac-dropdown[hidden] {
+      display: none;
+    }
+
+    .ac-item {
+      padding: 8px 12px;
+      font-size: 0.84rem;
+      font-weight: 500;
+      color: var(--text-main);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .ac-item:hover, .ac-item[aria-selected="true"] {
+      background: var(--primary-light);
+      color: var(--primary);
+    }
+
+    /* Plantillas Snippets */
+    .snippets-accordion {
+      border: 1px dashed var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 10px 14px;
+      background: var(--bg-subtle);
+      margin-top: 12px;
+    }
+
+    .snippets-accordion summary {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--primary);
+      cursor: pointer;
+      user-select: none;
+      outline: none;
+    }
+
+    .snippets-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 10px;
+    }
+
+    .snippet-chip {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      font-size: 0.76rem;
+      font-weight: 600;
+      padding: 5px 10px;
+      border-radius: var(--radius-full);
+      cursor: pointer;
+      transition: all 0.15s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .snippet-chip:hover {
+      background: var(--primary-light);
+      border-color: var(--primary);
+      color: var(--primary);
+      transform: translateY(-1px);
+    }
+
+    /* Botones */
+    .btn-row {
+      display: flex;
+      gap: 10px;
+      margin-top: 18px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 9px 16px;
+      font-size: 0.86rem;
+      font-weight: 700;
+      font-family: inherit;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: all 0.15s ease;
+      border: 1px solid transparent;
+      outline: none;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: #ffffff;
+      box-shadow: 0 4px 12px color-mix(in srgb, var(--primary) 30%, transparent);
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-hover);
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      background: var(--bg-subtle);
+      border-color: var(--border-color);
+      color: var(--text-muted);
+    }
+
+    .btn-secondary:hover {
+      background: var(--border-color);
+      color: var(--text-main);
+    }
+
+    .btn-export {
+      background: #ecfdf5;
+      color: #059669;
+      border-color: #a7f3d0;
+    }
+    .btn-export:hover {
+      background: #d1fae5;
+    }
+
+    .btn-icon-action {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      cursor: pointer;
+      padding: 6px;
+      border-radius: var(--radius-sm);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s;
+    }
+    .btn-icon-action:hover {
+      background: var(--primary-light);
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    /* Help Cards / Accordions */
+    .help-box {
+      margin-top: 16px;
+      background: var(--bg-subtle);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 12px;
+      font-size: 0.8rem;
+    }
+
+    .help-box h4 {
+      font-size: 0.82rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+      color: var(--text-main);
+    }
+
+    .help-box ul {
+      margin-left: 18px;
+      color: var(--text-muted);
+    }
+
+    /* ==========================================================================
+       07. KPIS & DASHBOARD STATS
+       ========================================================================== */
+    .kpis-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .kpi-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.2s ease;
+    }
+
+    .kpi-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+      border-color: var(--primary);
+    }
+
+    .kpi-card.active-kpi {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px var(--primary);
+    }
+
+    .kpi-card::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 4px;
+      background: var(--border-color);
+      border-radius: 4px 0 0 4px;
+    }
+
+    .kpi-card[data-kpi="total"]::before { background: var(--primary); }
+    .kpi-card[data-kpi="open"]::before { background: var(--status-open); }
+    .kpi-card[data-kpi="process"]::before { background: var(--status-process); }
+    .kpi-card[data-kpi="closed"]::before { background: var(--status-closed); }
+    .kpi-card[data-kpi="cancelled"]::before { background: var(--status-cancelled); }
+    .kpi-card[data-kpi="req"]::before { background: #8b5cf6; }
+
+    .kpi-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .kpi-title {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--text-muted);
+    }
+
+    .kpi-value {
+      font-size: 1.45rem;
+      font-weight: 800;
+      color: var(--text-main);
+      line-height: 1.2;
+    }
+
+    /* ==========================================================================
+       08. TOOLBAR & FILTROS DE TABLA
+       ========================================================================== */
+    .table-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      background: var(--bg-subtle);
+      padding: 12px 16px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-color);
+      margin-bottom: 16px;
+    }
+
+    .filter-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .filter-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .filter-label {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+
+    .filter-select {
+      padding: 6px 10px;
+      font-size: 0.82rem;
+      background: var(--bg-input);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      color: var(--text-main);
+      outline: none;
+    }
+
+    .search-wrapper {
+      position: relative;
+      flex: 1;
+      min-width: 220px;
+      max-width: 320px;
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-light);
+      pointer-events: none;
+      display: flex;
+      align-items: center;
+    }
+
+    .search-input {
+      padding-left: 32px !important;
+      font-size: 0.82rem;
+      padding-top: 6px;
+      padding-bottom: 6px;
+    }
+
+    /* ==========================================================================
+       09. TABLA DE TICKETS MODERNA
+       ========================================================================== */
+    .table-responsive {
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      overflow-x: auto;
+      background: var(--bg-card);
+      max-height: calc(100vh - 340px);
+      scrollbar-width: thin;
+    }
+
+    .data-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      font-size: 0.84rem;
+      text-align: left;
+    }
+
+    .data-table thead {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: var(--bg-subtle);
+    }
+
+    .data-table th {
+      padding: 12px 14px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border-color);
+      white-space: nowrap;
+    }
+
+    .data-table tbody tr {
+      transition: background 0.15s ease;
+    }
+
+    .data-table tbody tr:hover {
+      background: color-mix(in srgb, var(--primary) 4%, var(--bg-card));
+    }
+
+    .data-table td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border-color);
+      vertical-align: middle;
+      color: var(--text-main);
+    }
+
+    .ticket-id {
+      font-family: monospace;
+      font-weight: 700;
+      color: var(--primary);
+      background: var(--primary-light);
+      padding: 3px 6px;
+      border-radius: var(--radius-sm);
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+    }
+
+    /* Badges de Estado */
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: var(--radius-full);
+      font-size: 0.75rem;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+    }
+
+    .status-badge.open {
+      background: #fef2f2;
+      color: #dc2626;
+      border: 1px solid #fee2e2;
+    }
+    .status-badge.open .status-dot { background: #dc2626; animation: pulse-dot 1.5s infinite; }
+
+    .status-badge.process {
+      background: #fffbeb;
+      color: #d97706;
+      border: 1px solid #fef3c7;
+    }
+    .status-badge.process .status-dot { background: #d97706; }
+
+    .status-badge.closed {
+      background: #ecfdf5;
+      color: #059669;
+      border: 1px solid #d1fae5;
+    }
+    .status-badge.closed .status-dot { background: #059669; }
+
+    .status-badge.cancelled {
+      background: #f3f4f6;
+      color: #4b5563;
+      border: 1px solid #e5e7eb;
+    }
+    .status-badge.cancelled .status-dot { background: #4b5563; }
+
+    @keyframes pulse-dot {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.3); opacity: 0.6; }
+    }
+
+    /* Badges de Prioridad */
+    .prio-badge {
+      display: inline-flex;
+      padding: 3px 8px;
+      border-radius: var(--radius-full);
+      font-size: 0.74rem;
+      font-weight: 700;
+    }
+    .prio-badge.alta { background: #fee2e2; color: #b91c1c; }
+    .prio-badge.media { background: #fef3c7; color: #b45309; }
+    .prio-badge.baja { background: #e0f2fe; color: #0369a1; }
+
+    .desc-preview {
+      max-width: 220px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      color: var(--text-muted);
+      cursor: pointer;
+      display: inline-block;
+      transition: color 0.15s;
+    }
+    .desc-preview:hover {
+      color: var(--primary);
+      text-decoration: underline;
+    }
+
+    .table-actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .action-select {
+      font-size: 0.78rem;
+      padding: 4px 6px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-color);
+      background: var(--bg-card);
+      color: var(--text-main);
+      cursor: pointer;
+    }
+
+    /* Paginación */
+    .pagination-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 14px;
+      padding: 0 4px;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+    }
+
+    .pagination-controls {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-page {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      padding: 4px 10px;
+      border-radius: var(--radius-sm);
+      font-size: 0.8rem;
+      color: var(--text-main);
+      cursor: pointer;
+      font-weight: 600;
+    }
+    .btn-page:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    /* ==========================================================================
+       10. MODALES & DIALOGS (CENTRADOS PERFECTOS)
+       ========================================================================== */
+    dialog.modal {
+      position: fixed !important;
+      inset: 0 !important;
+      margin: auto !important;
+      width: min(600px, 92vw);
+      max-height: 88vh;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      background: var(--bg-card);
+      color: var(--text-main);
+      padding: 0;
+      box-shadow: var(--shadow-xl);
+      animation: modal-in 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      overflow-y: auto;
+    }
+
+    dialog.modal-large {
+      width: min(960px, 94vw);
+    }
+
+    @keyframes modal-in {
+      from { opacity: 0; transform: scale(0.96) translateY(10px); }
+      to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    dialog::backdrop {
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(5px);
+    }
+
+    .modal-header {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--bg-subtle);
+    }
+
+    .modal-header h3 {
+      font-size: 1.05rem;
+      font-weight: 700;
+    }
+
+    .modal-body {
+      padding: 20px;
+    }
+
+    .modal-footer {
+      position: sticky;
+      bottom: 0;
+      z-index: 10;
+      padding: 14px 20px;
+      border-top: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 10px;
+      background: var(--bg-subtle);
+    }
+
+    /* Detalle Ticket en Modal */
+    .detail-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .detail-item {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .detail-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    .detail-val {
+      font-size: 0.88rem;
+      font-weight: 600;
+    }
+
+    .detail-box {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 12px;
+      margin-top: 10px;
+      font-size: 0.85rem;
+      line-height: 1.5;
+      white-space: pre-wrap;
+    }
+
+    /* ==========================================================================
+       11. INFORME MENSUAL / GRÁFICAS ESTADÍSTICAS
+       ========================================================================== */
+    .report-filter-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      background: var(--bg-subtle);
+      padding: 12px 16px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-color);
+      margin-bottom: 16px;
+    }
+
+    .report-summary-box {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border-color);
+      border-left: 4px solid var(--primary);
+      border-radius: var(--radius-md);
+      padding: 14px 18px;
+      font-size: 0.92rem;
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+
+    .report-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+
+    @media(min-width: 768px) {
+      .report-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    .chart-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .chart-card h4 {
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 12px;
+      text-align: center;
+    }
+
+    .chart-container {
+      position: relative;
+      width: 100%;
+      max-height: 280px;
+      display: flex;
+      justify-content: center;
+    }
+
+    /* Tabla de actividades */
+    .report-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.84rem;
+      margin-top: 10px;
+    }
+    .report-table th {
+      background: var(--bg-subtle);
+      padding: 10px 12px;
+      text-align: left;
+      font-weight: 700;
+      color: var(--text-muted);
+      border: 1px solid var(--border-color);
+    }
+    .report-table td {
+      padding: 8px 12px;
+      border: 1px solid var(--border-color);
+    }
+    .report-table tr:nth-child(even) {
+      background: var(--bg-subtle);
+    }
+
+    /* ==========================================================================
+       12. TOAST NOTIFICATIONS
+       ========================================================================== */
+    .toast-container {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-width: 380px;
+    }
+
+    .toast {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 12px 16px;
+      box-shadow: var(--shadow-lg);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      animation: toast-in 0.25s ease forwards;
+    }
+
+    @keyframes toast-in {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
+    .toast.success { border-left: 4px solid #10b981; }
+    .toast.error { border-left: 4px solid #ef4444; }
+    .toast.info { border-left: 4px solid var(--primary); }
+
+    footer {
+      margin-top: 30px;
+      text-align: center;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+  </style>
+</head>
+<body data-theme="light">
+
+  <!-- ==================== CONTENEDOR TOASTS ==================== -->
+  <div id="toastContainer" class="toast-container"></div>
+
+  <!-- ==================== TOPBAR HEADER ==================== -->
+  <header class="topbar">
+    <div class="topbar-content">
+      <div class="brand-section">
+        <div class="brand-logo-wrap">
+          <img class="brand-logo" src="Imagen/logo-empresas.jpg" alt="INGETEC / SEDIC"
+               onerror="this.onerror=null;this.src='https://jose01ve.github.io/GESTION-TI/Imagen/logo-empresas.jpg';">
+        </div>
+        <div class="brand-title">
+          <h1>Gestión Reportes TI <span class="brand-badge">Ituango</span></h1>
+          <span>Mesa de Ayuda · Ingetec / Sedic / EPM</span>
+        </div>
+      </div>
+
+      <div class="topbar-actions">
+        <!-- Selector de Analista Activo -->
+        <div class="analyst-active-wrap" title="Selecciona el analista en sesión">
+          <div class="user-avatar" id="whoamiAvatar">JS</div>
+          <select id="activeAnalystSelect" class="analyst-select-top">
+            <option value="Jose Salas">Jose Salas</option>
+            <option value="Sebastián Cataño">Sebastián Cataño</option>
+            <option value="Sebastián Posada">Sebastián Posada</option>
+            <option value="Pablo Calle">Pablo Calle</option>
+          </select>
+        </div>
+
+        <!-- Botón Informe Mensual -->
+        <button id="btnOpenMonthlyReport" class="btn-report-nav" title="Generar informe y gráficas mensuales">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 20V10M12 20V4M6 20v-6"></path></svg>
+          <span>Informe Mensual</span>
+        </button>
+
+        <!-- Selector de Tema -->
+        <select id="themePick" class="theme-select" title="Personalizar tema">
+          <optgroup label="Temas">
+            <option value="Claro" data-theme="light">☀️ Claro Profesional</option>
+            <option value="Oscuro" data-theme="dark">🌙 Modo Oscuro</option>
+            <option value="Mint" data-theme="mint">🌿 Mint Ingetec</option>
+            <option value="Azul" data-theme="blue">💧 Azul EPM</option>
+            <option value="Navy" data-theme="navy">🌌 Deep Navy</option>
+          </optgroup>
+        </select>
+      </div>
+    </div>
+  </header>
+
+  <!-- ==================== CONTENIDO PRINCIPAL ==================== -->
+  <div class="app-container">
+    <main class="main-grid">
+
+      <!-- ==================== COLUMNA IZQUIERDA: FORMULARIO ==================== -->
+      <section id="cardForm" class="card">
+        <div class="card-header">
+          <div class="card-header-title">
+            <div class="card-header-icon">
+              <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 4v16m8-8H4"></path></svg>
+            </div>
+            <h2>Nuevo Reporte TI</h2>
+          </div>
+          <span id="syncBadge" class="brand-badge" style="background:#ecfdf5; color:#059669;">Conectando…</span>
+        </div>
+
+        <div class="card-body">
+          <form id="formTicket" autocomplete="off">
+            <div class="form-grid cols-2">
+              
+              <!-- Analista Responsable -->
+              <div class="form-group">
+                <label for="analista">Analista Responsable <span class="required-star">*</span></label>
+                <select id="analista" required></select>
+              </div>
+
+              <!-- Categoría -->
+              <div class="form-group">
+                <label for="categoria">Categoría <span class="required-star">*</span></label>
+                <select id="categoria" required>
+                  <option value="">Selecciona…</option>
+                  <option>Red</option>
+                  <option>Hardware</option>
+                  <option>Software</option>
+                  <option>Asesoría</option>
+                  <option>Préstamo de activo</option>
+                  <option>Correo</option>
+                  <option>Impresión</option>
+                  <option>Mantenimiento</option>
+                  <option>Servidores</option>
+                  <option>Otro</option>
+                </select>
+              </div>
+
+              <!-- Servicio Prestado (Falla) -->
+              <div class="form-group full-width">
+                <label for="falla">Servicio prestado / Tipo de falla <span class="required-star">*</span></label>
+                <select id="falla" required>
+                  <option value="">Selecciona servicio…</option>
+                  <option>Soporte a equipos informáticos</option>
+                  <option>Configuración equipo</option>
+                  <option>Desbloquear cuenta de red</option>
+                  <option>Devolución activo a EPM</option>
+                  <option>Préstamo Video Beam / Préstamo equipo</option>
+                  <option>Crear acta</option>
+                  <option>Instalación de PC-Dis \ Préstamo de equipo \ Dispositivo</option>
+                  <option>Reposición de equipo</option>
+                  <option>Retiro de equipo a usuario</option>
+                  <option>Traslado de puesto</option>
+                  <option>Instalación de software - Desinstalación \ Traslado SW</option>
+                  <option>Desbloqueo punto de red</option>
+                  <option>Adquisición de Software y Hardware</option>
+                  <option>Asignación de puesto nuevo</option>
+                  <option>Creación de cuentas de red</option>
+                  <option>Eliminación de cuentas de red</option>
+                  <option>Crear cuenta de correo \ Eliminar</option>
+                  <option>Actualización de datos \ Información</option>
+                  <option>Inventario de Equipos</option>
+                  <option>Inventario de software</option>
+                  <option>Actualización de cuentas de red</option>
+                  <option>Asignar Permiso en servidores \ Retirar permisos</option>
+                  <option>Permisos en Unidades compartidas</option>
+                  <option>Soporte equipos CONSORCIO</option>
+                  <option>Auditoria desde TIC a Interventoría</option>
+                  <option>Instalación de Guayas</option>
+                  <option>Backups información</option>
+                  <option>Resolución de ECOS</option>
+                  <option>Actualización de carpetas de información general</option>
+                  <option>Actualización de información CADD</option>
+                  <option>Capacitación</option>
+                  <option>Reposición de equipos EPM</option>
+                  <option>Asesoría general</option>
+                  <option>Permisos en Skype Empresarial</option>
+                  <option>Desinstalación de programas</option>
+                  <option>Requerimiento de Impresión</option>
+                  <option>Gestión en Vault</option>
+                  <option>Permisos VPN</option>
+                  <option>Gestión en obra</option>
+                  <option>Crear cuenta de correo</option>
+                  <option>Entrega de equipo por reintegro o reposición</option>
+                  <option>Configurar Dispositivo móvil</option>
+                  <option>Marcación de puestos</option>
+                  <option>Recuperación de información</option>
+                  <option>Gestión aplicaciones</option>
+                </select>
+              </div>
+
+              <!-- Usuario Reporta (Autocomplete) -->
+              <div class="form-group ac-wrapper">
+                <label for="usuario">Usuario que reporta <span class="required-star">*</span></label>
+                <input id="usuario" class="form-control" placeholder="Escribe nombre o apellido…" required autocomplete="off" />
+                <ul id="acList" class="ac-dropdown" hidden></ul>
+                <span class="input-hint">Elige entre las sugerencias de contactos</span>
+              </div>
+
+              <!-- Prioridad -->
+              <div class="form-group">
+                <label for="prioridad">Prioridad <span class="required-star">*</span></label>
+                <select id="prioridad" required>
+                  <option value="">Selecciona…</option>
+                  <option value="Alta">🔴 Alta (Crítico / Bloqueo)</option>
+                  <option value="Media">🟡 Media (Afecta tarea)</option>
+                  <option value="Baja">🔵 Baja (Consulta / Rutina)</option>
+                </select>
+              </div>
+
+              <!-- ¿Tiene Requerimiento? -->
+              <div class="form-group full-width">
+                <label>¿Requiere número de Requerimiento?</label>
+                <div style="display:flex; gap:10px; align-items:center;">
+                  <div class="radio-pill-group">
+                    <label class="radio-pill-label">
+                      <input type="radio" name="hasReq" value="no" id="reqNo" checked> No
+                    </label>
+                    <label class="radio-pill-label">
+                      <input type="radio" name="hasReq" value="si" id="reqSi"> Sí
+                    </label>
+                  </div>
+                  <input id="reqNumber" class="form-control" placeholder="Ej: REQ000003481" style="display:none; flex:1;">
+                </div>
+              </div>
+
+              <!-- Descripción -->
+              <div class="form-group full-width">
+                <label for="descripcion">Descripción detallada del ticket (opcional)</label>
+                <textarea id="descripcion" placeholder="Describe los detalles de la atención, usuario o equipo…"></textarea>
+                
+                <!-- Plantillas Rápidas -->
+                <details class="snippets-accordion" open>
+                  <summary>⚡ Plantillas rápidas de descripción</summary>
+                  <div class="snippets-grid">
+                    <button type="button" class="snippet-chip" data-snippet="Usuario se comunica e informa tener problemas de acceso al servidor/equipo/recurso compartido con nombre xxxx.">Soporte informático</button>
+                    <button type="button" class="snippet-chip" data-snippet="El usuario informa no puede imprimir o que la impresora presenta fallos (atasco de papel, sin conexión, sin tinta, o no aparece en red).">Impresión</button>
+                    <button type="button" class="snippet-chip" data-snippet="Se requiere realizar la instalación/desinstalación del programa xxx en el equipo con serial xxx y nombre xxx.">Software / Apps</button>
+                    <button type="button" class="snippet-chip" data-snippet="Gestionar permisos en servidores/VPN.">Permisos / VPN</button>
+                    <button type="button" class="snippet-chip" data-snippet="Gestionar creación de cuenta de red/correo o eliminación.">Cuenta de Red</button>
+                    <button type="button" class="snippet-chip" data-snippet="Usuario se comunica e informa tener la cuenta de red bloqueada. Se desbloquea la cuenta de red indicada, se hacen pruebas y estas son satisfactorias.">Desbloqueo Cuenta</button>
+                    <button type="button" class="snippet-chip" data-snippet="Usuario informa tener problemas con la APP XXX.">Problema App</button>
+                  </div>
+                </details>
+              </div>
+
+            </div>
+
+            <!-- Botones de Acción -->
+            <div class="btn-row">
+              <button class="btn btn-primary" type="submit" id="btnSubmit" style="flex:2;">
+                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+                <span>Guardar Reporte</span>
+              </button>
+              <button class="btn btn-secondary" type="reset" id="btnReset" style="flex:1;">
+                <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M2.5 2v6h6M21.5 22v-6h-6"/><path d="M22 11.5A10 10 0 0 0 3.2 7.2M2 12.5a10 10 0 0 0 18.8 4.3"/></svg>
+                <span>Limpiar</span>
+              </button>
+            </div>
+
+            <!-- Guía Rápida & Checklist -->
+            <div class="help-box">
+              <h4>📋 Checklist previo al registro</h4>
+              <ul>
+                <li>Verifica los datos del usuario solicitante y nombre del equipo.</li>
+                <li>Clasifica adecuadamente la <em>Categoría</em> y el <em>Servicio prestado</em>.</li>
+                <li>Registra el número de requerimiento formal si aplica.</li>
+              </ul>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <!-- ==================== COLUMNA DERECHA: DASHBOARD & TABLA ==================== -->
+      <section id="cardReport" class="card">
+        <div class="card-header">
+          <div class="card-header-title">
+            <div class="card-header-icon">
+              <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+            </div>
+            <h2>Mesa de Reportes y Tickets</h2>
+          </div>
+          <button id="btnExportCSV" class="btn btn-export" title="Descargar registros en archivo Excel / CSV">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"></path></svg>
+            <span>Exportar CSV</span>
+          </button>
+        </div>
+
+        <div class="card-body">
+          <!-- KPI Cards -->
+          <div class="kpis-grid">
+            <div class="kpi-card" data-kpi="total" title="Ver todos">
+              <div class="kpi-header"><span class="kpi-title">Total</span><span>📑</span></div>
+              <div class="kpi-value" id="kpiTotal">0</div>
+            </div>
+            <div class="kpi-card" data-kpi="open" title="Filtrar Abiertos">
+              <div class="kpi-header"><span class="kpi-title">Abiertos</span><span>🔴</span></div>
+              <div class="kpi-value" id="kpiAb" style="color:var(--status-open);">0</div>
+            </div>
+            <div class="kpi-card" data-kpi="process" title="Filtrar En Proceso">
+              <div class="kpi-header"><span class="kpi-title">En Proceso</span><span>🟡</span></div>
+              <div class="kpi-value" id="kpiPr" style="color:var(--status-process);">0</div>
+            </div>
+            <div class="kpi-card" data-kpi="closed" title="Filtrar Cerrados">
+              <div class="kpi-header"><span class="kpi-title">Cerrados</span><span>🟢</span></div>
+              <div class="kpi-value" id="kpiCe" style="color:var(--status-closed);">0</div>
+            </div>
+            <div class="kpi-card" data-kpi="cancelled" title="Filtrar Cancelados">
+              <div class="kpi-header"><span class="kpi-title">Cancelados</span><span>⚪</span></div>
+              <div class="kpi-value" id="kpiCa" style="color:var(--status-cancelled);">0</div>
+            </div>
+            <div class="kpi-card" data-kpi="req" title="Filtrar Con Requerimiento">
+              <div class="kpi-header"><span class="kpi-title">Con Requerimiento</span><span>🏷️</span></div>
+              <div class="kpi-value" id="kpiRq" style="color:#8b5cf6;">0</div>
+            </div>
+          </div>
+
+          <!-- Toolbar / Filtros -->
+          <div class="table-toolbar">
+            <div class="filter-group">
+              <div class="filter-item">
+                <span class="filter-label">Vista:</span>
+                <select id="viewSelect" class="filter-select">
+                  <option value="mis">Asignados a mí</option>
+                  <option value="todos">Todos los analistas</option>
+                </select>
+              </div>
+
+              <div class="filter-item">
+                <span class="filter-label">Analista:</span>
+                <select id="analystSelect" class="filter-select">
+                  <option value="">Todos</option>
+                  <option>Jose Salas</option>
+                  <option>Sebastián Cataño</option>
+                  <option>Sebastián Posada</option>
+                  <option>Pablo Calle</option>
+                </select>
+              </div>
+
+              <div class="filter-item">
+                <span class="filter-label">Estado:</span>
+                <select id="statusSelect" class="filter-select">
+                  <option value="">Todos los estados</option>
+                  <option value="pendientes">Pendientes (Abierto/Proceso)</option>
+                  <option value="Abierto">Abierto</option>
+                  <option value="En Proceso">En Proceso</option>
+                  <option value="Cerrado">Cerrado</option>
+                  <option value="Cancelado">Cancelado</option>
+                </select>
+              </div>
+
+              <div class="filter-item">
+                <span class="filter-label">Mes:</span>
+                <select id="monthSelect" class="filter-select">
+                  <option value="">Todos los meses</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Buscador Rápido -->
+            <div class="search-wrapper">
+              <span class="search-icon">
+                <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+              </span>
+              <input id="quickSearch" class="form-control search-input" placeholder="Buscar por ID, usuario, falla…">
+            </div>
+          </div>
+
+          <!-- Tabla de Datos -->
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Ticket ID</th>
+                  <th>Analista</th>
+                  <th>Categoría</th>
+                  <th>Servicio / Falla</th>
+                  <th>Usuario</th>
+                  <th>Descripción</th>
+                  <th>Prioridad</th>
+                  <th>Estado</th>
+                  <th>Fecha</th>
+                  <th style="text-align:center;">Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="tbody">
+                <tr><td colspan="10" style="text-align:center; padding:30px; color:var(--text-muted);">Cargando registros…</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Paginación -->
+          <div class="pagination-bar">
+            <div id="pageInfo">Mostrando 0 de 0 tickets</div>
+            <div class="pagination-controls">
+              <button id="btnPrevPage" class="btn-page" disabled>◀ Anterior</button>
+              <span id="pageCurrent" style="font-weight:700;">1</span>
+              <button id="btnNextPage" class="btn-page" disabled>Siguiente ▶</button>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+    </main>
+
+    <footer>
+      ⚡ Aplicación Gestión TI Ituango · Sincronización en tiempo real con Google Sheets
+    </footer>
+  </div>
+
+  <!-- ==================== MODAL DE ESTADO / SOLUCIÓN / MOTIVO ==================== -->
+  <dialog id="statusModal" class="modal">
+    <div class="modal-header">
+      <h3 id="modalTitle">Actualizar Ticket</h3>
+      <button class="btn-icon-action" onclick="document.getElementById('statusModal').close()" style="border:none;">✕</button>
+    </div>
+    <div class="modal-body">
+      <label id="modalLabel" for="modalText" style="margin-bottom:8px; font-weight:600;">Detalle</label>
+      <textarea id="modalText" class="form-control" style="min-height:120px;"></textarea>
+    </div>
+    <div class="modal-footer">
+      <button id="modalCancel" class="btn btn-secondary">Cancelar</button>
+      <button id="modalOk" class="btn btn-primary">Aceptar</button>
+    </div>
+  </dialog>
+
+  <!-- ==================== MODAL DE DETALLES COMPLETOS (PROFESIONAL) ==================== -->
+  <dialog id="detailModal" class="modal">
+    <div class="modal-header">
+      <h3 id="detailTitle">Detalles del Ticket</h3>
+      <button class="btn-icon-action" onclick="document.getElementById('detailModal').close()" style="border:none;">✕</button>
+    </div>
+    <div class="modal-body" id="detailBody">
+      <!-- Se inyecta dinámicamente -->
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="document.getElementById('detailModal').close()">Cerrar</button>
+    </div>
+  </dialog>
+
+  <!-- ==================== MODAL DE INFORME MENSUAL Y ESTADÍSTICAS ==================== -->
+  <dialog id="reportModal" class="modal modal-large">
+    <div class="modal-header">
+      <div style="display:flex; align-items:center; gap:8px;">
+        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 20V10M12 20V4M6 20v-6"></path></svg>
+        <h3>Informe Ejecutivo Mensual TI</h3>
+      </div>
+      <button class="btn-icon-action" onclick="document.getElementById('reportModal').close()" style="border:none;">✕</button>
+    </div>
+    <div class="modal-body">
+      
+      <!-- Filtros del informe -->
+      <div class="report-filter-bar">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span style="font-weight:700; font-size:0.85rem;">Mes del Informe:</span>
+          <select id="reportMonthSelect" class="form-control" style="width:auto; padding:6px 12px;"></select>
+        </div>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span style="font-weight:700; font-size:0.85rem;">Analista:</span>
+          <select id="reportAnalystSelect" class="form-control" style="width:auto; padding:6px 12px;">
+            <option value="">Todos los analistas</option>
+            <option>Jose Salas</option>
+            <option>Sebastián Cataño</option>
+            <option>Sebastián Posada</option>
+            <option>Pablo Calle</option>
+          </select>
+        </div>
+        <button id="btnCopyReportText" class="btn btn-secondary btn-sm" title="Copiar resumen ejecutivo al portapapeles">
+          📋 Copiar Resumen
+        </button>
+      </div>
+
+      <!-- Resumen Ejecutivo redactado -->
+      <div id="reportSummaryText" class="report-summary-box">
+        Calculando estadísticas del período…
+      </div>
+
+      <!-- Gráficos -->
+      <div class="report-grid">
+        <div class="chart-card">
+          <h4>ESTADO REQUERIMIENTOS E INCIDENTES</h4>
+          <div class="chart-container">
+            <canvas id="chartStatus"></canvas>
+          </div>
+        </div>
+        <div class="chart-card">
+          <h4>TOP 5 CATEGORÍAS DE SERVICIO</h4>
+          <div class="chart-container">
+            <canvas id="chartCategory"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tabla de actividades ejecutadas -->
+      <div style="margin-top:20px;">
+        <h4 style="font-size:0.9rem; font-weight:700; margin-bottom:8px; text-transform:uppercase; color:var(--text-main);">
+          ACTIVIDADES EJECUTADAS (DISTRIBUCIÓN DE SERVICIOS PRESTADOS)
+        </h4>
+        <div style="max-height:300px; overflow-y:auto; border:1px solid var(--border-color); border-radius:var(--radius-md);">
+          <table class="report-table">
+            <thead>
+              <tr>
+                <th>Descripción Actividad / Servicio</th>
+                <th style="width:140px; text-align:right;">Por Actividad ▼</th>
+              </tr>
+            </thead>
+            <tbody id="reportTableBody">
+              <tr><td colspan="2" style="text-align:center;">Cargando…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="document.getElementById('reportModal').close()">Cerrar</button>
+      <button class="btn btn-primary" onclick="window.print()">🖨️ Imprimir / Guardar PDF</button>
+    </div>
+  </dialog>
+
+  <!-- ==================== JAVASCRIPT ==================== -->
+  <script>
+  (function(){
+    'use strict';
+
+    /* ==================== CONFIGURACIÓN ==================== */
+    const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwWF0rbBu4l3FJkhXJS9oMsL5SSaQ7uwMeTg8abHL2mMmYyvdTEYT2Ef79QHVAEtzhfsQ/exec';
+    const AUTO_REFRESH_MS = 30000;
+    const PAGE_SIZE = 25;
+
+    const ANALISTAS = [
+      { nombre:'Jose Salas',        email:'jsalas@sedic.com.co',       init:'JS' },
+      { nombre:'Sebastián Cataño',  email:'scatano@sedic.com.co',     init:'SC' },
+      { nombre:'Sebastián Posada',  email:'sposada@sedic.com.co',     init:'SP' },
+      { nombre:'Pablo Calle',       email:'pablocalle@ingetec.com.co', init:'PC' }
+    ];
+
+    let USUARIOS = [
+      'Marcela Pareja', 'Jhon Madrid', 'Juan Carlos Betancur', 'Heidy Zambrano',
+      'Andrés Gómez', 'Carlos Ramírez', 'Lina Areiza', 'Diana Pérez',
+      'Jose Salas', 'Sebastián Cataño', 'Sebastián Posada', 'Pablo Calle'
+    ];
+
+    /* ==================== SELECTORES DOM ==================== */
+    const $ = s => document.querySelector(s);
+    const tbody = $('#tbody');
+    const kpiTotal = $('#kpiTotal'), kpiAb = $('#kpiAb'), kpiPr = $('#kpiPr'), 
+          kpiCe = $('#kpiCe'), kpiCa = $('#kpiCa'), kpiRq = $('#kpiRq');
+    const viewSelect = $('#viewSelect'), analystSelect = $('#analystSelect'),
+          statusSelect = $('#statusSelect'), monthSelect = $('#monthSelect'),
+          quickSearch = $('#quickSearch'), themePick = $('#themePick');
+    const form = $('#formTicket'), syncBadge = $('#syncBadge'), 
+          activeAnalystSelect = $('#activeAnalystSelect'), whoAvatar = $('#whoamiAvatar');
+    const toastContainer = $('#toastContainer');
+    const btnPrevPage = $('#btnPrevPage'), btnNextPage = $('#btnNextPage'), 
+          pageCurrent = $('#pageCurrent'), pageInfo = $('#pageInfo');
+    const btnExportCSV = $('#btnExportCSV');
+
+    /* Modales */
+    const statusModal = $('#statusModal'), modalTitle = $('#modalTitle'),
+          modalLabel = $('#modalLabel'), modalText = $('#modalText'),
+          modalOk = $('#modalOk'), modalCancel = $('#modalCancel');
+    const detailModal = $('#detailModal'), detailBody = $('#detailBody'), detailTitle = $('#detailTitle');
+    const reportModal = $('#reportModal'), btnOpenMonthlyReport = $('#btnOpenMonthlyReport'),
+          reportMonthSelect = $('#reportMonthSelect'), reportAnalystSelect = $('#reportAnalystSelect'),
+          reportSummaryText = $('#reportSummaryText'), reportTableBody = $('#reportTableBody'),
+          btnCopyReportText = $('#btnCopyReportText');
+
+    let chartStatusInstance = null;
+    let chartCategoryInstance = null;
+
+    /* ==================== ESTADO DE LA APP ==================== */
+    const localKey = 'tickets_fallas_v11';
+    const loadLocal = () => { try { return JSON.parse(localStorage.getItem(localKey)) || []; } catch { return []; } };
+    const saveLocal = v => localStorage.setItem(localKey, JSON.stringify(v));
+    
+    let ticketsLocal = loadLocal();
+    let ticketsRemote = null;
+    let lastSource = 'Local';
+    let searchText = '';
+    let currentPage = 1;
+    let currentFilterKpi = null;
+
+    /* ==================== SISTEMA DE TOASTS ==================== */
+    function showToast(message, type = 'info') {
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+      const icon = type === 'success' ? '✅' : type === 'error' ? '⚠️' : 'ℹ️';
+      toast.innerHTML = `<span>${icon}</span><span style="flex:1;">${message}</span>`;
+      toastContainer.appendChild(toast);
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(10px)';
+        toast.style.transition = 'all 0.25s ease';
+        setTimeout(() => toast.remove(), 250);
+      }, 3500);
+    }
+
+    /* ==================== TEMA Y APARIENCIA ==================== */
+    function applyTheme(theme) {
+      document.body.setAttribute('data-theme', theme);
+      localStorage.setItem('ui_theme', theme);
+    }
+    (function initTheme(){
+      const savedTheme = localStorage.getItem('ui_theme') || 'light';
+      applyTheme(savedTheme);
+      if (themePick) {
+        for (let opt of themePick.options) {
+          if (opt.dataset.theme === savedTheme) { opt.selected = true; break; }
+        }
+        themePick.addEventListener('change', () => {
+          const opt = themePick.selectedOptions[0];
+          if (opt && opt.dataset.theme) applyTheme(opt.dataset.theme);
+        });
+      }
+    })();
+
+    /* ==================== GESTIÓN DE ANALISTA ACTIVO ==================== */
+    function initActiveAnalyst() {
+      const saved = localStorage.getItem('active_analyst') || 'Jose Salas';
+      if (activeAnalystSelect) {
+        activeAnalystSelect.value = saved;
+        updateAnalystAvatar(saved);
+        activeAnalystSelect.addEventListener('change', () => {
+          const val = activeAnalystSelect.value;
+          localStorage.setItem('active_analyst', val);
+          updateAnalystAvatar(val);
+          // Prefill en formulario
+          const formAnalista = $('#analista');
+          if (formAnalista) formAnalista.value = val;
+          // Si la vista es "mis", actualizar filtro
+          if (viewSelect && viewSelect.value === 'mis') {
+            if (analystSelect) analystSelect.value = val;
+            fetchRemote();
+          }
+          showToast(`Analista activo: ${val}`, 'info');
         });
       }
     }
-    return list;
-  } catch (err) {
-    return [];
-  }
-}
 
-// En tu función doGet(e):
-function doGet(e) {
-  var action = e.parameter.action;
-  if (action === "contacts_full") {
-    var contacts = getPersonnelDirectory();
-    return ContentService.createTextOutput(JSON.stringify(contacts))
-      .setMimeType(ContentService.MimeType.JSON);
-  }
-  // ... tus demás acciones de lectura
-}
+    function updateAnalystAvatar(name) {
+      const a = ANALISTAS.find(x => x.nombre === name);
+      if (whoAvatar) whoAvatar.textContent = a ? a.init : name.slice(0, 2).toUpperCase();
+    }
+
+    /* ==================== INICIALIZAR ANALISTAS EN SELECTS ==================== */
+    (function initAnalistas(){
+      const sel = $('#analista');
+      if (sel) {
+        sel.innerHTML = '<option value="">Selecciona analista…</option>' + 
+          ANALISTAS.map(a => `<option value="${a.nombre}">${a.nombre}</option>`).join('');
+        const saved = localStorage.getItem('active_analyst') || 'Jose Salas';
+        sel.value = saved;
+      }
+    })();
+
+    /* ==================== AUTOCOMPLETE USUARIOS ==================== */
+    const inputUsuario = $('#usuario'), acList = $('#acList');
+    const norm = s => String(s || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
+    function filtraUsuarios(q){
+      const n = norm(q);
+      if (!n) return [];
+      return USUARIOS.filter(u => norm(u).includes(n)).slice(0, 8);
+    }
+    function renderAcList(items){
+      if (!items.length) { acList.hidden = true; acList.innerHTML = ''; return; }
+      acList.innerHTML = items.map((t, i) => `<li class="ac-item" ${i === 0 ? 'aria-selected="true"' : ''}>👤 ${t}</li>`).join('');
+      acList.hidden = false;
+    }
+    if (inputUsuario) {
+      inputUsuario.addEventListener('input', () => renderAcList(filtraUsuarios(inputUsuario.value)));
+      inputUsuario.addEventListener('focus', () => renderAcList(filtraUsuarios(inputUsuario.value)));
+      document.addEventListener('click', e => {
+        const item = e.target.closest('#acList li');
+        if (item) {
+          inputUsuario.value = item.textContent.replace('👤 ', '').trim();
+          acList.hidden = true;
+        } else if (!e.target.closest('.ac-wrapper')) {
+          acList.hidden = true;
+        }
+      });
+    }
+
+    /* ==================== SNIPPETS / PLANTILLAS ==================== */
+    document.addEventListener('click', e => {
+      const btn = e.target.closest('.snippet-chip');
+      if (!btn) return;
+      const txt = btn.getAttribute('data-snippet') || '';
+      const area = $('#descripcion');
+      const { selectionStart: s, selectionEnd: ePos, value: v } = area;
+      area.value = v.slice(0, s) + txt + v.slice(ePos);
+      area.focus();
+      area.selectionStart = area.selectionEnd = s + txt.length;
+      showToast('Plantilla insertada', 'info');
+    });
+
+    /* ==================== CONTROL REQUERIMIENTO ==================== */
+    const reqSi = $('#reqSi'), reqNo = $('#reqNo'), reqNumber = $('#reqNumber');
+    function toggleReq(){
+      if (reqSi && reqNumber) {
+        reqNumber.style.display = reqSi.checked ? 'block' : 'none';
+        if (reqSi.checked) reqNumber.focus();
+      }
+    }
+    if (reqSi) reqSi.addEventListener('change', toggleReq);
+    if (reqNo) reqNo.addEventListener('change', toggleReq);
+
+    /* ==================== MESES Y VISTAS ==================== */
+    (function fillMonths(){
+      const now = new Date();
+      const items = ['<option value="">Todos los meses</option>'];
+      const reportItems = [];
+      for (let i = 0; i < 18; i++){
+        const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+        const ym = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+        const label = d.toLocaleDateString('es-CO', { month: 'long', year: 'numeric' });
+        const text = label.charAt(0).toUpperCase() + label.slice(1);
+        items.push(`<option value="${ym}">${text}</option>`);
+        reportItems.push(`<option value="${ym}">${text}</option>`);
+      }
+      if (monthSelect) monthSelect.innerHTML = items.join('');
+      if (reportMonthSelect) reportMonthSelect.innerHTML = reportItems.join('');
+    })();
+
+    (function initSavedView(){
+      const saved = JSON.parse(localStorage.getItem('tickets_view') || '{}');
+      if (viewSelect) viewSelect.value = saved.view || 'mis';
+      if (analystSelect) {
+        const active = localStorage.getItem('active_analyst') || 'Jose Salas';
+        analystSelect.value = saved.view === 'mis' ? active : (saved.analyst || '');
+      }
+      if (statusSelect) statusSelect.value = saved.status || '';
+      if (monthSelect) monthSelect.value = saved.month || '';
+    })();
+
+    function persistView(){
+      localStorage.setItem('tickets_view', JSON.stringify({
+        view: viewSelect.value,
+        analyst: analystSelect.value,
+        status: statusSelect.value,
+        month: monthSelect.value
+      }));
+    }
+
+    if (viewSelect) {
+      viewSelect.addEventListener('change', () => {
+        if (viewSelect.value === 'mis') {
+          const active = localStorage.getItem('active_analyst') || 'Jose Salas';
+          if (analystSelect) analystSelect.value = active;
+        } else {
+          if (analystSelect) analystSelect.value = '';
+        }
+        persistView();
+        currentPage = 1;
+        fetchRemote();
+      });
+    }
+
+    [analystSelect, statusSelect, monthSelect].forEach(el => {
+      if (el) el.addEventListener('change', () => {
+        currentFilterKpi = null;
+        updateKpiHighlight();
+        currentPage = 1;
+        persistView();
+        fetchRemote();
+      });
+    });
+
+    /* ==================== FILTROS KPI INTERACTIVOS ==================== */
+    document.querySelectorAll('.kpi-card').forEach(card => {
+      card.addEventListener('click', () => {
+        const kpi = card.getAttribute('data-kpi');
+        if (currentFilterKpi === kpi) {
+          currentFilterKpi = null;
+        } else {
+          currentFilterKpi = kpi;
+        }
+        updateKpiHighlight();
+        currentPage = 1;
+        render();
+      });
+    });
+
+    function updateKpiHighlight() {
+      document.querySelectorAll('.kpi-card').forEach(c => {
+        if (currentFilterKpi && c.getAttribute('data-kpi') === currentFilterKpi) {
+          c.classList.add('active-kpi');
+        } else {
+          c.classList.remove('active-kpi');
+        }
+      });
+    }
+
+    /* ==================== BUSCADOR RÁPIDO ==================== */
+    if (quickSearch) {
+      quickSearch.addEventListener('input', () => {
+        searchText = quickSearch.value;
+        currentPage = 1;
+        render();
+      });
+    }
+
+    /* ==================== HELPERS DE ESCAPE Y FORMATO ==================== */
+    const esc = s => String(s ?? '').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'","&#39;");
+    const trunc = (s, len = 35) => { const t = String(s || ''); return t.length > len ? t.slice(0, len) + '…' : t; };
+    
+    function renderStatusBadge(st) {
+      const s = String(st || 'Abierto');
+      let cls = 'open';
+      if (s === 'En Proceso') cls = 'process';
+      else if (s === 'Cerrado') cls = 'closed';
+      else if (s === 'Cancelado') cls = 'cancelled';
+      return `<span class="status-badge ${cls}"><span class="status-dot"></span>${s}</span>`;
+    }
+
+    function renderPriorityBadge(prio) {
+      const p = String(prio || 'Media');
+      const cls = p === 'Alta' ? 'alta' : p === 'Media' ? 'media' : 'baja';
+      return `<span class="prio-badge ${cls}">${p}</span>`;
+    }
+
+    function fmtDate(iso) {
+      if (!iso) return '—';
+      const d = (iso instanceof Date) ? iso : new Date(iso);
+      if (isNaN(d)) return String(iso);
+      return d.toLocaleDateString('es-CO', { day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit' });
+    }
+
+    /* ==================== PROCESAMIENTO Y FILTRADO DE DATOS ==================== */
+    function computeCounters(rows){
+      const c = { total: rows.length, abiertos: 0, en_proceso: 0, cerrados: 0, cancelados: 0, con_req: 0 };
+      rows.forEach(t => {
+        const s = String(t.estado || '').toLowerCase();
+        if (s === 'abierto') c.abiertos++;
+        else if (s === 'en proceso') c.en_proceso++;
+        else if (s === 'cerrado') c.cerrados++;
+        else if (s === 'cancelado') c.cancelados++;
+        if (t.requerimiento) c.con_req++;
+      });
+      return c;
+    }
+
+    function setCounters(c){
+      kpiTotal.textContent = c.total;
+      kpiAb.textContent = c.abiertos;
+      kpiPr.textContent = c.en_proceso;
+      kpiCe.textContent = c.cerrados;
+      kpiCa.textContent = c.cancelados;
+      kpiRq.textContent = c.con_req || 0;
+    }
+
+    function currentBaseRows(){
+      const base = Array.isArray(ticketsRemote) ? ticketsRemote : ticketsLocal;
+      lastSource = Array.isArray(ticketsRemote) ? 'Google Sheets' : 'Local';
+      let rows = base.slice();
+
+      const st = statusSelect.value;
+      if (st === 'pendientes') {
+        rows = rows.filter(x => !['Cerrado', 'Cancelado'].includes(String(x.estado)));
+      } else if (st) {
+        rows = rows.filter(x => String(x.estado) === st);
+      }
+
+      if (analystSelect.value) {
+        rows = rows.filter(x => String(x.analista) === analystSelect.value);
+      }
+
+      if (monthSelect.value) {
+        rows = rows.filter(x => {
+          const d = new Date(x.fecha);
+          const ym = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+          return ym === monthSelect.value;
+        });
+      }
+
+      return rows;
+    }
+
+    function currentFilteredRows(){
+      let rows = currentBaseRows();
+
+      if (currentFilterKpi) {
+        if (currentFilterKpi === 'open') rows = rows.filter(r => String(r.estado).toLowerCase() === 'abierto');
+        else if (currentFilterKpi === 'process') rows = rows.filter(r => String(r.estado).toLowerCase() === 'en proceso');
+        else if (currentFilterKpi === 'closed') rows = rows.filter(r => String(r.estado).toLowerCase() === 'cerrado');
+        else if (currentFilterKpi === 'cancelled') rows = rows.filter(r => String(r.estado).toLowerCase() === 'cancelado');
+        else if (currentFilterKpi === 'req') rows = rows.filter(r => !!r.requerimiento);
+      }
+
+      if (searchText && searchText.trim()){
+        const n = norm(searchText);
+        rows = rows.filter(r =>
+          norm(`${r.id} ${r.categoria} ${r.falla} ${r.usuario} ${r.descripcion || ''} ${r.requerimiento || ''}`).includes(n)
+        );
+      }
+
+      rows.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
+      return rows;
+    }
+
+    /* ==================== RENDER DE LA TABLA CON PAGINACIÓN ==================== */
+    function render(countersFromAPI){
+      const allRows = currentFilteredRows();
+      
+      if (countersFromAPI && lastSource === 'Google Sheets') {
+        setCounters(countersFromAPI);
+      } else {
+        setCounters(computeCounters(currentBaseRows()));
+      }
+
+      syncBadge.innerHTML = `🟢 ${lastSource}`;
+      syncBadge.style.background = lastSource === 'Google Sheets' ? '#ecfdf5' : '#fef3c7';
+      syncBadge.style.color = lastSource === 'Google Sheets' ? '#059669' : '#b45309';
+
+      // Paginación
+      const totalItems = allRows.length;
+      const totalPages = Math.max(1, Math.ceil(totalItems / PAGE_SIZE));
+      if (currentPage > totalPages) currentPage = totalPages;
+
+      const start = (currentPage - 1) * PAGE_SIZE;
+      const end = start + PAGE_SIZE;
+      const pageRows = allRows.slice(start, end);
+
+      pageInfo.textContent = `Mostrando ${totalItems === 0 ? 0 : start + 1} - ${Math.min(end, totalItems)} de ${totalItems} reportes`;
+      pageCurrent.textContent = `${currentPage} / ${totalPages}`;
+      btnPrevPage.disabled = currentPage <= 1;
+      btnNextPage.disabled = currentPage >= totalPages;
+
+      if (!pageRows.length) {
+        tbody.innerHTML = `<tr><td colspan="10" style="text-align:center; padding:36px; color:var(--text-muted);">
+          🔍 No se encontraron tickets con los filtros actuales.
+        </td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = pageRows.map(t => `
+        <tr>
+          <td>
+            <span class="ticket-id" data-id="${t.id}" title="Copiar ID o ver detalles">
+              ${t.id || '—'}
+            </span>
+            ${t.requerimiento ? `<div style="font-size:0.72rem; color:#8b5cf6; font-weight:700; margin-top:2px;">🏷️ ${esc(t.requerimiento)}</div>` : ''}
+          </td>
+          <td><strong>${esc(t.analista || '—')}</strong></td>
+          <td><span style="font-size:0.8rem; background:var(--bg-subtle); padding:2px 6px; border-radius:4px;">${esc(t.categoria || '—')}</span></td>
+          <td>${esc(t.falla || '—')}</td>
+          <td>${esc(t.usuario || '—')}</td>
+          <td>
+            ${t.descripcion ? 
+              `<span class="desc-preview" data-id="${t.id}" title="Haz clic para ver descripción completa">${esc(trunc(t.descripcion, 32))}</span>` 
+              : '<span style="color:var(--text-light)">—</span>'}
+          </td>
+          <td>${renderPriorityBadge(t.prioridad)}</td>
+          <td>${renderStatusBadge(t.estado)}</td>
+          <td style="font-size:0.78rem; color:var(--text-muted);">${fmtDate(t.fecha)}</td>
+          <td>
+            <div class="table-actions">
+              <!-- Botón icono profesional para ver detalle -->
+              <button class="btn-icon-action btn-detail" data-id="${t.id}" title="Ver todos los detalles del ticket">
+                <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+              </button>
+              <select class="action-select estado-select" data-id="${t.id}" title="Cambiar estado">
+                <option ${t.estado==='Abierto'?'selected':''}>Abierto</option>
+                <option ${t.estado==='En Proceso'?'selected':''}>En Proceso</option>
+                <option ${t.estado==='Cerrado'?'selected':''}>Cerrado</option>
+                <option ${t.estado==='Cancelado'?'selected':''}>Cancelado</option>
+              </select>
+              <select class="action-select prio-select" data-id="${t.id}" title="Cambiar prioridad">
+                <option ${t.prioridad==='Alta'?'selected':''}>Alta</option>
+                <option ${t.prioridad==='Media'?'selected':''}>Media</option>
+                <option ${t.prioridad==='Baja'?'selected':''}>Baja</option>
+              </select>
+            </div>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    /* Paginación click */
+    btnPrevPage.addEventListener('click', () => { if (currentPage > 1) { currentPage--; render(); } });
+    btnNextPage.addEventListener('click', () => { currentPage++; render(); });
+
+    /* ==================== EXPORTACIÓN A CSV (COMPATIBLE EXCEL) ==================== */
+    if (btnExportCSV) {
+      btnExportCSV.addEventListener('click', () => {
+        try {
+          const rows = currentFilteredRows();
+          if (!rows || !rows.length) {
+            showToast('No hay datos en la tabla para exportar', 'error');
+            return;
+          }
+
+          // Formato con punto y coma (;) para compatibilidad nativa con Excel en español
+          const headers = ['ID', 'Analista', 'Categoria', 'Servicio', 'Usuario', 'Descripcion', 'Prioridad', 'Estado', 'Requerimiento', 'Fecha', 'Solucion_Motivo'];
+          const lines = [headers.join(';')];
+
+          rows.forEach(r => {
+            const clean = str => `"${String(str || '').replace(/"/g, '""').replace(/[\r\n]+/g, ' ')}"`;
+            const row = [
+              clean(r.id),
+              clean(r.analista),
+              clean(r.categoria),
+              clean(r.falla),
+              clean(r.usuario),
+              clean(r.descripcion),
+              clean(r.prioridad),
+              clean(r.estado),
+              clean(r.requerimiento),
+              clean(fmtDate(r.fecha)),
+              clean(r.solucion || r.motivo || '')
+            ];
+            lines.push(row.join(';'));
+          });
+
+          const csvContent = '\uFEFF' + lines.join('\r\n');
+          const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          const fechaStr = new Date().toISOString().slice(0, 10);
+          
+          link.href = url;
+          link.download = `Reportes_TI_${fechaStr}.csv`;
+          document.body.appendChild(link);
+          link.click();
+          
+          setTimeout(() => {
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+          }, 100);
+
+          showToast(`Archivo Reportes_TI_${fechaStr}.csv descargado con éxito`, 'success');
+        } catch (err) {
+          console.error(err);
+          showToast('Error al exportar el archivo CSV', 'error');
+        }
+      });
+    }
+
+    /* ==================== MODAL DE DETALLES DEL TICKET ==================== */
+    document.addEventListener('click', e => {
+      // Copiar ID
+      const tid = e.target.closest('.ticket-id');
+      if (tid && !e.target.closest('.btn-detail')) {
+        const id = tid.dataset.id;
+        navigator.clipboard.writeText(id).then(() => {
+          showToast(`ID ${id} copiado al portapapeles`, 'success');
+        });
+      }
+
+      // Ver detalle completo
+      const btnD = e.target.closest('.btn-detail') || e.target.closest('.desc-preview');
+      if (btnD) {
+        const id = btnD.dataset.id;
+        const all = Array.isArray(ticketsRemote) ? ticketsRemote : ticketsLocal;
+        const t = all.find(x => x.id === id);
+        if (t) showTicketDetails(t);
+      }
+    });
+
+    function showTicketDetails(t) {
+      detailTitle.textContent = `Detalle del Ticket ${t.id}`;
+      detailBody.innerHTML = `
+        <div class="detail-grid">
+          <div class="detail-item"><span class="detail-label">Analista Responsable</span><span class="detail-val">${esc(t.analista || '—')}</span></div>
+          <div class="detail-item"><span class="detail-label">Usuario Solicitante</span><span class="detail-val">${esc(t.usuario || '—')}</span></div>
+          <div class="detail-item"><span class="detail-label">Categoría</span><span class="detail-val">${esc(t.categoria || '—')}</span></div>
+          <div class="detail-item"><span class="detail-label">Servicio / Falla</span><span class="detail-val">${esc(t.falla || '—')}</span></div>
+          <div class="detail-item"><span class="detail-label">Prioridad</span><span class="detail-val">${renderPriorityBadge(t.prioridad)}</span></div>
+          <div class="detail-item"><span class="detail-label">Estado</span><span class="detail-val">${renderStatusBadge(t.estado)}</span></div>
+          <div class="detail-item"><span class="detail-label">Requerimiento</span><span class="detail-val">${t.requerimiento ? `🏷️ ${esc(t.requerimiento)}` : 'No registra'}</span></div>
+          <div class="detail-item"><span class="detail-label">Fecha Creación</span><span class="detail-val">${fmtDate(t.fecha)}</span></div>
+        </div>
+
+        <div style="margin-top:14px;">
+          <span class="detail-label">Descripción del Ticket</span>
+          <div class="detail-box">${esc(t.descripcion || 'Sin descripción adicional.')}</div>
+        </div>
+
+        ${t.solucion ? `
+          <div style="margin-top:14px;">
+            <span class="detail-label" style="color:#059669;">Solución Registrada</span>
+            <div class="detail-box" style="border-color:#a7f3d0; background:#f0fdf4;">${esc(t.solucion)}</div>
+          </div>
+        ` : ''}
+
+        ${t.motivo ? `
+          <div style="margin-top:14px;">
+            <span class="detail-label" style="color:#dc2626;">Motivo de Cancelación</span>
+            <div class="detail-box" style="border-color:#fecaca; background:#fef2f2;">${esc(t.motivo)}</div>
+          </div>
+        ` : ''}
+      `;
+      detailModal.showModal();
+    }
+
+    /* ==================== MÓDULO DE INFORME MENSUAL Y GRÁFICAS ==================== */
+    if (btnOpenMonthlyReport) {
+      btnOpenMonthlyReport.addEventListener('click', () => {
+        // Inicializar mes por defecto con el actual o el seleccionado
+        if (monthSelect.value && reportMonthSelect) {
+          reportMonthSelect.value = monthSelect.value;
+        }
+        updateMonthlyReport();
+        reportModal.showModal();
+      });
+    }
+
+    if (reportMonthSelect) reportMonthSelect.addEventListener('change', updateMonthlyReport);
+    if (reportAnalystSelect) reportAnalystSelect.addEventListener('change', updateMonthlyReport);
+
+    function updateMonthlyReport() {
+      const allTickets = Array.isArray(ticketsRemote) ? ticketsRemote : ticketsLocal;
+      const selYm = reportMonthSelect.value;
+      const selAnalyst = reportAnalystSelect.value;
+
+      // Filtrar tickets por mes y analista
+      let filtered = allTickets.filter(t => {
+        const d = new Date(t.fecha);
+        const ym = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+        if (selYm && ym !== selYm) return false;
+        if (selAnalyst && String(t.analista) !== selAnalyst) return false;
+        return true;
+      });
+
+      // Calcular estadísticas
+      const total = filtered.length;
+      let cerrados = 0;
+      let abiertos = 0;
+      let enProceso = 0;
+      let cancelados = 0;
+
+      const countServices = {};
+      const countCategories = {};
+
+      filtered.forEach(t => {
+        const st = String(t.estado || '').toLowerCase();
+        if (st === 'cerrado') cerrados++;
+        else if (st === 'en proceso') enProceso++;
+        else if (st === 'cancelado') cancelados++;
+        else abiertos++;
+
+        const srv = t.falla || 'Otros servicios';
+        countServices[srv] = (countServices[srv] || 0) + 1;
+
+        const cat = t.categoria || 'Otro';
+        countCategories[cat] = (countCategories[cat] || 0) + 1;
+      });
+
+      const tramites = abiertos + enProceso;
+      const pctCerrados = total ? ((cerrados / total) * 100).toFixed(1) : '0.0';
+      const pctTramite = total ? ((tramites / total) * 100).toFixed(1) : '0.0';
+
+      const monthName = reportMonthSelect.options[reportMonthSelect.selectedIndex]?.text || 'el período seleccionado';
+
+      // 1. Redactar el Resumen Ejecutivo
+      reportSummaryText.innerHTML = `
+        <p>Durante el mes de <strong>${monthName}</strong>, el área de TI atendió un total de <strong>${total} solicitudes</strong>${selAnalyst ? ` asignadas a <strong>${selAnalyst}</strong>` : ''}, clasificados principalmente entre incidentes y requerimientos.</p>
+        <p style="margin-top:6px;">El <strong>${pctCerrados}%</strong> de las actividades fueron finalizadas satisfactoriamente, mientras que el <strong>${pctTramite}%</strong> permanecen en trámite.</p>
+      `;
+
+      // 2. Llenar tabla de Actividades Ejecutadas (ordenada de mayor a menor)
+      const sortedServices = Object.entries(countServices).sort((a, b) => b[1] - a[1]);
+      if (sortedServices.length) {
+        reportTableBody.innerHTML = sortedServices.map(([srv, cnt]) => `
+          <tr>
+            <td>${esc(srv)}</td>
+            <td style="text-align:right; font-weight:700;">${cnt}</td>
+          </tr>
+        `).join('');
+      } else {
+        reportTableBody.innerHTML = `<tr><td colspan="2" style="text-align:center; padding:20px; color:var(--text-muted);">Sin registros en este período.</td></tr>`;
+      }
+
+      // 3. Renderizar Gráfico Donut de Estados (Chart.js)
+      renderChartStatus(cerrados, abiertos, enProceso, cancelados);
+
+      // 4. Renderizar Gráfico de Categorías (Top)
+      renderChartCategory(countCategories);
+    }
+
+    function renderChartStatus(cerrados, abiertos, enProceso, cancelados) {
+      const ctx = document.getElementById('chartStatus');
+      if (!ctx) return;
+
+      if (chartStatusInstance) chartStatusInstance.destroy();
+
+      chartStatusInstance = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: ['Cerrado', 'Abierto', 'En Proceso', 'Cancelado'],
+          datasets: [{
+            data: [cerrados, abiertos, enProceso, cancelados],
+            backgroundColor: ['#3b82f6', '#f97316', '#eab308', '#94a3b8'],
+            borderWidth: 2,
+            borderColor: '#ffffff'
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { position: 'bottom', labels: { boxWidth: 12, font: { family: 'Plus Jakarta Sans', size: 11 } } },
+            tooltip: {
+              callbacks: {
+                label: function(item) {
+                  const total = item.dataset.data.reduce((a, b) => a + b, 0);
+                  const val = item.raw;
+                  const pct = total ? ((val / total) * 100).toFixed(1) : 0;
+                  return ` ${item.label}: ${val} (${pct}%)`;
+                }
+              }
+            }
+          },
+          cutout: '65%'
+        }
+      });
+    }
+
+    function renderChartCategory(categories) {
+      const ctx = document.getElementById('chartCategory');
+      if (!ctx) return;
+
+      if (chartCategoryInstance) chartCategoryInstance.destroy();
+
+      const sorted = Object.entries(categories).sort((a, b) => b[1] - a[1]).slice(0, 5);
+      const labels = sorted.map(x => x[0]);
+      const values = sorted.map(x => x[1]);
+
+      chartCategoryInstance = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Tickets',
+            data: values,
+            backgroundColor: '#0284c7',
+            borderRadius: 6
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false }
+          },
+          scales: {
+            y: { beginAtZero: true, ticks: { precision: 0 } },
+            x: { ticks: { font: { size: 10 } } }
+          }
+        }
+      });
+    }
+
+    if (btnCopyReportText) {
+      btnCopyReportText.addEventListener('click', () => {
+        const text = reportSummaryText.innerText;
+        navigator.clipboard.writeText(text).then(() => {
+          showToast('Resumen ejecutivo copiado al portapapeles', 'success');
+        });
+      });
+    }
+
+    /* ==================== WHOAMI + LIST + CONTACTS ==================== */
+    async function fetchRemote(){
+      try {
+        const params = new URLSearchParams();
+        params.set('action', 'list');
+        params.set('view', viewSelect.value);
+        if (analystSelect.value) params.set('analyst', analystSelect.value);
+        if (statusSelect.value === 'pendientes') params.set('state', 'pendientes');
+        else if (statusSelect.value) params.set('status', statusSelect.value);
+        if (monthSelect.value) params.set('ym', monthSelect.value);
+        params.set('limit', '2500');
+
+        const res = await fetch(WEB_APP_URL + '?' + params.toString());
+        const data = await res.json();
+        if (data && data.ok && Array.isArray(data.items)){
+          ticketsRemote = data.items;
+          render(data.counters);
+        } else {
+          ticketsRemote = null;
+          render();
+        }
+      } catch (err) {
+        ticketsRemote = null;
+        render();
+      }
+    }
+
+    async function fetchContacts(){
+      try {
+        const params = new URLSearchParams({ action:'contacts' });
+        const res = await fetch(WEB_APP_URL + '?' + params.toString());
+        const data = await res.json();
+        if (data && data.ok && Array.isArray(data.contacts) && data.contacts.length){
+          USUARIOS = data.contacts;
+        }
+      } catch(e) {}
+    }
+
+    async function postJSON(payload){
+      const res = await fetch(WEB_APP_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify(payload)
+      });
+      try { return await res.json(); } catch { return { ok: false, error: 'Respuesta no-JSON' }; }
+    }
+
+    /* ==================== CREAR TICKET ==================== */
+    form.addEventListener('submit', async e => {
+      e.preventDefault();
+      const analista   = $('#analista').value;
+      const categoria  = $('#categoria').value;
+      const falla      = $('#falla').value;
+      const usuario    = $('#usuario').value.trim();
+      const prioridad  = $('#prioridad').value;
+      const descripcion = $('#descripcion').value.trim();
+
+      const tieneReq = $('#reqSi').checked;
+      const reqNum   = $('#reqNumber').value.trim();
+      if (tieneReq && !reqNum){
+        showToast('Escribe el número de requerimiento', 'error');
+        $('#reqNumber').focus();
+        return;
+      }
+
+      if (!analista || !categoria || !falla || !usuario || !prioridad){
+        showToast('Completa todos los campos obligatorios (*)', 'error');
+        return;
+      }
+
+      const btnSubmit = $('#btnSubmit');
+      btnSubmit.disabled = true;
+      btnSubmit.innerHTML = '<span>⏳ Guardando…</span>';
+
+      const correoAnalista = (ANALISTAS.find(a => a.nombre === analista)?.email) || '';
+      const id = 'T' + new Date().toISOString().replace(/\D/g, '').slice(0, 14);
+      const nowISO = new Date().toISOString();
+
+      const t = {
+        id, analista, correoAnalista, categoria, falla, usuario, prioridad, descripcion,
+        requerimiento: tieneReq ? (reqNum.startsWith('REQ') ? reqNum : `REQ-${reqNum}`) : '',
+        estado: 'Abierto', fecha: nowISO
+      };
+
+      ticketsLocal.unshift(t);
+      saveLocal(ticketsLocal);
+      render();
+      showToast(`Ticket ${id} creado. Sincronizando con Sheets…`, 'info');
+
+      try {
+        const d = await postJSON({
+          action: 'create', id: t.id, analista, correoAnalista, categoria, falla, usuario, prioridad,
+          descripcion, estado: t.estado, fechaISO: nowISO, requerimiento: t.requerimiento
+        });
+        if (!d || !d.ok){
+          showToast('Guardado localmente. Pendiente de sincronizar en Sheets.', 'info');
+        } else {
+          showToast(`¡Ticket ${id} registrado en Google Sheets!`, 'success');
+          fetchRemote();
+        }
+      } catch (err) {
+        showToast('Error de red al sincronizar con Sheets', 'error');
+      } finally {
+        btnSubmit.disabled = false;
+        btnSubmit.innerHTML = `<svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg><span>Guardar Reporte</span>`;
+        form.reset();
+        toggleReq();
+        const active = localStorage.getItem('active_analyst') || 'Jose Salas';
+        $('#analista').value = active;
+      }
+    });
+
+    /* ==================== MODAL REUTILIZABLE ==================== */
+    function askModal({ title, label, placeholder = '', required = false, okText = 'Aceptar', value = '' }){
+      return new Promise(resolve => {
+        modalTitle.textContent = title;
+        modalLabel.textContent = label;
+        modalText.placeholder = placeholder;
+        modalText.required = required;
+        modalOk.textContent = okText;
+        modalText.value = value;
+
+        const onOk = () => {
+          if (required && !modalText.value.trim()){
+            modalText.focus();
+            showToast('Este campo es obligatorio', 'error');
+            return;
+          }
+          cleanup();
+          statusModal.close();
+          resolve({ ok: true, text: modalText.value.trim() });
+        };
+        const onCancel = () => { cleanup(); statusModal.close(); resolve({ ok: false }); };
+        function cleanup(){
+          modalOk.removeEventListener('click', onOk);
+          modalCancel.removeEventListener('click', onCancel);
+          statusModal.removeEventListener('cancel', onCancel);
+        }
+        modalOk.addEventListener('click', onOk);
+        modalCancel.addEventListener('click', onCancel);
+        statusModal.addEventListener('cancel', onCancel);
+        statusModal.showModal();
+        setTimeout(() => modalText.focus(), 50);
+      });
+    }
+
+    document.addEventListener('focusin', e => {
+      const s = e.target.closest('.estado-select');
+      if (s) s.dataset.prev = s.value;
+    });
+
+    /* ==================== CAMBIO DE ESTADO Y PRIORIDAD ==================== */
+    document.addEventListener('change', async e => {
+      const selE = e.target.closest('.estado-select');
+      const selP = e.target.closest('.prio-select');
+
+      if (selE){
+        const id = selE.dataset.id;
+        const newStatus = selE.value;
+        const prev = selE.dataset.prev || 'Abierto';
+
+        if (newStatus === 'Cancelado'){
+          const r = await askModal({
+            title: `Cancelar ticket ${id}`,
+            label: 'Motivo de la cancelación',
+            placeholder: 'Describe detalladamente el motivo de la cancelación…',
+            required: true
+          });
+          if (!r.ok){ selE.value = prev; return; }
+          
+          const tL = ticketsLocal.find(x => x.id === id);
+          if (tL){ tL.estado = newStatus; tL.motivo = r.text; saveLocal(ticketsLocal); }
+          render();
+          showToast(`Cancelando ticket ${id}…`, 'info');
+          const d = await postJSON({ action: 'update_status', id, status: newStatus, reason: r.text });
+          if (d && d.ok) { showToast(`Ticket ${id} marcado como Cancelado`, 'success'); fetchRemote(); }
+          return;
+        }
+
+        if (newStatus === 'Cerrado'){
+          const r = await askModal({
+            title: `Cerrar ticket ${id}`,
+            label: 'Solución técnica brindada',
+            placeholder: 'Describe la solución realizada para resolver el reporte…',
+            required: true
+          });
+          if (!r.ok){ selE.value = prev; return; }
+
+          const tL = ticketsLocal.find(x => x.id === id);
+          if (tL){ tL.estado = newStatus; tL.solucion = r.text; saveLocal(ticketsLocal); }
+          render();
+          showToast(`Cerrando ticket ${id}…`, 'info');
+          const d = await postJSON({ action: 'update_status', id, status: newStatus, solution: r.text });
+          if (d && d.ok) { showToast(`Ticket ${id} marcado como Cerrado`, 'success'); fetchRemote(); }
+          return;
+        }
+
+        // Otros estados (Abierto / En Proceso)
+        const tL = ticketsLocal.find(x => x.id === id);
+        if (tL){ tL.estado = newStatus; saveLocal(ticketsLocal); }
+        render();
+        showToast(`Actualizando estado a "${newStatus}"…`, 'info');
+        const d2 = await postJSON({ action: 'update_status', id, status: newStatus });
+        if (d2 && d2.ok) { showToast(`Estado actualizado`, 'success'); fetchRemote(); }
+      }
+
+      if (selP){
+        const id = selP.dataset.id;
+        const pr = selP.value;
+        const tL = ticketsLocal.find(x => x.id === id);
+        if (tL){ tL.prioridad = pr; saveLocal(ticketsLocal); }
+        render();
+        showToast(`Prioridad de ${id} cambiada a ${pr}`, 'info');
+        const d3 = await postJSON({ action: 'update_priority', id, prioridad: pr });
+        if (d3 && d3.ok) fetchRemote();
+      }
+    });
+
+    /* ==================== INICIALIZACIÓN ==================== */
+    async function init(){
+      initActiveAnalyst();
+      await fetchContacts();
+      render();
+      fetchRemote();
+      setInterval(() => { if (!document.hidden) fetchRemote(); }, AUTO_REFRESH_MS);
+    }
+    init();
+  })();
+  </script>
+</body>
+</html>
