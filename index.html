@@ -1,2672 +1,1283 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Gestión TI · Mesa de Ayuda & Reportes</title>
-  
-  <!-- Tipografía Google Fonts -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interventoría TI - Consorcio Ingetec / SEDIC</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  
-  <!-- Chart.js para generación automática de gráficas mensuales -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
   <style>
-    /* ==========================================================================
-       01. VARIABLES DE TEMA Y ESTILOS GLOBALES
-       ========================================================================== */
     :root {
-      --font-main: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
-      --primary: #2563eb;
-      --primary-hover: #1d4ed8;
-      --primary-light: #eff6ff;
-      --accent: #0284c7;
-      
-      --bg-body: #f1f5f9;
-      --bg-card: #ffffff;
-      --bg-card-glass: rgba(255, 255, 255, 0.96);
-      --bg-subtle: #f8fafc;
-      --bg-input: #ffffff;
-      
-      --text-main: #0f172a;
-      --text-muted: #64748b;
-      --text-light: #94a3b8;
-      
-      --border-color: #e2e8f0;
-      --border-subtle: #f1f5f9;
-      --border-focus: #3b82f6;
-      
-      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
-      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
-      --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.12), 0 8px 10px -6px rgba(0, 0, 0, 0.06);
-      
-      --radius-sm: 8px;
-      --radius-md: 12px;
-      --radius-lg: 16px;
-      --radius-full: 9999px;
-      
-      --status-open: #ef4444;
-      --status-process: #f59e0b;
-      --status-closed: #10b981;
-      --status-cancelled: #6b7280;
-    }
-
-    body[data-theme="dark"] {
-      --bg-body: #0b1120;
-      --bg-card: #131d33;
-      --bg-card-glass: rgba(19, 29, 51, 0.96);
-      --bg-subtle: #0f172a;
-      --bg-input: #1e293b;
+      --bg-dark: #0b0f17;
+      --bg-card: rgba(18, 26, 43, 0.95);
+      --bg-glass: rgba(15, 23, 42, 0.9);
+      --border-color: rgba(255, 255, 255, 0.1);
+      --primary: #4285f4;
+      --primary-hover: #3367d6;
+      --primary-glow: rgba(66, 133, 244, 0.25);
+      --success: #34a853;
+      --success-bg: rgba(52, 168, 83, 0.18);
+      --warning: #fbbc04;
+      --warning-bg: rgba(251, 188, 4, 0.18);
+      --danger: #ea4335;
+      --danger-bg: rgba(234, 67, 53, 0.18);
+      --purple: #a142f4;
+      --purple-bg: rgba(161, 66, 244, 0.18);
       --text-main: #f8fafc;
       --text-muted: #94a3b8;
-      --text-light: #64748b;
-      --border-color: #1e293b;
-      --border-subtle: #172339;
-      --primary: #3b82f6;
-      --primary-light: #1e293b;
+      --input-bg: #070a10;
+      --input-color: #f8fafc;
+      --input-border: rgba(255, 255, 255, 0.15);
+      --table-th-bg: rgba(255, 255, 255, 0.04);
+      --table-hover: rgba(255, 255, 255, 0.03);
+      --modal-bg: #111827;
+      --banner-bg: linear-gradient(135deg, rgba(66,133,244,0.15), rgba(161,66,244,0.1));
+      --radius-sm: 6px;
+      --radius-md: 12px;
+      --radius-lg: 18px;
     }
 
-    body[data-theme="mint"] {
-      --bg-body: #f0fdf4;
-      --bg-card: #ffffff;
-      --primary: #059669;
-      --primary-hover: #047857;
-      --primary-light: #ecfdf5;
-      --border-color: #d1fae5;
-    }
-
-    body[data-theme="blue"] {
-      --bg-body: #f0f9ff;
-      --bg-card: #ffffff;
-      --primary: #0284c7;
-      --primary-hover: #0369a1;
-      --primary-light: #e0f2fe;
-      --border-color: #bae6fd;
-    }
-
-    body[data-theme="navy"] {
-      --bg-body: #0a1128;
-      --bg-card: #101c3d;
-      --bg-subtle: #0c1630;
-      --bg-input: #15254f;
-      --text-main: #f1f5f9;
-      --text-muted: #94a3b8;
-      --border-color: #1c3168;
-      --primary: #4f7cff;
-      --primary-light: #162854;
-    }
-
-    /* ==========================================================================
-       02. RESET & LAYOUT GENERAL
-       ========================================================================== */
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    html, body { min-height: 100%; }
     body {
-      background-color: var(--bg-body);
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg-dark);
       color: var(--text-main);
-      font-family: var(--font-main);
+      min-height: 100vh;
       line-height: 1.5;
-      -webkit-font-smoothing: antialiased;
+      background-image: 
+        radial-gradient(at 0% 0%, var(--primary-glow) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(161, 66, 244, 0.08) 0px, transparent 50%);
       transition: background-color 0.25s ease, color 0.25s ease;
     }
 
-    .app-container {
-      max-width: 1720px;
-      margin: 0 auto;
-      padding: 12px 20px 40px;
-    }
+    h1, h2, h3, h4 { font-family: 'Outfit', sans-serif; font-weight: 700; letter-spacing: -0.02em; }
 
-    /* ==========================================================================
-       03. NAVBAR & HEADER CORPORATIVO
-       ========================================================================== */
-    .topbar {
-      position: sticky;
-      top: 0;
-      z-index: 40;
-      background: var(--bg-card-glass);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--border-color);
-      padding: 10px 20px;
-      margin-bottom: 16px;
-      border-radius: var(--radius-md);
-      box-shadow: var(--shadow-sm);
-    }
-
-    .topbar-content {
-      max-width: 1720px;
-      margin: 0 auto;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 12px;
-    }
-
-    .brand-section {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-    }
-
-    .brand-logo-wrap {
-      display: flex;
-      align-items: center;
+    /* LOGOS CORPORATIVOS */
+    .login-logo-container {
       background: #ffffff;
-      padding: 4px 10px;
-      border-radius: var(--radius-sm);
-      border: 1px solid var(--border-color);
+      padding: 10px 20px;
+      border-radius: 14px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1.25rem;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      max-width: 240px;
     }
-
-    .brand-logo {
-      height: 38px;
+    .login-logo-img {
+      height: 48px;
       width: auto;
+      max-width: 200px;
       object-fit: contain;
+      display: block;
     }
 
-    .brand-title {
-      display: flex;
-      flex-direction: column;
-    }
-
-    .brand-title h1 {
-      font-size: 1.15rem;
-      font-weight: 800;
-      letter-spacing: -0.02em;
-      color: var(--text-main);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .brand-badge {
-      font-size: 0.68rem;
-      font-weight: 700;
-      background: var(--primary-light);
-      color: var(--primary);
-      padding: 2px 8px;
-      border-radius: var(--radius-full);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-
-    .brand-title span {
-      font-size: 0.8rem;
-      color: var(--text-muted);
-      font-weight: 500;
-    }
-
-    .topbar-actions {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-
-    /* Selector de Analista Activo */
-    .analyst-active-wrap {
+    .brand-logo-container {
+      background: #ffffff;
+      padding: 5px 14px;
+      border-radius: 10px;
       display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background: var(--bg-subtle);
-      border: 1px solid var(--border-color);
-      padding: 4px 10px;
-      border-radius: var(--radius-full);
-    }
-
-    .user-avatar {
-      width: 26px;
-      height: 26px;
-      border-radius: 50%;
-      background: var(--primary);
-      color: #fff;
-      display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 0.75rem;
-      font-weight: 800;
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.25);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      height: 44px;
     }
-
-    .analyst-select-top {
-      border: none;
-      background: transparent;
-      font-size: 0.84rem;
-      font-weight: 700;
-      color: var(--text-main);
-      outline: none;
-      cursor: pointer;
-      font-family: inherit;
-    }
-
-    /* Botón Informe Mensual en Topbar */
-    .btn-report-nav {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      background: #eff6ff;
-      border: 1px solid #bfdbfe;
-      color: #1d4ed8;
-      font-size: 0.82rem;
-      font-weight: 700;
-      padding: 6px 14px;
-      border-radius: var(--radius-md);
-      cursor: pointer;
-      transition: all 0.15s;
-    }
-    .btn-report-nav:hover {
-      background: #dbeafe;
-      transform: translateY(-1px);
-    }
-
-    .theme-select {
-      background: var(--bg-subtle);
-      color: var(--text-main);
-      border: 1px solid var(--border-color);
-      padding: 6px 10px;
-      border-radius: var(--radius-md);
-      font-size: 0.82rem;
-      font-weight: 500;
-      cursor: pointer;
-      outline: none;
-    }
-
-    /* ==========================================================================
-       04. GRID PRINCIPAL (FORMULARIO + TABLA)
-       ========================================================================== */
-    .main-grid {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 20px;
-      align-items: start;
-    }
-
-    @media (min-width: 1200px) {
-      .main-grid {
-        grid-template-columns: 500px 1fr;
-      }
-    }
-
-    @media (min-width: 1500px) {
-      .main-grid {
-        grid-template-columns: 540px 1fr;
-      }
-    }
-
-    /* ==========================================================================
-       05. CARDS & SECCIONES
-       ========================================================================== */
-    .card {
-      background: var(--bg-card);
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-lg);
-      box-shadow: var(--shadow-sm);
-      transition: box-shadow 0.2s ease;
-      overflow: hidden;
-    }
-    .card:hover {
-      box-shadow: var(--shadow-md);
-    }
-
-    .card-header {
-      padding: 16px 20px;
-      border-bottom: 1px solid var(--border-color);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      background: var(--bg-subtle);
-    }
-
-    .card-header-title {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .card-header-icon {
-      width: 32px;
+    .brand-logo-img {
       height: 32px;
-      border-radius: var(--radius-sm);
-      background: var(--primary-light);
-      color: var(--primary);
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      width: auto;
+      max-width: 140px;
+      object-fit: contain;
+      display: block;
     }
 
-    .card-header h2 {
-      font-size: 1.05rem;
-      font-weight: 700;
-      color: var(--text-main);
-      letter-spacing: -0.01em;
+    .login-overlay {
+      position: fixed; inset: 0; background: rgba(5, 8, 15, 0.97);
+      backdrop-filter: blur(25px); z-index: 9999;
+      display: flex; align-items: center; justify-content: center; padding: 1.5rem;
+    }
+    .login-box {
+      background: var(--bg-card); border: 1px solid var(--border-color);
+      width: 100%; max-width: 440px; border-radius: var(--radius-lg); padding: 2.5rem;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.7); text-align: center;
     }
 
-    .card-body {
-      padding: 20px;
+    .navbar {
+      background: var(--bg-glass);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border-color);
+      position: sticky; top: 0; z-index: 100;
+      padding: 0.85rem 2rem;
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 1rem;
     }
-
-    #cardForm {
-      position: sticky;
-      top: 76px;
-      max-height: calc(100vh - 96px);
-      overflow-y: auto;
-      scrollbar-width: thin;
-    }
-
-    /* ==========================================================================
-       06. FORMULARIOS & CONTROLES
-       ========================================================================== */
-    .form-grid {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 14px;
-    }
-
-    @media (min-width: 540px) {
-      .form-grid.cols-2 {
-        grid-template-columns: 1fr 1fr;
-      }
-    }
-
-    .form-group {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-
-    .form-group.full-width {
-      grid-column: 1 / -1;
-    }
-
-    label {
-      font-size: 0.82rem;
-      font-weight: 600;
-      color: var(--text-muted);
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
-
-    .required-star {
-      color: #ef4444;
-      font-weight: 700;
-    }
-
-    .form-control, select, textarea {
-      width: 100%;
-      padding: 9px 12px;
-      font-size: 0.88rem;
-      font-family: inherit;
-      color: var(--text-main);
-      background: var(--bg-input);
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-md);
-      outline: none;
-      transition: all 0.15s ease;
-    }
-
-    .form-control:focus, select:focus, textarea:focus {
-      border-color: var(--border-focus);
-      box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 20%, transparent);
-    }
-
-    textarea {
-      min-height: 90px;
-      resize: vertical;
-      line-height: 1.45;
-    }
-
-    .input-hint {
-      font-size: 0.75rem;
-      color: var(--text-light);
-      margin-top: 2px;
-    }
-
-    /* Radio Pills */
-    .radio-pill-group {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      background: var(--bg-subtle);
-      padding: 4px;
-      border-radius: var(--radius-md);
+    .brand-section { display: flex; align-items: center; gap: 1rem; }
+    .brand-title { font-size: 1.15rem; color: var(--text-main); font-weight: 700; }
+    .brand-subtitle { font-size: 0.75rem; color: var(--text-muted); display: flex; align-items: center; gap: 0.35rem; }
+    .g-badge {
+      background: var(--primary-glow); color: var(--primary);
+      padding: 0.15rem 0.4rem; border-radius: var(--radius-sm); font-size: 0.7rem; font-weight: 700;
       border: 1px solid var(--border-color);
     }
+    
+    .main-wrapper { max-width: 1400px; margin: 0 auto; padding: 2rem; }
 
-    .radio-pill-label {
-      flex: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      padding: 6px 12px;
-      font-size: 0.82rem;
-      font-weight: 600;
-      cursor: pointer;
-      border-radius: var(--radius-sm);
-      transition: all 0.15s;
-      color: var(--text-muted);
+    .stats-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;
     }
-
-    .radio-pill-label:has(input:checked) {
-      background: var(--bg-card);
-      color: var(--primary);
-      box-shadow: var(--shadow-sm);
+    .stat-card {
+      background: var(--bg-card); border: 1px solid var(--border-color);
+      padding: 1.1rem; border-radius: var(--radius-md); backdrop-filter: blur(12px);
+      display: flex; align-items: center; gap: 0.85rem;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.06);
     }
-
-    .radio-pill-label input {
-      display: none;
+    .stat-icon {
+      width: 42px; height: 42px; border-radius: var(--radius-md);
+      display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0;
     }
+    .stat-val { font-size: 1.35rem; font-weight: 700; color: var(--text-main); }
+    .stat-lbl { font-size: 0.75rem; color: var(--text-muted); font-weight: 500; }
 
-    /* Autocomplete */
-    .ac-wrapper {
-      position: relative;
-    }
-
-    .ac-dropdown {
-      position: absolute;
-      top: calc(100% + 4px);
-      left: 0;
-      right: 0;
-      background: var(--bg-card);
+    .role-banner {
+      background: var(--banner-bg);
       border: 1px solid var(--border-color);
       border-radius: var(--radius-md);
-      box-shadow: var(--shadow-lg);
-      max-height: 220px;
-      overflow-y: auto;
-      z-index: 50;
-      padding: 4px;
-      list-style: none;
+      padding: 1.25rem 1.5rem; margin-bottom: 1.5rem;
+      display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;
     }
 
-    .ac-dropdown[hidden] {
-      display: none;
+    .tabs-header {
+      display: flex; gap: 0.5rem; border-bottom: 1px solid var(--border-color);
+      margin-bottom: 1.5rem; overflow-x: auto; padding-bottom: 0.25rem;
     }
+    .tab-button {
+      background: transparent; border: none; color: var(--text-muted);
+      padding: 0.6rem 1.1rem; font-size: 0.9rem; font-weight: 600;
+      border-radius: var(--radius-sm); cursor: pointer; transition: all 0.2s;
+      white-space: nowrap; display: flex; align-items: center; gap: 0.4rem;
+    }
+    .tab-button:hover { color: var(--text-main); background: rgba(255,255,255,0.06); }
+    .tab-button.active { color: var(--primary); background: var(--primary-glow); border-bottom: 2px solid var(--primary); }
 
-    .ac-item {
-      padding: 8px 12px;
-      font-size: 0.84rem;
-      font-weight: 500;
-      color: var(--text-main);
-      border-radius: var(--radius-sm);
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 8px;
+    .glass-panel {
+      background: var(--bg-card); border: 1px solid var(--border-color);
+      border-radius: var(--radius-md); padding: 1.5rem; backdrop-filter: blur(12px);
+      box-shadow: 0 4px 25px rgba(0,0,0,0.06);
     }
+    .panel-header {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 1.25rem; flex-wrap: wrap; gap: 0.75rem;
+    }
+    .panel-title { font-size: 1.15rem; display: flex; align-items: center; gap: 0.5rem; color: var(--text-main); }
 
-    .ac-item:hover, .ac-item[aria-selected="true"] {
-      background: var(--primary-light);
-      color: var(--primary);
+    .table-container { overflow-x: auto; }
+    .custom-table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.88rem; }
+    .custom-table th {
+      padding: 0.85rem 1rem; background: var(--table-th-bg);
+      color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase;
+      letter-spacing: 0.05em; border-bottom: 1px solid var(--border-color);
     }
+    .custom-table td { padding: 0.9rem 1rem; border-bottom: 1px solid var(--border-color); color: var(--text-main); }
+    .custom-table tr:hover td { background: var(--table-hover); }
 
-    /* Plantillas Snippets */
-    .snippets-accordion {
-      border: 1px dashed var(--border-color);
-      border-radius: var(--radius-md);
-      padding: 10px 14px;
-      background: var(--bg-subtle);
-      margin-top: 12px;
+    .badge {
+      display: inline-flex; align-items: center; padding: 0.25rem 0.6rem;
+      border-radius: 20px; font-size: 0.72rem; font-weight: 700; text-transform: uppercase;
     }
-
-    .snippets-accordion summary {
-      font-size: 0.82rem;
-      font-weight: 700;
-      color: var(--primary);
-      cursor: pointer;
-      user-select: none;
-      outline: none;
-    }
-
-    .snippets-grid {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      margin-top: 10px;
-    }
-
-    .snippet-chip {
-      background: var(--bg-card);
-      border: 1px solid var(--border-color);
-      color: var(--text-muted);
-      font-size: 0.76rem;
-      font-weight: 600;
-      padding: 5px 10px;
-      border-radius: var(--radius-full);
-      cursor: pointer;
-      transition: all 0.15s ease;
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-    }
-
-    .snippet-chip:hover {
-      background: var(--primary-light);
-      border-color: var(--primary);
-      color: var(--primary);
-      transform: translateY(-1px);
-    }
-
-    /* Botones */
-    .btn-row {
-      display: flex;
-      gap: 10px;
-      margin-top: 18px;
-      flex-wrap: wrap;
-    }
+    .badge-disponible { background: var(--success-bg); color: var(--success); border: 1px solid var(--success); }
+    .badge-prestamo { background: var(--warning-bg); color: var(--warning); border: 1px solid var(--warning); }
+    .badge-mora { background: var(--danger-bg); color: var(--danger); border: 1px solid var(--danger); }
+    .badge-solicitado { background: var(--purple-bg); color: var(--purple); border: 1px solid var(--purple); }
+    .badge-rechazado { background: var(--danger-bg); color: var(--danger); border: 1px solid var(--danger); }
 
     .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      padding: 9px 16px;
-      font-size: 0.86rem;
-      font-weight: 700;
-      font-family: inherit;
-      border-radius: var(--radius-md);
-      cursor: pointer;
-      transition: all 0.15s ease;
-      border: 1px solid transparent;
-      outline: none;
-    }
-
-    .btn-primary {
-      background: var(--primary);
-      color: #ffffff;
-      box-shadow: 0 4px 12px color-mix(in srgb, var(--primary) 30%, transparent);
-    }
-
-    .btn-primary:hover {
-      background: var(--primary-hover);
-      transform: translateY(-1px);
-    }
-
-    .btn-secondary {
-      background: var(--bg-subtle);
-      border-color: var(--border-color);
-      color: var(--text-muted);
-    }
-
-    .btn-secondary:hover {
-      background: var(--border-color);
-      color: var(--text-main);
-    }
-
-    .btn-export {
-      background: #ecfdf5;
-      color: #059669;
-      border-color: #a7f3d0;
-    }
-    .btn-export:hover {
-      background: #d1fae5;
-    }
-
-    .btn-icon-action {
-      background: var(--bg-subtle);
-      border: 1px solid var(--border-color);
-      color: var(--text-muted);
-      cursor: pointer;
-      padding: 6px;
-      border-radius: var(--radius-sm);
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.15s;
-    }
-    .btn-icon-action:hover {
-      background: var(--primary-light);
-      border-color: var(--primary);
-      color: var(--primary);
-    }
-
-    /* Help Cards / Accordions */
-    .help-box {
-      margin-top: 16px;
-      background: var(--bg-subtle);
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-md);
-      padding: 12px;
-      font-size: 0.8rem;
-    }
-
-    .help-box h4 {
-      font-size: 0.82rem;
-      font-weight: 700;
-      margin-bottom: 6px;
-      color: var(--text-main);
-    }
-
-    .help-box ul {
-      margin-left: 18px;
-      color: var(--text-muted);
-    }
-
-    /* ==========================================================================
-       07. KPIS & DASHBOARD STATS
-       ========================================================================== */
-    .kpis-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-      gap: 12px;
-      margin-bottom: 20px;
-    }
-
-    .kpi-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-md);
-      padding: 14px 16px;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      cursor: pointer;
-      position: relative;
-      overflow: hidden;
-      transition: all 0.2s ease;
-    }
-
-    .kpi-card:hover {
-      transform: translateY(-2px);
-      box-shadow: var(--shadow-md);
-      border-color: var(--primary);
-    }
-
-    .kpi-card.active-kpi {
-      border-color: var(--primary);
-      box-shadow: 0 0 0 2px var(--primary);
-    }
-
-    .kpi-card::before {
-      content: '';
-      position: absolute;
-      left: 0;
-      top: 0;
-      bottom: 0;
-      width: 4px;
-      background: var(--border-color);
-      border-radius: 4px 0 0 4px;
-    }
-
-    .kpi-card[data-kpi="total"]::before { background: var(--primary); }
-    .kpi-card[data-kpi="open"]::before { background: var(--status-open); }
-    .kpi-card[data-kpi="process"]::before { background: var(--status-process); }
-    .kpi-card[data-kpi="closed"]::before { background: var(--status-closed); }
-    .kpi-card[data-kpi="cancelled"]::before { background: var(--status-cancelled); }
-    .kpi-card[data-kpi="req"]::before { background: #8b5cf6; }
-
-    .kpi-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .kpi-title {
-      font-size: 0.75rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-      color: var(--text-muted);
-    }
-
-    .kpi-value {
-      font-size: 1.45rem;
-      font-weight: 800;
-      color: var(--text-main);
-      line-height: 1.2;
-    }
-
-    /* ==========================================================================
-       08. TOOLBAR & FILTROS DE TABLA
-       ========================================================================== */
-    .table-toolbar {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      background: var(--bg-subtle);
-      padding: 12px 16px;
-      border-radius: var(--radius-md);
-      border: 1px solid var(--border-color);
-      margin-bottom: 16px;
-    }
-
-    .filter-group {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-
-    .filter-item {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .filter-label {
-      font-size: 0.78rem;
-      font-weight: 700;
-      color: var(--text-muted);
-      white-space: nowrap;
-    }
-
-    .filter-select {
-      padding: 6px 10px;
-      font-size: 0.82rem;
-      background: var(--bg-input);
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-sm);
-      color: var(--text-main);
-      outline: none;
-    }
-
-    .search-wrapper {
-      position: relative;
-      flex: 1;
-      min-width: 220px;
-      max-width: 320px;
-    }
-
-    .search-icon {
-      position: absolute;
-      left: 10px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: var(--text-light);
-      pointer-events: none;
-      display: flex;
-      align-items: center;
-    }
-
-    .search-input {
-      padding-left: 32px !important;
-      font-size: 0.82rem;
-      padding-top: 6px;
-      padding-bottom: 6px;
-    }
-
-    /* ==========================================================================
-       09. TABLA DE TICKETS MODERNA
-       ========================================================================== */
-    .table-responsive {
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-md);
-      overflow-x: auto;
-      background: var(--bg-card);
-      max-height: calc(100vh - 340px);
-      scrollbar-width: thin;
-    }
-
-    .data-table {
-      width: 100%;
-      border-collapse: separate;
-      border-spacing: 0;
-      font-size: 0.84rem;
-      text-align: left;
-    }
-
-    .data-table thead {
-      position: sticky;
-      top: 0;
-      z-index: 10;
-      background: var(--bg-subtle);
-    }
-
-    .data-table th {
-      padding: 12px 14px;
-      font-size: 0.75rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      color: var(--text-muted);
-      border-bottom: 1px solid var(--border-color);
-      white-space: nowrap;
-    }
-
-    .data-table tbody tr {
-      transition: background 0.15s ease;
-    }
-
-    .data-table tbody tr:hover {
-      background: color-mix(in srgb, var(--primary) 4%, var(--bg-card));
-    }
-
-    .data-table td {
-      padding: 12px 14px;
-      border-bottom: 1px solid var(--border-color);
-      vertical-align: middle;
-      color: var(--text-main);
-    }
-
-    .ticket-id {
-      font-family: monospace;
-      font-weight: 700;
-      color: var(--primary);
-      background: var(--primary-light);
-      padding: 3px 6px;
-      border-radius: var(--radius-sm);
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      cursor: pointer;
-    }
-
-    /* Badges de Estado */
-    .status-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 4px 10px;
-      border-radius: var(--radius-full);
-      font-size: 0.75rem;
-      font-weight: 700;
-      white-space: nowrap;
-    }
-
-    .status-dot {
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-    }
-
-    .status-badge.open {
-      background: #fef2f2;
-      color: #dc2626;
-      border: 1px solid #fee2e2;
-    }
-    .status-badge.open .status-dot { background: #dc2626; animation: pulse-dot 1.5s infinite; }
-
-    .status-badge.process {
-      background: #fffbeb;
-      color: #d97706;
-      border: 1px solid #fef3c7;
-    }
-    .status-badge.process .status-dot { background: #d97706; }
-
-    .status-badge.closed {
-      background: #ecfdf5;
-      color: #059669;
-      border: 1px solid #d1fae5;
-    }
-    .status-badge.closed .status-dot { background: #059669; }
-
-    .status-badge.cancelled {
-      background: #f3f4f6;
-      color: #4b5563;
-      border: 1px solid #e5e7eb;
-    }
-    .status-badge.cancelled .status-dot { background: #4b5563; }
-
-    @keyframes pulse-dot {
-      0%, 100% { transform: scale(1); opacity: 1; }
-      50% { transform: scale(1.3); opacity: 0.6; }
-    }
-
-    /* Badges de Prioridad */
-    .prio-badge {
-      display: inline-flex;
-      padding: 3px 8px;
-      border-radius: var(--radius-full);
-      font-size: 0.74rem;
-      font-weight: 700;
-    }
-    .prio-badge.alta { background: #fee2e2; color: #b91c1c; }
-    .prio-badge.media { background: #fef3c7; color: #b45309; }
-    .prio-badge.baja { background: #e0f2fe; color: #0369a1; }
-
-    .desc-preview {
-      max-width: 220px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      color: var(--text-muted);
-      cursor: pointer;
-      display: inline-block;
-      transition: color 0.15s;
-    }
-    .desc-preview:hover {
-      color: var(--primary);
-      text-decoration: underline;
-    }
-
-    .table-actions {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .action-select {
-      font-size: 0.78rem;
-      padding: 4px 6px;
-      border-radius: var(--radius-sm);
-      border: 1px solid var(--border-color);
-      background: var(--bg-card);
-      color: var(--text-main);
-      cursor: pointer;
-    }
-
-    /* Paginación */
-    .pagination-bar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-top: 14px;
-      padding: 0 4px;
-      font-size: 0.82rem;
-      color: var(--text-muted);
-    }
-
-    .pagination-controls {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .btn-page {
-      background: var(--bg-card);
-      border: 1px solid var(--border-color);
-      padding: 4px 10px;
-      border-radius: var(--radius-sm);
-      font-size: 0.8rem;
-      color: var(--text-main);
-      cursor: pointer;
-      font-weight: 600;
-    }
-    .btn-page:disabled {
-      opacity: 0.4;
-      cursor: not-allowed;
-    }
-
-    /* ==========================================================================
-       10. MODALES & DIALOGS (CENTRADOS PERFECTOS)
-       ========================================================================== */
-    dialog.modal {
-      position: fixed !important;
-      inset: 0 !important;
-      margin: auto !important;
-      width: min(600px, 92vw);
-      max-height: 88vh;
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-lg);
-      background: var(--bg-card);
-      color: var(--text-main);
-      padding: 0;
-      box-shadow: var(--shadow-xl);
-      animation: modal-in 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-      overflow-y: auto;
-    }
-
-    dialog.modal-large {
-      width: min(960px, 94vw);
-    }
-
-    @keyframes modal-in {
-      from { opacity: 0; transform: scale(0.96) translateY(10px); }
-      to { opacity: 1; transform: scale(1) translateY(0); }
-    }
-
-    dialog::backdrop {
-      background: rgba(15, 23, 42, 0.6);
-      backdrop-filter: blur(5px);
-    }
-
-    .modal-header {
-      position: sticky;
-      top: 0;
-      z-index: 10;
-      padding: 16px 20px;
-      border-bottom: 1px solid var(--border-color);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      background: var(--bg-subtle);
-    }
-
-    .modal-header h3 {
-      font-size: 1.05rem;
-      font-weight: 700;
-    }
-
-    .modal-body {
-      padding: 20px;
-    }
-
-    .modal-footer {
-      position: sticky;
-      bottom: 0;
-      z-index: 10;
-      padding: 14px 20px;
-      border-top: 1px solid var(--border-color);
-      display: flex;
-      align-items: center;
-      justify-content: flex-end;
-      gap: 10px;
-      background: var(--bg-subtle);
-    }
-
-    /* Detalle Ticket en Modal */
-    .detail-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      margin-bottom: 14px;
-    }
-
-    .detail-item {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-    }
-
-    .detail-label {
-      font-size: 0.72rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      color: var(--text-muted);
-    }
-
-    .detail-val {
-      font-size: 0.88rem;
-      font-weight: 600;
-    }
-
-    .detail-box {
-      background: var(--bg-subtle);
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-md);
-      padding: 12px;
-      margin-top: 10px;
-      font-size: 0.85rem;
-      line-height: 1.5;
-      white-space: pre-wrap;
-    }
-
-    /* ==========================================================================
-       11. INFORME MENSUAL / GRÁFICAS ESTADÍSTICAS
-       ========================================================================== */
-    .report-filter-bar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 12px;
-      background: var(--bg-subtle);
-      padding: 12px 16px;
-      border-radius: var(--radius-md);
-      border: 1px solid var(--border-color);
-      margin-bottom: 16px;
-    }
-
-    .report-summary-box {
-      background: var(--bg-subtle);
-      border: 1px solid var(--border-color);
-      border-left: 4px solid var(--primary);
-      border-radius: var(--radius-md);
-      padding: 14px 18px;
-      font-size: 0.92rem;
-      line-height: 1.6;
-      margin-bottom: 20px;
-    }
-
-    .report-grid {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 20px;
-      margin-bottom: 20px;
-    }
-
-    @media(min-width: 768px) {
-      .report-grid {
-        grid-template-columns: 1fr 1fr;
-      }
-    }
-
-    .chart-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-md);
-      padding: 16px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-
-    .chart-card h4 {
-      font-size: 0.88rem;
-      font-weight: 700;
-      color: var(--text-main);
-      margin-bottom: 12px;
-      text-align: center;
-    }
-
-    .chart-container {
-      position: relative;
-      width: 100%;
-      max-height: 280px;
-      display: flex;
-      justify-content: center;
-    }
-
-    /* Tabla de actividades */
-    .report-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.84rem;
-      margin-top: 10px;
-    }
-    .report-table th {
-      background: var(--bg-subtle);
-      padding: 10px 12px;
-      text-align: left;
-      font-weight: 700;
-      color: var(--text-muted);
-      border: 1px solid var(--border-color);
-    }
-    .report-table td {
-      padding: 8px 12px;
-      border: 1px solid var(--border-color);
-    }
-    .report-table tr:nth-child(even) {
-      background: var(--bg-subtle);
-    }
-
-    /* ==========================================================================
-       12. TOAST NOTIFICATIONS
-       ========================================================================== */
-    .toast-container {
-      position: fixed;
-      bottom: 24px;
-      right: 24px;
-      z-index: 9999;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      max-width: 380px;
-    }
-
-    .toast {
-      background: var(--bg-card);
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-md);
-      padding: 12px 16px;
-      box-shadow: var(--shadow-lg);
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      font-size: 0.85rem;
-      font-weight: 500;
-      animation: toast-in 0.25s ease forwards;
-    }
-
-    @keyframes toast-in {
-      from { transform: translateX(100%); opacity: 0; }
-      to { transform: translateX(0); opacity: 1; }
-    }
-
-    .toast.success { border-left: 4px solid #10b981; }
-    .toast.error { border-left: 4px solid #ef4444; }
-    .toast.info { border-left: 4px solid var(--primary); }
-
-    footer {
-      margin-top: 30px;
-      text-align: center;
-      font-size: 0.8rem;
-      color: var(--text-muted);
-    }
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      padding: 0.55rem 1.1rem; border-radius: var(--radius-sm);
+      font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all 0.2s;
+      border: none; text-decoration: none;
+    }
+    .btn-primary { background: var(--primary); color: white; }
+    .btn-primary:hover { background: var(--primary-hover); box-shadow: 0 0 15px var(--primary-glow); }
+    .btn-secondary { background: rgba(255,255,255,0.08); color: var(--text-main); border: 1px solid var(--border-color); }
+    .btn-secondary:hover { background: rgba(255,255,255,0.15); }
+    .btn-success { background: var(--success); color: white; }
+    .btn-success:hover { opacity: 0.9; }
+    .btn-danger { background: var(--danger); color: white; }
+    .btn-danger:hover { opacity: 0.9; }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+    @media (max-width: 900px) { .grid-2 { grid-template-columns: 1fr; } }
+
+    .form-group { margin-bottom: 1.1rem; text-align: left; }
+    .form-label { display: block; font-size: 0.8rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.35rem; }
+    .form-input, .form-select, .form-textarea {
+      width: 100%; background: var(--input-bg); border: 1px solid var(--input-border);
+      color: var(--input-color); padding: 0.65rem 0.85rem; border-radius: var(--radius-sm);
+      font-size: 0.88rem; outline: none; transition: border-color 0.2s;
+    }
+    .form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--primary); }
+
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.75);
+      backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center;
+      z-index: 1000; padding: 1.5rem;
+    }
+    .modal-overlay.active { display: flex; }
+    .modal-content {
+      background: var(--modal-bg); border: 1px solid var(--border-color);
+      width: 100%; max-width: 540px; border-radius: var(--radius-md); padding: 1.75rem;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.5); color: var(--text-main);
+    }
+
+    .theme-palette-widget {
+      position: fixed; bottom: 20px; right: 20px; z-index: 999;
+      background: var(--bg-card); border: 1px solid var(--border-color);
+      backdrop-filter: blur(16px); padding: 0.5rem 0.85rem; border-radius: 30px;
+      display: flex; align-items: center; gap: 0.65rem;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+    }
+    .theme-label { font-size: 0.72rem; font-weight: 700; color: var(--text-muted); display: flex; align-items: center; gap: 0.3rem; }
+    .color-swatch {
+      width: 22px; height: 22px; border-radius: 50%; cursor: pointer;
+      border: 2px solid rgba(255,255,255,0.25); transition: transform 0.2s, border-color 0.2s;
+    }
+    .color-swatch:hover { transform: scale(1.3); border-color: #fff; }
+
+    .toast-msg {
+      position: fixed; top: 80px; right: 25px; z-index: 2000;
+      background: var(--bg-card); border: 1px solid var(--primary);
+      color: var(--text-main); padding: 0.85rem 1.25rem; border-radius: var(--radius-md);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.4); display: none; align-items: center; gap: 0.6rem;
+      font-size: 0.88rem; font-weight: 600;
+    }
+    .toast-msg.show { display: flex; animation: fadeIn 0.3s forwards; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
   </style>
 </head>
-<body data-theme="light">
+<body>
 
-  <!-- ==================== CONTENEDOR TOASTS ==================== -->
-  <div id="toastContainer" class="toast-container"></div>
-
-  <!-- ==================== TOPBAR HEADER ==================== -->
-  <header class="topbar">
-    <div class="topbar-content">
-      <div class="brand-section">
-        <div class="brand-logo-wrap">
-          <img class="brand-logo" src="Imagen/logo-empresas.jpg" alt="INGETEC / SEDIC"
-               onerror="this.onerror=null;this.src='https://jose01ve.github.io/GESTION-TI/Imagen/logo-empresas.jpg';">
-        </div>
-        <div class="brand-title">
-          <h1>Gestión Reportes TI <span class="brand-badge">Ituango</span></h1>
-          <span>Mesa de Ayuda · Ingetec / Sedic / EPM</span>
-        </div>
+  <!-- LOGIN -->
+  <div id="login-screen" class="login-overlay">
+    <div class="login-box">
+      <div class="login-logo-container">
+        <img src="logo.png" alt="Consorcio Ingetec / SEDIC" class="login-logo-img" onerror="this.style.display='none'; document.getElementById('alt-login-logo').style.display='block';">
+        <span id="alt-login-logo" style="display:none; font-weight:800; color:#1e293b; font-size:0.9rem;">CONSORCIO INGETEC / SEDIC</span>
       </div>
-
-      <div class="topbar-actions">
-        <!-- Selector de Analista Activo -->
-        <div class="analyst-active-wrap" title="Selecciona el analista en sesión">
-          <div class="user-avatar" id="whoamiAvatar">JS</div>
-          <select id="activeAnalystSelect" class="analyst-select-top">
-            <option value="Jose Salas">Jose Salas</option>
-            <option value="Sebastián Cataño">Sebastián Cataño</option>
-            <option value="Sebastián Posada">Sebastián Posada</option>
-            <option value="Pablo Calle">Pablo Calle</option>
-          </select>
+      
+      <h2 style="font-size: 1.35rem; margin-bottom: 0.3rem;">Interventoría TI</h2>
+      <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 1.75rem;">Sistema de Préstamos de Activos (Google Cloud)</p>
+      
+      <form onsubmit="handleUserLogin(event)">
+        <div class="form-group">
+          <label class="form-label">Ingresa tu Correo Corporativo Autorizado</label>
+          <input type="email" class="form-input" id="login-email" required placeholder="ej: jsalas@sedic.com.co" style="padding:0.75rem; text-align:center;">
         </div>
 
-        <!-- Botón Informe Mensual -->
-        <button id="btnOpenMonthlyReport" class="btn-report-nav" title="Generar informe y gráficas mensuales">
-          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 20V10M12 20V4M6 20v-6"></path></svg>
-          <span>Informe Mensual</span>
+        <div id="login-error-msg" style="display:none; color:var(--danger); font-size:0.8rem; margin-bottom:1rem; background:var(--danger-bg); padding:0.6rem; border-radius:6px; border:1px solid var(--danger);">
+          ⛔ Correo no autorizado. Comunícate con el Administrador de TI.
+        </div>
+
+        <button type="submit" class="btn btn-primary" id="btn-login-submit" style="width:100%; justify-content:center; padding:0.75rem; font-size:0.95rem; margin-top:0.5rem;">
+          Ingresar al Sistema ➔
         </button>
-
-        <!-- Selector de Tema -->
-        <select id="themePick" class="theme-select" title="Personalizar tema">
-          <optgroup label="Temas">
-            <option value="Claro" data-theme="light">☀️ Claro Profesional</option>
-            <option value="Oscuro" data-theme="dark">🌙 Modo Oscuro</option>
-            <option value="Mint" data-theme="mint">🌿 Mint Ingetec</option>
-            <option value="Azul" data-theme="blue">💧 Azul EPM</option>
-            <option value="Navy" data-theme="navy">🌌 Deep Navy</option>
-          </optgroup>
-        </select>
+      </form>
+      <div style="margin-top: 1.2rem; font-size: 0.72rem; color: var(--text-muted);" id="login-status-text">
+        🔐 6 Usuarios autorizados listos
       </div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast-msg">
+    <span id="toast-icon">⚡</span>
+    <span id="toast-text">Petición despachada</span>
+  </div>
+
+  <!-- Navbar -->
+  <header class="navbar">
+    <div class="brand-section">
+      <div class="brand-logo-container">
+        <img src="logo.png" alt="Consorcio Ingetec / SEDIC" class="brand-logo-img" onerror="this.style.display='none'; document.getElementById('alt-nav-logo').style.display='block';">
+        <span id="alt-nav-logo" style="display:none; font-weight:800; color:#1e293b; font-size:0.78rem;">INGETEC / SEDIC</span>
+      </div>
+      <div>
+        <div class="brand-title">Interventoría TI</div>
+        <div class="brand-subtitle">
+          Gestión Cloud de Activos & Custodia
+          <span class="g-badge">Google Sheets Live</span>
+          <span class="g-badge" id="role-badge">ADMIN</span>
+        </div>
+      </div>
+    </div>
+
+    <div style="display: flex; align-items: center; gap: 1rem;">
+      <div style="text-align: right;">
+        <div style="font-size: 0.85rem; font-weight: 600;" id="nav-user-name">Jose Salas</div>
+        <div style="font-size: 0.72rem; color: var(--text-muted);" id="nav-user-email">jsalas@sedic.com.co</div>
+      </div>
+      <div style="width:36px; height:36px; border-radius:50%; background:var(--primary); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:0.85rem;" id="nav-user-avatar">JS</div>
+      <button onclick="handleLogout()" class="btn btn-secondary" style="padding:0.35rem 0.65rem; font-size:0.75rem;">Cerrar Sesión</button>
     </div>
   </header>
 
-  <!-- ==================== CONTENIDO PRINCIPAL ==================== -->
-  <div class="app-container">
-    <main class="main-grid">
+  <div class="main-wrapper">
+    <!-- Banner -->
+    <div class="role-banner">
+      <div>
+        <h3 id="banner-role-title">SESIÓN INICIADA</h3>
+        <p style="font-size: 0.82rem; color: var(--text-muted); margin-top: 0.2rem;" id="banner-role-desc"></p>
+      </div>
+      <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;" id="admin-action-links">
+        <button class="btn btn-success" onclick="openModal('modal-add-user')" style="font-size: 0.8rem;">
+          ➕ Invitar / Agregar Usuario
+        </button>
+        <a href="https://docs.google.com/spreadsheets/d/13Bci4AhSslwPWHsYoG09yRymXSDOcNhgrsOxNIi7jcY/edit" target="_blank" class="btn btn-primary" style="font-size: 0.8rem;">
+          📊 Base de Datos Sheets ↗
+        </a>
+        <a href="https://drive.google.com/drive/u/0/folders/1pV04KdGZ1Bqt-f97hyfFIEoO_F4HYb8a" target="_blank" class="btn btn-secondary" style="font-size: 0.8rem;">
+          📁 Carpeta Actas Drive ↗
+        </a>
+      </div>
+    </div>
 
-      <!-- ==================== COLUMNA IZQUIERDA: FORMULARIO ==================== -->
-      <section id="cardForm" class="card">
-        <div class="card-header">
-          <div class="card-header-title">
-            <div class="card-header-icon">
-              <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 4v16m8-8H4"></path></svg>
-            </div>
-            <h2>Nuevo Reporte TI</h2>
-          </div>
-          <span id="syncBadge" class="brand-badge" style="background:#ecfdf5; color:#059669;">Conectando…</span>
+    <!-- Indicadores -->
+    <div class="stats-grid" id="stats-grid-container">
+      <div class="stat-card">
+        <div class="stat-icon" style="background: var(--primary-glow); color: var(--primary);">👥</div>
+        <div>
+          <div class="stat-val" id="stat-total-users">6</div>
+          <div class="stat-lbl">Usuarios Autorizados</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon" style="background: var(--success-bg); color: var(--success);">✔</div>
+        <div>
+          <div class="stat-val" id="stat-available">-</div>
+          <div class="stat-lbl">Activos Disponibles</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon" style="background: var(--warning-bg); color: var(--warning);">💻</div>
+        <div>
+          <div class="stat-val" id="stat-loans">-</div>
+          <div class="stat-lbl">En Préstamo Activo</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon" style="background: var(--purple-bg); color: var(--purple);">⏳</div>
+        <div>
+          <div class="stat-val" id="stat-pending">-</div>
+          <div class="stat-lbl">Solicitudes Pendientes</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon" style="background: var(--danger-bg); color: var(--danger);">⚠️</div>
+        <div>
+          <div class="stat-val" id="stat-overdue">0</div>
+          <div class="stat-lbl">Préstamos en Mora</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pestañas -->
+    <div class="tabs-header" id="tabs-header-container"></div>
+
+    <!-- 1. 🏠 DASHBOARD -->
+    <div id="tab-dashboard" class="tab-content active glass-panel">
+      <div class="panel-header">
+        <div>
+          <h2 class="panel-title">📊 Resumen Cloud de Custodia & Préstamos TI</h2>
+          <p style="font-size: 0.85rem; color: var(--text-muted);">Sincronización en vivo con la Base de Datos central en Google Sheets.</p>
+        </div>
+        <button class="btn btn-primary" onclick="openModal('modal-loan')">+ Nueva Solicitud de Préstamo</button>
+      </div>
+
+      <div class="grid-2">
+        <div style="background: rgba(255,255,255,0.03); padding: 1.25rem; border-radius: 12px; border: 1px solid var(--border-color);">
+          <h4>📌 Procedimiento Oficial Multi-Sede TI</h4>
+          <ol style="margin-left: 1.25rem; margin-top: 0.75rem; font-size: 0.85rem; color: var(--text-muted); line-height: 1.7;">
+            <li>El usuario busca y selecciona el tipo de activo mediante el <strong>buscador predictivo</strong>.</li>
+            <li>El Administrador TI valida disponibilidad y el sistema <strong>asigna automáticamente el serial correspondiente</strong>.</li>
+            <li>En caso de no haber disponibilidad, se puede <strong>Rechazar con un motivo</strong>.</li>
+            <li>El sistema genera el acta oficial en PDF y notifica automáticamente al solicitante por Gmail.</li>
+          </ol>
         </div>
 
-        <div class="card-body">
-          <form id="formTicket" autocomplete="off">
-            <div class="form-grid cols-2">
-              
-              <!-- Analista Responsable -->
-              <div class="form-group">
-                <label for="analista">Analista Responsable <span class="required-star">*</span></label>
-                <select id="analista" required></select>
-              </div>
-
-              <!-- Categoría -->
-              <div class="form-group">
-                <label for="categoria">Categoría <span class="required-star">*</span></label>
-                <select id="categoria" required>
-                  <option value="">Selecciona…</option>
-                  <option>Red</option>
-                  <option>Hardware</option>
-                  <option>Software</option>
-                  <option>Asesoría</option>
-                  <option>Préstamo de activo</option>
-                  <option>Correo</option>
-                  <option>Impresión</option>
-                  <option>Mantenimiento</option>
-                  <option>Servidores</option>
-                  <option>Otro</option>
-                </select>
-              </div>
-
-              <!-- Servicio Prestado (Falla) -->
-              <div class="form-group full-width">
-                <label for="falla">Servicio prestado / Tipo de falla <span class="required-star">*</span></label>
-                <select id="falla" required>
-                  <option value="">Selecciona servicio…</option>
-                  <option>Soporte a equipos informáticos</option>
-                  <option>Configuración equipo</option>
-                  <option>Desbloquear cuenta de red</option>
-                  <option>Devolución activo a EPM</option>
-                  <option>Préstamo Video Beam / Préstamo equipo</option>
-                  <option>Crear acta</option>
-                  <option>Instalación de PC-Dis \ Préstamo de equipo \ Dispositivo</option>
-                  <option>Reposición de equipo</option>
-                  <option>Retiro de equipo a usuario</option>
-                  <option>Traslado de puesto</option>
-                  <option>Instalación de software - Desinstalación \ Traslado SW</option>
-                  <option>Desbloqueo punto de red</option>
-                  <option>Adquisición de Software y Hardware</option>
-                  <option>Asignación de puesto nuevo</option>
-                  <option>Creación de cuentas de red</option>
-                  <option>Eliminación de cuentas de red</option>
-                  <option>Crear cuenta de correo \ Eliminar</option>
-                  <option>Actualización de datos \ Información</option>
-                  <option>Inventario de Equipos</option>
-                  <option>Inventario de software</option>
-                  <option>Actualización de cuentas de red</option>
-                  <option>Asignar Permiso en servidores \ Retirar permisos</option>
-                  <option>Permisos en Unidades compartidas</option>
-                  <option>Soporte equipos CONSORCIO</option>
-                  <option>Auditoria desde TIC a Interventoría</option>
-                  <option>Instalación de Guayas</option>
-                  <option>Backups información</option>
-                  <option>Resolución de ECOS</option>
-                  <option>Actualización de carpetas de información general</option>
-                  <option>Actualización de información CADD</option>
-                  <option>Capacitación</option>
-                  <option>Reposición de equipos EPM</option>
-                  <option>Asesoría general</option>
-                  <option>Permisos en Skype Empresarial</option>
-                  <option>Desinstalación de programas</option>
-                  <option>Requerimiento de Impresión</option>
-                  <option>Gestión en Vault</option>
-                  <option>Permisos VPN</option>
-                  <option>Gestión en obra</option>
-                  <option>Crear cuenta de correo</option>
-                  <option>Entrega de equipo por reintegro o reposición</option>
-                  <option>Configurar Dispositivo móvil</option>
-                  <option>Marcación de puestos</option>
-                  <option>Recuperación de información</option>
-                  <option>Gestión aplicaciones</option>
-                </select>
-              </div>
-
-              <!-- Usuario Reporta (Autocomplete) -->
-              <div class="form-group ac-wrapper">
-                <label for="usuario">Usuario que reporta <span class="required-star">*</span></label>
-                <input id="usuario" class="form-control" placeholder="Escribe nombre o apellido…" required autocomplete="off" />
-                <ul id="acList" class="ac-dropdown" hidden></ul>
-                <span class="input-hint">Elige entre las sugerencias de contactos</span>
-              </div>
-
-              <!-- Prioridad -->
-              <div class="form-group">
-                <label for="prioridad">Prioridad <span class="required-star">*</span></label>
-                <select id="prioridad" required>
-                  <option value="">Selecciona…</option>
-                  <option value="Alta">🔴 Alta (Crítico / Bloqueo)</option>
-                  <option value="Media">🟡 Media (Afecta tarea)</option>
-                  <option value="Baja">🔵 Baja (Consulta / Rutina)</option>
-                </select>
-              </div>
-
-              <!-- ¿Tiene Requerimiento? -->
-              <div class="form-group full-width">
-                <label>¿Requiere número de Requerimiento?</label>
-                <div style="display:flex; gap:10px; align-items:center;">
-                  <div class="radio-pill-group">
-                    <label class="radio-pill-label">
-                      <input type="radio" name="hasReq" value="no" id="reqNo" checked> No
-                    </label>
-                    <label class="radio-pill-label">
-                      <input type="radio" name="hasReq" value="si" id="reqSi"> Sí
-                    </label>
-                  </div>
-                  <input id="reqNumber" class="form-control" placeholder="Ej: REQ000003481" style="display:none; flex:1;">
-                </div>
-              </div>
-
-              <!-- Descripción -->
-              <div class="form-group full-width">
-                <label for="descripcion">Descripción detallada del ticket (opcional)</label>
-                <textarea id="descripcion" placeholder="Describe los detalles de la atención, usuario o equipo…"></textarea>
-                
-                <!-- Plantillas Rápidas -->
-                <details class="snippets-accordion" open>
-                  <summary>⚡ Plantillas rápidas de descripción</summary>
-                  <div class="snippets-grid">
-                    <button type="button" class="snippet-chip" data-snippet="Usuario se comunica e informa tener problemas de acceso al servidor/equipo/recurso compartido con nombre xxxx.">Soporte informático</button>
-                    <button type="button" class="snippet-chip" data-snippet="El usuario informa no puede imprimir o que la impresora presenta fallos (atasco de papel, sin conexión, sin tinta, o no aparece en red).">Impresión</button>
-                    <button type="button" class="snippet-chip" data-snippet="Se requiere realizar la instalación/desinstalación del programa xxx en el equipo con serial xxx y nombre xxx.">Software / Apps</button>
-                    <button type="button" class="snippet-chip" data-snippet="Gestionar permisos en servidores/VPN.">Permisos / VPN</button>
-                    <button type="button" class="snippet-chip" data-snippet="Gestionar creación de cuenta de red/correo o eliminación.">Cuenta de Red</button>
-                    <button type="button" class="snippet-chip" data-snippet="Usuario se comunica e informa tener la cuenta de red bloqueada. Se desbloquea la cuenta de red indicada, se hacen pruebas y estas son satisfactorias.">Desbloqueo Cuenta</button>
-                    <button type="button" class="snippet-chip" data-snippet="Usuario informa tener problemas con la APP XXX.">Problema App</button>
-                  </div>
-                </details>
-              </div>
-
-            </div>
-
-            <!-- Botones de Acción -->
-            <div class="btn-row">
-              <button class="btn btn-primary" type="submit" id="btnSubmit" style="flex:2;">
-                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
-                <span>Guardar Reporte</span>
-              </button>
-              <button class="btn btn-secondary" type="reset" id="btnReset" style="flex:1;">
-                <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M2.5 2v6h6M21.5 22v-6h-6"/><path d="M22 11.5A10 10 0 0 0 3.2 7.2M2 12.5a10 10 0 0 0 18.8 4.3"/></svg>
-                <span>Limpiar</span>
-              </button>
-            </div>
-
-            <!-- Guía Rápida & Checklist -->
-            <div class="help-box">
-              <h4>📋 Checklist previo al registro</h4>
-              <ul>
-                <li>Verifica los datos del usuario solicitante y nombre del equipo.</li>
-                <li>Clasifica adecuadamente la <em>Categoría</em> y el <em>Servicio prestado</em>.</li>
-                <li>Registra el número de requerimiento formal si aplica.</li>
-              </ul>
-            </div>
-          </form>
-        </div>
-      </section>
-
-      <!-- ==================== COLUMNA DERECHA: DASHBOARD & TABLA ==================== -->
-      <section id="cardReport" class="card">
-        <div class="card-header">
-          <div class="card-header-title">
-            <div class="card-header-icon">
-              <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
-            </div>
-            <h2>Mesa de Reportes y Tickets</h2>
+        <div style="background: rgba(255,255,255,0.03); padding: 1.25rem; border-radius: 12px; border: 1px solid var(--border-color);">
+          <h4>⚡ Estado de la Conexión Cloud</h4>
+          <div style="margin-top: 0.75rem; font-size: 0.85rem; line-height: 1.8;">
+            <div>• Base de Datos Sheets: <strong style="color: var(--success);">BD_Gestion_Prestamos_TI</strong></div>
+            <div>• Carpeta Actas Drive: <strong style="color: var(--primary);">01-Actas de Entregas y devoluciones</strong></div>
+            <div>• Total Activos Registrados: <strong id="dash-total-assets">-</strong></div>
+            <div>• Activos Disponibles: <strong id="dash-avail-assets" style="color:var(--success);">-</strong></div>
+            <div>• En Préstamo Activo: <strong id="dash-loan-assets" style="color:var(--warning);">-</strong></div>
           </div>
-          <button id="btnExportCSV" class="btn btn-export" title="Descargar registros en archivo Excel / CSV">
-            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"></path></svg>
-            <span>Exportar CSV</span>
-          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. 📋 SOLICITUDES -->
+    <div id="tab-solicitudes" class="tab-content glass-panel">
+      <div class="panel-header">
+        <div>
+          <h2 class="panel-title" id="solicitudes-title">📋 Solicitudes de Préstamo</h2>
+          <p style="font-size: 0.85rem; color: var(--text-muted);">Sincronizadas en vivo con Google Sheets.</p>
+        </div>
+        <div style="display:flex; gap:0.5rem;">
+          <button class="btn btn-secondary" onclick="fetchCloudData()">🔄 Actualizar Datos Cloud</button>
+          <button class="btn btn-primary" onclick="openModal('modal-loan')">+ Nueva Solicitud</button>
+        </div>
+      </div>
+
+      <div class="table-container">
+        <table class="custom-table">
+          <thead>
+            <tr>
+              <th>No. Solicitud</th>
+              <th>Solicitante / Correo</th>
+              <th>Categoría Solicitada</th>
+              <th>Activo Asignado & Serial</th>
+              <th>Fecha Registro</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="tbody-solicitudes"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 3. 💻 INVENTARIO -->
+    <div id="tab-inventario" class="tab-content glass-panel">
+      <div class="panel-header">
+        <div>
+          <h2 class="panel-title">💻 Inventario de Activos TI (Desde Google Sheets)</h2>
+          <p style="font-size: 0.85rem; color: var(--text-muted);">Gestiona tus más de 300 activos directamente en la pestaña <strong>01_Inventario_Activos</strong> de Google Sheets.</p>
+        </div>
+        <div style="display:flex; gap:0.5rem;">
+          <button class="btn btn-secondary" onclick="fetchCloudData()">🔄 Actualizar Datos Cloud</button>
+          <a href="https://docs.google.com/spreadsheets/d/13Bci4AhSslwPWHsYoG09yRymXSDOcNhgrsOxNIi7jcY/edit" target="_blank" class="btn btn-primary">
+            📝 Editar / Importar Activos en Sheets ↗
+          </a>
+        </div>
+      </div>
+
+      <div class="table-container">
+        <table class="custom-table">
+          <thead>
+            <tr>
+              <th>Placa (Asset Tag)</th>
+              <th>Número de Serie</th>
+              <th>Marca / Modelo</th>
+              <th>Categoría</th>
+              <th>Especificaciones</th>
+              <th>Ubicación</th>
+              <th>Estado</th>
+            </tr>
+          </thead>
+          <tbody id="tbody-inventario"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 4. 👥 GESTIÓN DE USUARIOS -->
+    <div id="tab-usuarios" class="tab-content glass-panel">
+      <div class="panel-header">
+        <div>
+          <h2 class="panel-title">👥 Gestión de Usuarios & Permisos</h2>
+          <p style="font-size: 0.85rem; color: var(--text-muted);">Al registrar un usuario, se guardará en <strong>04_Usuarios_Permisos</strong> y se le enviará automáticamente un correo de invitación.</p>
+        </div>
+        <button class="btn btn-success" onclick="openModal('modal-add-user')">➕ Nuevo Usuario Autorizado</button>
+      </div>
+
+      <div class="table-container">
+        <table class="custom-table">
+          <thead>
+            <tr>
+              <th>Nombre Completo</th>
+              <th>Correo Electrónico</th>
+              <th>Rol en el Sistema</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="tbody-usuarios"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 5. ⚙️ CONFIGURACIÓN -->
+    <div id="tab-configuracion" class="tab-content glass-panel">
+      <div class="panel-header">
+        <div>
+          <h2 class="panel-title">⚙️ Configuración Cloud</h2>
+          <p style="font-size: 0.85rem; color: var(--text-muted);">Conexión a Google Drive y Sheets.</p>
+        </div>
+      </div>
+      <div class="grid-2">
+        <div style="background: rgba(255,255,255,0.03); padding: 1.25rem; border-radius: 12px; border: 1px solid var(--border-color);">
+          <h4>📁 ID de Carpeta Actas (Drive)</h4>
+          <p style="font-family:monospace; color:var(--primary); margin-top:0.5rem;">1pV04KdGZ1Bqt-f97hyfFIEoO_F4HYb8a</p>
+          <div style="font-size: 0.78rem; color: var(--success); margin-top:0.5rem;">✔ Enlazado a 01-Actas de Entregas y devoluciones</div>
         </div>
 
-        <div class="card-body">
-          <!-- KPI Cards -->
-          <div class="kpis-grid">
-            <div class="kpi-card" data-kpi="total" title="Ver todos">
-              <div class="kpi-header"><span class="kpi-title">Total</span><span>📑</span></div>
-              <div class="kpi-value" id="kpiTotal">0</div>
-            </div>
-            <div class="kpi-card" data-kpi="open" title="Filtrar Abiertos">
-              <div class="kpi-header"><span class="kpi-title">Abiertos</span><span>🔴</span></div>
-              <div class="kpi-value" id="kpiAb" style="color:var(--status-open);">0</div>
-            </div>
-            <div class="kpi-card" data-kpi="process" title="Filtrar En Proceso">
-              <div class="kpi-header"><span class="kpi-title">En Proceso</span><span>🟡</span></div>
-              <div class="kpi-value" id="kpiPr" style="color:var(--status-process);">0</div>
-            </div>
-            <div class="kpi-card" data-kpi="closed" title="Filtrar Cerrados">
-              <div class="kpi-header"><span class="kpi-title">Cerrados</span><span>🟢</span></div>
-              <div class="kpi-value" id="kpiCe" style="color:var(--status-closed);">0</div>
-            </div>
-            <div class="kpi-card" data-kpi="cancelled" title="Filtrar Cancelados">
-              <div class="kpi-header"><span class="kpi-title">Cancelados</span><span>⚪</span></div>
-              <div class="kpi-value" id="kpiCa" style="color:var(--status-cancelled);">0</div>
-            </div>
-            <div class="kpi-card" data-kpi="req" title="Filtrar Con Requerimiento">
-              <div class="kpi-header"><span class="kpi-title">Con Requerimiento</span><span>🏷️</span></div>
-              <div class="kpi-value" id="kpiRq" style="color:#8b5cf6;">0</div>
-            </div>
-          </div>
-
-          <!-- Toolbar / Filtros -->
-          <div class="table-toolbar">
-            <div class="filter-group">
-              <div class="filter-item">
-                <span class="filter-label">Vista:</span>
-                <select id="viewSelect" class="filter-select">
-                  <option value="mis">Asignados a mí</option>
-                  <option value="todos">Todos los analistas</option>
-                </select>
-              </div>
-
-              <div class="filter-item">
-                <span class="filter-label">Analista:</span>
-                <select id="analystSelect" class="filter-select">
-                  <option value="">Todos</option>
-                  <option>Jose Salas</option>
-                  <option>Sebastián Cataño</option>
-                  <option>Sebastián Posada</option>
-                  <option>Pablo Calle</option>
-                </select>
-              </div>
-
-              <div class="filter-item">
-                <span class="filter-label">Estado:</span>
-                <select id="statusSelect" class="filter-select">
-                  <option value="">Todos los estados</option>
-                  <option value="pendientes">Pendientes (Abierto/Proceso)</option>
-                  <option value="Abierto">Abierto</option>
-                  <option value="En Proceso">En Proceso</option>
-                  <option value="Cerrado">Cerrado</option>
-                  <option value="Cancelado">Cancelado</option>
-                </select>
-              </div>
-
-              <div class="filter-item">
-                <span class="filter-label">Mes:</span>
-                <select id="monthSelect" class="filter-select">
-                  <option value="">Todos los meses</option>
-                </select>
-              </div>
-            </div>
-
-            <!-- Buscador Rápido -->
-            <div class="search-wrapper">
-              <span class="search-icon">
-                <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-              </span>
-              <input id="quickSearch" class="form-control search-input" placeholder="Buscar por ID, usuario, falla…">
-            </div>
-          </div>
-
-          <!-- Tabla de Datos -->
-          <div class="table-responsive">
-            <table class="data-table">
-              <thead>
-                <tr>
-                  <th>Ticket ID</th>
-                  <th>Analista</th>
-                  <th>Categoría</th>
-                  <th>Servicio / Falla</th>
-                  <th>Usuario</th>
-                  <th>Descripción</th>
-                  <th>Prioridad</th>
-                  <th>Estado</th>
-                  <th>Fecha</th>
-                  <th style="text-align:center;">Acciones</th>
-                </tr>
-              </thead>
-              <tbody id="tbody">
-                <tr><td colspan="10" style="text-align:center; padding:30px; color:var(--text-muted);">Cargando registros…</td></tr>
-              </tbody>
-            </table>
-          </div>
-
-          <!-- Paginación -->
-          <div class="pagination-bar">
-            <div id="pageInfo">Mostrando 0 de 0 tickets</div>
-            <div class="pagination-controls">
-              <button id="btnPrevPage" class="btn-page" disabled>◀ Anterior</button>
-              <span id="pageCurrent" style="font-weight:700;">1</span>
-              <button id="btnNextPage" class="btn-page" disabled>Siguiente ▶</button>
-            </div>
-          </div>
-
+        <div style="background: rgba(255,255,255,0.03); padding: 1.25rem; border-radius: 12px; border: 1px solid var(--border-color);">
+          <h4>📊 Base de Datos Google Sheets</h4>
+          <p style="font-family:monospace; color:var(--success); margin-top:0.5rem;">13Bci4AhSslwPWHsYoG09yRymXSDOcNhgrsOxNIi7jcY</p>
+          <div style="font-size: 0.78rem; color: var(--text-muted); margin-top:0.5rem;">Pestañas: 01_Inventario_Activos | 02_Solicitudes_Prestamos | 04_Usuarios_Permisos</div>
         </div>
-      </section>
+      </div>
+    </div>
 
-    </main>
+    <!-- 6. 👤 MI PERFIL -->
+    <div id="tab-perfil" class="tab-content glass-panel">
+      <div class="panel-header">
+        <div>
+          <h2 class="panel-title">👤 Perfil de Usuario</h2>
+        </div>
+      </div>
+      <div class="grid-2">
+        <div style="background: rgba(255,255,255,0.03); padding: 1.25rem; border-radius: 12px; border: 1px solid var(--border-color);">
+          <h4 id="perfil-name">Usuario</h4>
+          <p style="font-size: 0.85rem; color: var(--text-muted);" id="perfil-email">correo@sedic.com.co</p>
+          <p style="font-size: 0.85rem; color: var(--text-muted);" id="perfil-role">Rol: USUARIO</p>
+        </div>
 
-    <footer>
-      ⚡ Aplicación Gestión TI Ituango · Sincronización en tiempo real con Google Sheets
-    </footer>
+        <div style="background: rgba(255,255,255,0.03); padding: 1.25rem; border-radius: 12px; border: 1px solid var(--border-color);">
+          <h4>📦 Mis Activos Actualmente en Custodia</h4>
+          <div id="user-custody-list" style="margin-top: 0.5rem; font-size: 0.85rem;"></div>
+        </div>
+      </div>
+    </div>
   </div>
 
-  <!-- ==================== MODAL DE ESTADO / SOLUCIÓN / MOTIVO ==================== -->
-  <dialog id="statusModal" class="modal">
-    <div class="modal-header">
-      <h3 id="modalTitle">Actualizar Ticket</h3>
-      <button class="btn-icon-action" onclick="document.getElementById('statusModal').close()" style="border:none;">✕</button>
-    </div>
-    <div class="modal-body">
-      <label id="modalLabel" for="modalText" style="margin-bottom:8px; font-weight:600;">Detalle</label>
-      <textarea id="modalText" class="form-control" style="min-height:120px;"></textarea>
-    </div>
-    <div class="modal-footer">
-      <button id="modalCancel" class="btn btn-secondary">Cancelar</button>
-      <button id="modalOk" class="btn btn-primary">Aceptar</button>
-    </div>
-  </dialog>
+  <!-- PALETA -->
+  <div class="theme-palette-widget">
+    <div class="theme-label">🎨 Tema:</div>
+    <div class="color-swatch" style="background: #4285f4;" onclick="applyTheme('blue')" title="Midnight Blue"></div>
+    <div class="color-swatch" style="background: #10b981;" onclick="applyTheme('emerald')" title="Cyber Emerald"></div>
+    <div class="color-swatch" style="background: #a855f7;" onclick="applyTheme('purple')" title="Neon Cyberpunk"></div>
+    <div class="color-swatch" style="background: #f59e0b;" onclick="applyTheme('amber')" title="Solar Amber"></div>
+    <div class="color-swatch" style="background: #ef4444;" onclick="applyTheme('crimson')" title="Crimson Security"></div>
+    <div class="color-swatch" style="background: #64748b;" onclick="applyTheme('slate')" title="Nordic Slate"></div>
+    <div class="color-swatch" style="background: #ffffff; border-color:#94a3b8;" onclick="applyTheme('light')" title="Light Corporate"></div>
+  </div>
 
-  <!-- ==================== MODAL DE DETALLES COMPLETOS (PROFESIONAL) ==================== -->
-  <dialog id="detailModal" class="modal">
-    <div class="modal-header">
-      <h3 id="detailTitle">Detalles del Ticket</h3>
-      <button class="btn-icon-action" onclick="document.getElementById('detailModal').close()" style="border:none;">✕</button>
-    </div>
-    <div class="modal-body" id="detailBody">
-      <!-- Se inyecta dinámicamente -->
-    </div>
-    <div class="modal-footer">
-      <button class="btn btn-secondary" onclick="document.getElementById('detailModal').close()">Cerrar</button>
-    </div>
-  </dialog>
-
-  <!-- ==================== MODAL DE INFORME MENSUAL Y ESTADÍSTICAS ==================== -->
-  <dialog id="reportModal" class="modal modal-large">
-    <div class="modal-header">
-      <div style="display:flex; align-items:center; gap:8px;">
-        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 20V10M12 20V4M6 20v-6"></path></svg>
-        <h3>Informe Ejecutivo Mensual TI</h3>
-      </div>
-      <button class="btn-icon-action" onclick="document.getElementById('reportModal').close()" style="border:none;">✕</button>
-    </div>
-    <div class="modal-body">
-      
-      <!-- Filtros del informe -->
-      <div class="report-filter-bar">
-        <div style="display:flex; align-items:center; gap:8px;">
-          <span style="font-weight:700; font-size:0.85rem;">Mes del Informe:</span>
-          <select id="reportMonthSelect" class="form-control" style="width:auto; padding:6px 12px;"></select>
-        </div>
-        <div style="display:flex; align-items:center; gap:8px;">
-          <span style="font-weight:700; font-size:0.85rem;">Analista:</span>
-          <select id="reportAnalystSelect" class="form-control" style="width:auto; padding:6px 12px;">
-            <option value="">Todos los analistas</option>
-            <option>Jose Salas</option>
-            <option>Sebastián Cataño</option>
-            <option>Sebastián Posada</option>
-            <option>Pablo Calle</option>
-          </select>
-        </div>
-        <button id="btnCopyReportText" class="btn btn-secondary btn-sm" title="Copiar resumen ejecutivo al portapapeles">
-          📋 Copiar Resumen
-        </button>
-      </div>
-
-      <!-- Resumen Ejecutivo redactado -->
-      <div id="reportSummaryText" class="report-summary-box">
-        Calculando estadísticas del período…
-      </div>
-
-      <!-- Gráficos -->
-      <div class="report-grid">
-        <div class="chart-card">
-          <h4>ESTADO REQUERIMIENTOS E INCIDENTES</h4>
-          <div class="chart-container">
-            <canvas id="chartStatus"></canvas>
+  <!-- MODAL 1: Solicitud con BUSCADOR PREDICTIVO -->
+  <div id="modal-loan" class="modal-overlay">
+    <div class="modal-content">
+      <h3 style="margin-bottom: 1rem;">Nueva Solicitud de Préstamo</h3>
+      <form onsubmit="submitLoanForm(event)">
+        <div class="form-group">
+          <label class="form-label">Buscar Tipo de Activo Requerido (Escribe para filtrar)</label>
+          <input type="text" class="form-input" id="loan-cat" list="dynamic-categories-list" required placeholder="Escribe: Portátil, Monitor, Mouse, Teclado..." autocomplete="off">
+          <datalist id="dynamic-categories-list"></datalist>
+          <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 0.3rem;">
+            💡 Se autocompleta automáticamente con las categorías de tu inventario.
           </div>
         </div>
-        <div class="chart-card">
-          <h4>TOP 5 CATEGORÍAS DE SERVICIO</h4>
-          <div class="chart-container">
-            <canvas id="chartCategory"></canvas>
+
+        <div class="form-group">
+          <label class="form-label">Justificación Operativa de Interventoría</label>
+          <textarea class="form-textarea" id="loan-just" rows="3" required placeholder="Ej: Inspección técnica en proyecto vías norte..."></textarea>
+        </div>
+
+        <div style="display:flex; justify-content:flex-end; gap:0.75rem; margin-top:1.5rem;">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('modal-loan')">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Enviar Solicitud a Sheets</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL 2: Registrar Nuevo Usuario -->
+  <div id="modal-add-user" class="modal-overlay">
+    <div class="modal-content">
+      <h3 style="margin-bottom: 1rem;">➕ Registrar Nuevo Usuario Autorizado</h3>
+      <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 1.25rem;">
+        El usuario se agregará a la base de datos y recibirá un correo automático con el enlace de acceso.
+      </p>
+
+      <form onsubmit="submitNewUserForm(event)">
+        <div class="form-group">
+          <label class="form-label">Nombre Completo</label>
+          <input type="text" class="form-input" id="new-user-name" required placeholder="Ej: Carlos Andrés Pérez">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Correo Electrónico Corporativo</label>
+          <input type="email" class="form-input" id="new-user-email" required placeholder="Ej: cperez@sedic.com.co">
+        </div>
+
+        <div class="grid-2">
+          <div class="form-group">
+            <label class="form-label">Rol en el Sistema</label>
+            <select class="form-select" id="new-user-role" required>
+              <option value="USUARIO">USUARIO (Solicitante)</option>
+              <option value="ADMIN_TI">ADMIN_TI (Administrador)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Estado</label>
+            <select class="form-select" id="new-user-status" required>
+              <option value="ACTIVO">ACTIVO</option>
+              <option value="INACTIVO">INACTIVO</option>
+            </select>
           </div>
         </div>
-      </div>
 
-      <!-- Tabla de actividades ejecutadas -->
-      <div style="margin-top:20px;">
-        <h4 style="font-size:0.9rem; font-weight:700; margin-bottom:8px; text-transform:uppercase; color:var(--text-main);">
-          ACTIVIDADES EJECUTADAS (DISTRIBUCIÓN DE SERVICIOS PRESTADOS)
-        </h4>
-        <div style="max-height:300px; overflow-y:auto; border:1px solid var(--border-color); border-radius:var(--radius-md);">
-          <table class="report-table">
-            <thead>
-              <tr>
-                <th>Descripción Actividad / Servicio</th>
-                <th style="width:140px; text-align:right;">Por Actividad ▼</th>
-              </tr>
-            </thead>
-            <tbody id="reportTableBody">
-              <tr><td colspan="2" style="text-align:center;">Cargando…</td></tr>
-            </tbody>
-          </table>
+        <div style="display:flex; justify-content:flex-end; gap:0.75rem; margin-top:1.5rem;">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('modal-add-user')">Cancelar</button>
+          <button type="submit" class="btn btn-success">Guardar & Enviar Correo de Acceso ✉️</button>
         </div>
-      </div>
-
+      </form>
     </div>
-    <div class="modal-footer">
-      <button class="btn btn-secondary" onclick="document.getElementById('reportModal').close()">Cerrar</button>
-      <button class="btn btn-primary" onclick="window.print()">🖨️ Imprimir / Guardar PDF</button>
-    </div>
-  </dialog>
+  </div>
 
-  <!-- ==================== JAVASCRIPT ==================== -->
   <script>
-  (function(){
-    'use strict';
+    const appsScriptWebhookUrl = 'https://script.google.com/macros/s/AKfycbww3-snEOxLhAh9Bywum-_Mqswtkpk6pUtW7yWBNZ3M5uZoS_1jsI2iKzxzY1jSSjwrfg/exec';
+    const driveFolderId = '1pV04KdGZ1Bqt-f97hyfFIEoO_F4HYb8a';
 
-    /* ==================== CONFIGURACIÓN ==================== */
-    const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwWF0rbBu4l3FJkhXJS9oMsL5SSaQ7uwMeTg8abHL2mMmYyvdTEYT2Ef79QHVAEtzhfsQ/exec';
-    const AUTO_REFRESH_MS = 30000;
-    const PAGE_SIZE = 25;
+    let currentRole = 'ADMIN'; 
+    let activeUser = null;
+    let assets = [];
+    let loans = [];
 
-    const ANALISTAS = [
-      { nombre:'Jose Salas',        email:'jsalas@sedic.com.co',       init:'JS' },
-      { nombre:'Sebastián Cataño',  email:'scatano@sedic.com.co',     init:'SC' },
-      { nombre:'Sebastián Posada',  email:'sposada@sedic.com.co',     init:'SP' },
-      { nombre:'Pablo Calle',       email:'pablocalle@ingetec.com.co', init:'PC' }
+    // LISTA DE RESPALDO INMEDIATA PARA ACCESO 100% GARANTIZADO
+    let whitelistUsers = [
+      { email: 'jsalas@sedic.com.co', name: 'Jose Salas', role: 'ADMIN_TI', status: 'ACTIVO' },
+      { email: 'soportesistemasve@gmail.com', name: 'Sebastian Posada Moreno', role: 'ADMIN_TI', status: 'ACTIVO' },
+      { email: 'carambitave@gmail.com', name: 'Leonardo', role: 'ADMIN_TI', status: 'ACTIVO' },
+      { email: 'financierave@gmail.com', name: 'Patricia Vellojin', role: 'USUARIO', status: 'ACTIVO' },
+      { email: 'jnavarro@sedic.com.co', name: 'Jorge Alfonso Navarro Illias', role: 'USUARIO', status: 'ACTIVO' },
+      { email: 'scatano@sedic.com.co', name: 'Sebastian Alejandro Cataño Velasquez', role: 'ADMIN_TI', status: 'ACTIVO' }
     ];
 
-    let USUARIOS = [
-      'Marcela Pareja', 'Jhon Madrid', 'Juan Carlos Betancur', 'Heidy Zambrano',
-      'Andrés Gómez', 'Carlos Ramírez', 'Lina Areiza', 'Diana Pérez',
-      'Jose Salas', 'Sebastián Cataño', 'Sebastián Posada', 'Pablo Calle'
-    ];
-
-    /* ==================== SELECTORES DOM ==================== */
-    const $ = s => document.querySelector(s);
-    const tbody = $('#tbody');
-    const kpiTotal = $('#kpiTotal'), kpiAb = $('#kpiAb'), kpiPr = $('#kpiPr'), 
-          kpiCe = $('#kpiCe'), kpiCa = $('#kpiCa'), kpiRq = $('#kpiRq');
-    const viewSelect = $('#viewSelect'), analystSelect = $('#analystSelect'),
-          statusSelect = $('#statusSelect'), monthSelect = $('#monthSelect'),
-          quickSearch = $('#quickSearch'), themePick = $('#themePick');
-    const form = $('#formTicket'), syncBadge = $('#syncBadge'), 
-          activeAnalystSelect = $('#activeAnalystSelect'), whoAvatar = $('#whoamiAvatar');
-    const toastContainer = $('#toastContainer');
-    const btnPrevPage = $('#btnPrevPage'), btnNextPage = $('#btnNextPage'), 
-          pageCurrent = $('#pageCurrent'), pageInfo = $('#pageInfo');
-    const btnExportCSV = $('#btnExportCSV');
-
-    /* Modales */
-    const statusModal = $('#statusModal'), modalTitle = $('#modalTitle'),
-          modalLabel = $('#modalLabel'), modalText = $('#modalText'),
-          modalOk = $('#modalOk'), modalCancel = $('#modalCancel');
-    const detailModal = $('#detailModal'), detailBody = $('#detailBody'), detailTitle = $('#detailTitle');
-    const reportModal = $('#reportModal'), btnOpenMonthlyReport = $('#btnOpenMonthlyReport'),
-          reportMonthSelect = $('#reportMonthSelect'), reportAnalystSelect = $('#reportAnalystSelect'),
-          reportSummaryText = $('#reportSummaryText'), reportTableBody = $('#reportTableBody'),
-          btnCopyReportText = $('#btnCopyReportText');
-
-    let chartStatusInstance = null;
-    let chartCategoryInstance = null;
-
-    /* ==================== ESTADO DE LA APP ==================== */
-    const localKey = 'tickets_fallas_v11';
-    const loadLocal = () => { try { return JSON.parse(localStorage.getItem(localKey)) || []; } catch { return []; } };
-    const saveLocal = v => localStorage.setItem(localKey, JSON.stringify(v));
-    
-    let ticketsLocal = loadLocal();
-    let ticketsRemote = null;
-    let lastSource = 'Local';
-    let searchText = '';
-    let currentPage = 1;
-    let currentFilterKpi = null;
-
-    /* ==================== SISTEMA DE TOASTS ==================== */
-    function showToast(message, type = 'info') {
-      const toast = document.createElement('div');
-      toast.className = `toast ${type}`;
-      const icon = type === 'success' ? '✅' : type === 'error' ? '⚠️' : 'ℹ️';
-      toast.innerHTML = `<span>${icon}</span><span style="flex:1;">${message}</span>`;
-      toastContainer.appendChild(toast);
-      setTimeout(() => {
-        toast.style.opacity = '0';
-        toast.style.transform = 'translateY(10px)';
-        toast.style.transition = 'all 0.25s ease';
-        setTimeout(() => toast.remove(), 250);
-      }, 3500);
+    function showToast(text, icon = '🚀') {
+      const toast = document.getElementById('toast');
+      document.getElementById('toast-icon').innerText = icon;
+      document.getElementById('toast-text').innerText = text;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 3500);
     }
 
-    /* ==================== TEMA Y APARIENCIA ==================== */
-    function applyTheme(theme) {
-      document.body.setAttribute('data-theme', theme);
-      localStorage.setItem('ui_theme', theme);
-    }
-    (function initTheme(){
-      const savedTheme = localStorage.getItem('ui_theme') || 'light';
-      applyTheme(savedTheme);
-      if (themePick) {
-        for (let opt of themePick.options) {
-          if (opt.dataset.theme === savedTheme) { opt.selected = true; break; }
-        }
-        themePick.addEventListener('change', () => {
-          const opt = themePick.selectedOptions[0];
-          if (opt && opt.dataset.theme) applyTheme(opt.dataset.theme);
-        });
-      }
-    })();
+    // CARGA DIRECTA Y ACTUALIZACIÓN EN VIVO
+    function fetchCloudData() {
+      window.handleCloudDataResponse = function(data) {
+        if (data && data.status === 'success') {
+          assets = data.assets || [];
+          loans = data.loans || [];
+          if (data.users && data.users.length > 0) {
+            whitelistUsers = data.users;
+            
+            if (activeUser) {
+              const freshUser = whitelistUsers.find(u => u.email.toLowerCase() === activeUser.email.toLowerCase());
+              if (freshUser) {
+                activeUser = freshUser;
+                const isAdmin = freshUser.role.toUpperCase().includes('ADMIN');
+                currentRole = isAdmin ? 'ADMIN' : 'USER';
+                setupUIForLoggedUser();
+              }
+            }
 
-    /* ==================== GESTIÓN DE ANALISTA ACTIVO ==================== */
-    function initActiveAnalyst() {
-      const saved = localStorage.getItem('active_analyst') || 'Jose Salas';
-      if (activeAnalystSelect) {
-        activeAnalystSelect.value = saved;
-        updateAnalystAvatar(saved);
-        activeAnalystSelect.addEventListener('change', () => {
-          const val = activeAnalystSelect.value;
-          localStorage.setItem('active_analyst', val);
-          updateAnalystAvatar(val);
-          // Prefill en formulario
-          const formAnalista = $('#analista');
-          if (formAnalista) formAnalista.value = val;
-          // Si la vista es "mis", actualizar filtro
-          if (viewSelect && viewSelect.value === 'mis') {
-            if (analystSelect) analystSelect.value = val;
-            fetchRemote();
+            const loginStatus = document.getElementById('login-status-text');
+            if (loginStatus) loginStatus.innerText = `🔐 ${whitelistUsers.length} Usuarios sincronizados con Google Sheets`;
+            const statUsers = document.getElementById('stat-total-users');
+            if (statUsers) statUsers.innerText = whitelistUsers.length;
           }
-          showToast(`Analista activo: ${val}`, 'info');
-        });
-      }
+
+          updateDynamicCategoriesDatalist();
+          renderAll();
+          showToast(`✔ Sincronizado (${assets.length} Activos, ${whitelistUsers.length} Usuarios)`, '📊');
+        }
+      };
+
+      const oldScript = document.getElementById('jsonp-cloud-loader');
+      if (oldScript) oldScript.remove();
+
+      const script = document.createElement('script');
+      script.id = 'jsonp-cloud-loader';
+      script.src = `${appsScriptWebhookUrl}?action=GET_ALL_DATA&callback=handleCloudDataResponse&_t=${Date.now()}`;
+      document.body.appendChild(script);
     }
 
-    function updateAnalystAvatar(name) {
-      const a = ANALISTAS.find(x => x.nombre === name);
-      if (whoAvatar) whoAvatar.textContent = a ? a.init : name.slice(0, 2).toUpperCase();
-    }
+    function updateDynamicCategoriesDatalist() {
+      const datalist = document.getElementById('dynamic-categories-list');
+      if (!datalist) return;
 
-    /* ==================== INICIALIZAR ANALISTAS EN SELECTS ==================== */
-    (function initAnalistas(){
-      const sel = $('#analista');
-      if (sel) {
-        sel.innerHTML = '<option value="">Selecciona analista…</option>' + 
-          ANALISTAS.map(a => `<option value="${a.nombre}">${a.nombre}</option>`).join('');
-        const saved = localStorage.getItem('active_analyst') || 'Jose Salas';
-        sel.value = saved;
-      }
-    })();
-
-    /* ==================== AUTOCOMPLETE USUARIOS ==================== */
-    const inputUsuario = $('#usuario'), acList = $('#acList');
-    const norm = s => String(s || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
-    function filtraUsuarios(q){
-      const n = norm(q);
-      if (!n) return [];
-      return USUARIOS.filter(u => norm(u).includes(n)).slice(0, 8);
-    }
-    function renderAcList(items){
-      if (!items.length) { acList.hidden = true; acList.innerHTML = ''; return; }
-      acList.innerHTML = items.map((t, i) => `<li class="ac-item" ${i === 0 ? 'aria-selected="true"' : ''}>👤 ${t}</li>`).join('');
-      acList.hidden = false;
-    }
-    if (inputUsuario) {
-      inputUsuario.addEventListener('input', () => renderAcList(filtraUsuarios(inputUsuario.value)));
-      inputUsuario.addEventListener('focus', () => renderAcList(filtraUsuarios(inputUsuario.value)));
-      document.addEventListener('click', e => {
-        const item = e.target.closest('#acList li');
-        if (item) {
-          inputUsuario.value = item.textContent.replace('👤 ', '').trim();
-          acList.hidden = true;
-        } else if (!e.target.closest('.ac-wrapper')) {
-          acList.hidden = true;
+      const uniqueCategories = [];
+      assets.forEach(a => {
+        if (a.cat && !uniqueCategories.includes(a.cat.trim())) {
+          uniqueCategories.push(a.cat.trim());
         }
       });
-    }
 
-    /* ==================== SNIPPETS / PLANTILLAS ==================== */
-    document.addEventListener('click', e => {
-      const btn = e.target.closest('.snippet-chip');
-      if (!btn) return;
-      const txt = btn.getAttribute('data-snippet') || '';
-      const area = $('#descripcion');
-      const { selectionStart: s, selectionEnd: ePos, value: v } = area;
-      area.value = v.slice(0, s) + txt + v.slice(ePos);
-      area.focus();
-      area.selectionStart = area.selectionEnd = s + txt.length;
-      showToast('Plantilla insertada', 'info');
-    });
-
-    /* ==================== CONTROL REQUERIMIENTO ==================== */
-    const reqSi = $('#reqSi'), reqNo = $('#reqNo'), reqNumber = $('#reqNumber');
-    function toggleReq(){
-      if (reqSi && reqNumber) {
-        reqNumber.style.display = reqSi.checked ? 'block' : 'none';
-        if (reqSi.checked) reqNumber.focus();
-      }
-    }
-    if (reqSi) reqSi.addEventListener('change', toggleReq);
-    if (reqNo) reqNo.addEventListener('change', toggleReq);
-
-    /* ==================== MESES Y VISTAS ==================== */
-    (function fillMonths(){
-      const now = new Date();
-      const items = ['<option value="">Todos los meses</option>'];
-      const reportItems = [];
-      for (let i = 0; i < 18; i++){
-        const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-        const ym = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
-        const label = d.toLocaleDateString('es-CO', { month: 'long', year: 'numeric' });
-        const text = label.charAt(0).toUpperCase() + label.slice(1);
-        items.push(`<option value="${ym}">${text}</option>`);
-        reportItems.push(`<option value="${ym}">${text}</option>`);
-      }
-      if (monthSelect) monthSelect.innerHTML = items.join('');
-      if (reportMonthSelect) reportMonthSelect.innerHTML = reportItems.join('');
-    })();
-
-    (function initSavedView(){
-      const saved = JSON.parse(localStorage.getItem('tickets_view') || '{}');
-      if (viewSelect) viewSelect.value = saved.view || 'mis';
-      if (analystSelect) {
-        const active = localStorage.getItem('active_analyst') || 'Jose Salas';
-        analystSelect.value = saved.view === 'mis' ? active : (saved.analyst || '');
-      }
-      if (statusSelect) statusSelect.value = saved.status || '';
-      if (monthSelect) monthSelect.value = saved.month || '';
-    })();
-
-    function persistView(){
-      localStorage.setItem('tickets_view', JSON.stringify({
-        view: viewSelect.value,
-        analyst: analystSelect.value,
-        status: statusSelect.value,
-        month: monthSelect.value
-      }));
-    }
-
-    if (viewSelect) {
-      viewSelect.addEventListener('change', () => {
-        if (viewSelect.value === 'mis') {
-          const active = localStorage.getItem('active_analyst') || 'Jose Salas';
-          if (analystSelect) analystSelect.value = active;
-        } else {
-          if (analystSelect) analystSelect.value = '';
-        }
-        persistView();
-        currentPage = 1;
-        fetchRemote();
-      });
-    }
-
-    [analystSelect, statusSelect, monthSelect].forEach(el => {
-      if (el) el.addEventListener('change', () => {
-        currentFilterKpi = null;
-        updateKpiHighlight();
-        currentPage = 1;
-        persistView();
-        fetchRemote();
-      });
-    });
-
-    /* ==================== FILTROS KPI INTERACTIVOS ==================== */
-    document.querySelectorAll('.kpi-card').forEach(card => {
-      card.addEventListener('click', () => {
-        const kpi = card.getAttribute('data-kpi');
-        if (currentFilterKpi === kpi) {
-          currentFilterKpi = null;
-        } else {
-          currentFilterKpi = kpi;
-        }
-        updateKpiHighlight();
-        currentPage = 1;
-        render();
-      });
-    });
-
-    function updateKpiHighlight() {
-      document.querySelectorAll('.kpi-card').forEach(c => {
-        if (currentFilterKpi && c.getAttribute('data-kpi') === currentFilterKpi) {
-          c.classList.add('active-kpi');
-        } else {
-          c.classList.remove('active-kpi');
-        }
-      });
-    }
-
-    /* ==================== BUSCADOR RÁPIDO ==================== */
-    if (quickSearch) {
-      quickSearch.addEventListener('input', () => {
-        searchText = quickSearch.value;
-        currentPage = 1;
-        render();
-      });
-    }
-
-    /* ==================== HELPERS DE ESCAPE Y FORMATO ==================== */
-    const esc = s => String(s ?? '').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'","&#39;");
-    const trunc = (s, len = 35) => { const t = String(s || ''); return t.length > len ? t.slice(0, len) + '…' : t; };
-    
-    function renderStatusBadge(st) {
-      const s = String(st || 'Abierto');
-      let cls = 'open';
-      if (s === 'En Proceso') cls = 'process';
-      else if (s === 'Cerrado') cls = 'closed';
-      else if (s === 'Cancelado') cls = 'cancelled';
-      return `<span class="status-badge ${cls}"><span class="status-dot"></span>${s}</span>`;
-    }
-
-    function renderPriorityBadge(prio) {
-      const p = String(prio || 'Media');
-      const cls = p === 'Alta' ? 'alta' : p === 'Media' ? 'media' : 'baja';
-      return `<span class="prio-badge ${cls}">${p}</span>`;
-    }
-
-    function fmtDate(iso) {
-      if (!iso) return '—';
-      const d = (iso instanceof Date) ? iso : new Date(iso);
-      if (isNaN(d)) return String(iso);
-      return d.toLocaleDateString('es-CO', { day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit' });
-    }
-
-    /* ==================== PROCESAMIENTO Y FILTRADO DE DATOS ==================== */
-    function computeCounters(rows){
-      const c = { total: rows.length, abiertos: 0, en_proceso: 0, cerrados: 0, cancelados: 0, con_req: 0 };
-      rows.forEach(t => {
-        const s = String(t.estado || '').toLowerCase();
-        if (s === 'abierto') c.abiertos++;
-        else if (s === 'en proceso') c.en_proceso++;
-        else if (s === 'cerrado') c.cerrados++;
-        else if (s === 'cancelado') c.cancelados++;
-        if (t.requerimiento) c.con_req++;
-      });
-      return c;
-    }
-
-    function setCounters(c){
-      kpiTotal.textContent = c.total;
-      kpiAb.textContent = c.abiertos;
-      kpiPr.textContent = c.en_proceso;
-      kpiCe.textContent = c.cerrados;
-      kpiCa.textContent = c.cancelados;
-      kpiRq.textContent = c.con_req || 0;
-    }
-
-    function currentBaseRows(){
-      const base = Array.isArray(ticketsRemote) ? ticketsRemote : ticketsLocal;
-      lastSource = Array.isArray(ticketsRemote) ? 'Google Sheets' : 'Local';
-      let rows = base.slice();
-
-      const st = statusSelect.value;
-      if (st === 'pendientes') {
-        rows = rows.filter(x => !['Cerrado', 'Cancelado'].includes(String(x.estado)));
-      } else if (st) {
-        rows = rows.filter(x => String(x.estado) === st);
+      if (uniqueCategories.length === 0) {
+        uniqueCategories.push("Portátil", "Laptop de Desarrollo", "Monitor", "Mouse", "Teclado", "Cargador portátil", "Control Video beam", "Diadema", "Memoria USB / Token");
       }
 
-      if (analystSelect.value) {
-        rows = rows.filter(x => String(x.analista) === analystSelect.value);
-      }
-
-      if (monthSelect.value) {
-        rows = rows.filter(x => {
-          const d = new Date(x.fecha);
-          const ym = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
-          return ym === monthSelect.value;
-        });
-      }
-
-      return rows;
+      datalist.innerHTML = uniqueCategories.map(cat => `<option value="${cat}">`).join('');
     }
 
-    function currentFilteredRows(){
-      let rows = currentBaseRows();
+    // LOGIN DIRECTO E INSTANTÁNEO
+    function handleUserLogin(e) {
+      e.preventDefault();
+      const emailInput = document.getElementById('login-email').value.trim().toLowerCase();
+      const errorMsg = document.getElementById('login-error-msg');
 
-      if (currentFilterKpi) {
-        if (currentFilterKpi === 'open') rows = rows.filter(r => String(r.estado).toLowerCase() === 'abierto');
-        else if (currentFilterKpi === 'process') rows = rows.filter(r => String(r.estado).toLowerCase() === 'en proceso');
-        else if (currentFilterKpi === 'closed') rows = rows.filter(r => String(r.estado).toLowerCase() === 'cerrado');
-        else if (currentFilterKpi === 'cancelled') rows = rows.filter(r => String(r.estado).toLowerCase() === 'cancelado');
-        else if (currentFilterKpi === 'req') rows = rows.filter(r => !!r.requerimiento);
-      }
+      const foundUser = whitelistUsers.find(u => u.email.toLowerCase() === emailInput && u.status.toUpperCase() === 'ACTIVO');
 
-      if (searchText && searchText.trim()){
-        const n = norm(searchText);
-        rows = rows.filter(r =>
-          norm(`${r.id} ${r.categoria} ${r.falla} ${r.usuario} ${r.descripcion || ''} ${r.requerimiento || ''}`).includes(n)
-        );
-      }
-
-      rows.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
-      return rows;
-    }
-
-    /* ==================== RENDER DE LA TABLA CON PAGINACIÓN ==================== */
-    function render(countersFromAPI){
-      const allRows = currentFilteredRows();
-      
-      if (countersFromAPI && lastSource === 'Google Sheets') {
-        setCounters(countersFromAPI);
-      } else {
-        setCounters(computeCounters(currentBaseRows()));
-      }
-
-      syncBadge.innerHTML = `🟢 ${lastSource}`;
-      syncBadge.style.background = lastSource === 'Google Sheets' ? '#ecfdf5' : '#fef3c7';
-      syncBadge.style.color = lastSource === 'Google Sheets' ? '#059669' : '#b45309';
-
-      // Paginación
-      const totalItems = allRows.length;
-      const totalPages = Math.max(1, Math.ceil(totalItems / PAGE_SIZE));
-      if (currentPage > totalPages) currentPage = totalPages;
-
-      const start = (currentPage - 1) * PAGE_SIZE;
-      const end = start + PAGE_SIZE;
-      const pageRows = allRows.slice(start, end);
-
-      pageInfo.textContent = `Mostrando ${totalItems === 0 ? 0 : start + 1} - ${Math.min(end, totalItems)} de ${totalItems} reportes`;
-      pageCurrent.textContent = `${currentPage} / ${totalPages}`;
-      btnPrevPage.disabled = currentPage <= 1;
-      btnNextPage.disabled = currentPage >= totalPages;
-
-      if (!pageRows.length) {
-        tbody.innerHTML = `<tr><td colspan="10" style="text-align:center; padding:36px; color:var(--text-muted);">
-          🔍 No se encontraron tickets con los filtros actuales.
-        </td></tr>`;
+      if (!foundUser) {
+        errorMsg.style.display = 'block';
         return;
       }
 
-      tbody.innerHTML = pageRows.map(t => `
+      errorMsg.style.display = 'none';
+      activeUser = foundUser;
+      const isAdmin = foundUser.role.toUpperCase().includes('ADMIN');
+      currentRole = isAdmin ? 'ADMIN' : 'USER';
+      localStorage.setItem('LOGGED_USER_EMAIL_CLOUD', foundUser.email);
+
+      document.getElementById('login-screen').style.display = 'none';
+      setupUIForLoggedUser();
+      fetchCloudData();
+    }
+
+    function handleLogout() {
+      localStorage.removeItem('LOGGED_USER_EMAIL_CLOUD');
+      activeUser = null;
+      document.getElementById('login-screen').style.display = 'flex';
+      document.getElementById('login-email').value = '';
+    }
+
+    function checkExistingSession() {
+      const savedEmail = localStorage.getItem('LOGGED_USER_EMAIL_CLOUD');
+      if (savedEmail) {
+        const found = whitelistUsers.find(u => u.email.toLowerCase() === savedEmail.toLowerCase() && u.status.toUpperCase() === 'ACTIVO');
+        if (found) {
+          activeUser = found;
+          const isAdmin = found.role.toUpperCase().includes('ADMIN');
+          currentRole = isAdmin ? 'ADMIN' : 'USER';
+          document.getElementById('login-screen').style.display = 'none';
+          setupUIForLoggedUser();
+          fetchCloudData();
+          return;
+        }
+      }
+      document.getElementById('login-screen').style.display = 'flex';
+    }
+
+    function setupUIForLoggedUser() {
+      document.getElementById('nav-user-name').innerText = activeUser.name;
+      document.getElementById('nav-user-email').innerText = activeUser.email;
+      document.getElementById('nav-user-avatar').innerText = activeUser.name.split(' ').map(n=>n[0]).join('');
+      document.getElementById('role-badge').innerText = activeUser.role;
+
+      document.getElementById('perfil-name').innerText = activeUser.name;
+      document.getElementById('perfil-email').innerText = activeUser.email;
+      document.getElementById('perfil-role').innerText = `Rol: ${activeUser.role}`;
+
+      const bannerDesc = document.getElementById('banner-role-desc');
+      const bannerTitle = document.getElementById('banner-role-title');
+      const actionLinks = document.getElementById('admin-action-links');
+
+      if (currentRole === 'ADMIN') {
+        bannerTitle.innerText = `ADMINISTRADOR TI: ${activeUser.name.toUpperCase()}`;
+        bannerDesc.innerText = 'Gestión de inventario, usuarios autorizados y actas de custodia.';
+        actionLinks.style.display = 'flex';
+      } else {
+        bannerTitle.innerText = `PANEL DE USUARIO: ${activeUser.name.toUpperCase()}`;
+        bannerDesc.innerText = 'Consulta tus solicitudes de préstamo y los equipos físicos bajo tu custodia.';
+        actionLinks.style.display = 'none';
+      }
+
+      renderTabsForRole();
+    }
+
+    function renderTabsForRole() {
+      const container = document.getElementById('tabs-header-container');
+      if (currentRole === 'ADMIN') {
+        document.getElementById('stats-grid-container').style.display = 'grid';
+        container.innerHTML = `
+          <button class="tab-button active" onclick="switchTab('dashboard')">🏠 Dashboard</button>
+          <button class="tab-button" onclick="switchTab('solicitudes')">📋 Solicitudes & Aprobaciones TI</button>
+          <button class="tab-button" onclick="switchTab('inventario')">💻 Inventario & Equipos</button>
+          <button class="tab-button" onclick="switchTab('usuarios')">👥 Gestión de Usuarios</button>
+          <button class="tab-button" onclick="switchTab('configuracion')">⚙️ Configuración Cloud</button>
+          <button class="tab-button" onclick="switchTab('perfil')">👤 Mi Perfil</button>
+        `;
+        document.getElementById('solicitudes-title').innerText = '📋 Solicitudes de Préstamo & Aprobaciones TI';
+        switchTab('dashboard');
+      } else {
+        document.getElementById('stats-grid-container').style.display = 'none';
+        container.innerHTML = `
+          <button class="tab-button active" onclick="switchTab('solicitudes')">📋 Mis Solicitudes</button>
+          <button class="tab-button" onclick="switchTab('perfil')">👤 Mis Activos en Custodia</button>
+        `;
+        document.getElementById('solicitudes-title').innerText = '📋 Mis Solicitudes de Préstamo';
+        switchTab('solicitudes');
+      }
+    }
+
+    // REGISTRAR NUEVO USUARIO
+    function submitNewUserForm(e) {
+      e.preventDefault();
+      const name = document.getElementById('new-user-name').value.trim();
+      const email = document.getElementById('new-user-email').value.trim().toLowerCase();
+      const role = document.getElementById('new-user-role').value;
+      const status = document.getElementById('new-user-status').value;
+
+      showToast(`Guardando a ${name} y enviando correo...`, '✉️');
+
+      const params = new URLSearchParams({
+        action: 'REGISTRAR_USUARIO',
+        newName: name,
+        newEmail: email,
+        newRole: role,
+        newStatus: status,
+        adminName: activeUser ? activeUser.name : 'Administrador TI',
+        _t: Date.now()
+      });
+
+      const popup = window.open(`${appsScriptWebhookUrl}?${params.toString()}`, 'gscript_runner', 'width=350,height=250,left=2000,top=2000');
+      if (popup) setTimeout(() => { try { popup.close(); } catch(e){} }, 2500);
+
+      closeModal('modal-add-user');
+      document.getElementById('new-user-name').value = '';
+      document.getElementById('new-user-email').value = '';
+      setTimeout(fetchCloudData, 2500);
+    }
+
+    // CREAR SOLICITUD
+    function submitLoanForm(e) {
+      e.preventDefault();
+      const cat = document.getElementById('loan-cat').value.trim();
+      const just = document.getElementById('loan-just').value.trim();
+
+      showToast('Enviando solicitud a Google Sheets...', '📨');
+
+      const params = new URLSearchParams({
+        action: 'CREAR_SOLICITUD',
+        user: activeUser ? activeUser.name : 'Usuario',
+        email: activeUser ? activeUser.email : 'correo@sedic.com.co',
+        cat: cat,
+        just: just,
+        _t: Date.now()
+      });
+
+      const popup = window.open(`${appsScriptWebhookUrl}?${params.toString()}`, 'gscript_runner', 'width=350,height=250,left=2000,top=2000');
+      if (popup) setTimeout(() => { try { popup.close(); } catch(e){} }, 2500);
+
+      closeModal('modal-loan');
+      document.getElementById('loan-cat').value = '';
+      document.getElementById('loan-just').value = '';
+      setTimeout(fetchCloudData, 2000);
+    }
+
+    // ASIGNAR EQUIPO CON RESPONSABLE DINÁMICO
+    function assignLoan(loanId) {
+      const loan = loans.find(l => l.id === loanId);
+      if (!loan) return;
+
+      const loanCatLower = (loan.cat || '').toLowerCase();
+      
+      const matchingAssets = assets.filter(a => {
+        if (a.status !== 'DISPONIBLE') return false;
+        const assetCatLower = (a.cat || '').toLowerCase();
+        
+        if (loanCatLower.includes('portátil') || loanCatLower.includes('laptop')) {
+          return assetCatLower.includes('portátil') || assetCatLower.includes('laptop') || assetCatLower.includes('desarrollo') || assetCatLower.includes('rendimiento');
+        }
+        if (loanCatLower.includes('pantalla') || loanCatLower.includes('monitor')) {
+          return assetCatLower.includes('pantalla') || assetCatLower.includes('monitor');
+        }
+        if (loanCatLower.includes('mouse')) return assetCatLower.includes('mouse');
+        if (loanCatLower.includes('teclado')) return assetCatLower.includes('teclado');
+        if (loanCatLower.includes('hdmi')) return assetCatLower.includes('hdmi') || assetCatLower.includes('cable');
+        if (loanCatLower.includes('usb') || loanCatLower.includes('token')) return assetCatLower.includes('usb') || assetCatLower.includes('token') || assetCatLower.includes('yubi');
+        if (loanCatLower.includes('cargador')) return assetCatLower.includes('cargador') || assetCatLower.includes('adaptador');
+        if (loanCatLower.includes('diadema') || loanCatLower.includes('auricular')) return assetCatLower.includes('diadema') || assetCatLower.includes('auricular');
+
+        return assetCatLower === loanCatLower || assetCatLower.includes(loanCatLower) || loanCatLower.includes(assetCatLower);
+      });
+
+      if (matchingAssets.length === 0) {
+        alert(`⚠️ No hay ningún activo disponible de la categoría "${loan.cat}".\n\nPuedes ingresar uno en Google Sheets o Rechazar la solicitud indicando el motivo.`);
+        return;
+      }
+
+      const selectedAsset = matchingAssets[0];
+
+      if (!confirm(`¿Confirmas asignar el siguiente equipo a ${loan.user}?\n\n• Categoría: ${selectedAsset.cat}\n• Equipo: ${selectedAsset.brand} ${selectedAsset.model}\n• Placa: ${selectedAsset.tag}\n• Serial: ${selectedAsset.sn}`)) {
+        return;
+      }
+
+      showToast(`Asignando ${selectedAsset.tag} por ${activeUser.name}...`, '📨');
+
+      const params = new URLSearchParams({
+        action: 'ASIGNAR_PRESTAMO',
+        to: loan.email,
+        recipientName: loan.user,
+        requestNumber: loan.num,
+        assetTag: selectedAsset.tag,
+        model: `${selectedAsset.brand} ${selectedAsset.model}`,
+        sn: selectedAsset.sn,
+        category: selectedAsset.cat || loan.cat,
+        specs: selectedAsset.specs,
+        adminName: activeUser ? activeUser.name : 'Administrador TI',
+        adminEmail: activeUser ? activeUser.email : 'ti@sedic.com.co',
+        _t: Date.now()
+      });
+
+      const popup = window.open(`${appsScriptWebhookUrl}?${params.toString()}`, 'gscript_runner', 'width=350,height=250,left=2000,top=2000');
+      if (popup) setTimeout(() => { try { popup.close(); } catch(e){} }, 2500);
+
+      setTimeout(fetchCloudData, 3000);
+    }
+
+    // RECHAZAR SOLICITUD
+    function rejectLoan(loanId) {
+      const loan = loans.find(l => l.id === loanId);
+      if (!loan) return;
+
+      const reason = prompt(`Indica el motivo del rechazo para ${loan.user} (${loan.num}):`, 'No hay disponibilidad de equipos en bodega en este momento.');
+      if (!reason) return;
+
+      showToast('Registrando rechazo y notificando por correo...', '📨');
+
+      const params = new URLSearchParams({
+        action: 'RECHAZAR_SOLICITUD',
+        to: loan.email,
+        recipientName: loan.user,
+        requestNumber: loan.num,
+        category: loan.cat,
+        reason: reason,
+        adminName: activeUser ? activeUser.name : 'Administrador TI',
+        adminEmail: activeUser ? activeUser.email : 'ti@sedic.com.co',
+        _t: Date.now()
+      });
+
+      const popup = window.open(`${appsScriptWebhookUrl}?${params.toString()}`, 'gscript_runner', 'width=350,height=250,left=2000,top=2000');
+      if (popup) setTimeout(() => { try { popup.close(); } catch(e){} }, 2500);
+
+      setTimeout(fetchCloudData, 2500);
+    }
+
+    // DEVOLVER EQUIPO
+    function returnLoan(loanId) {
+      const loan = loans.find(l => l.id === loanId);
+      if (!loan) return;
+
+      if (!confirm(`¿Confirmas la devolución del equipo ${loan.tag} de ${loan.user}?`)) return;
+
+      showToast('Actualizando acta de devolución en Drive y Sheets...', '📨');
+
+      const params = new URLSearchParams({
+        action: 'REGISTRAR_DEVOLUCION',
+        to: loan.email,
+        recipientName: loan.user,
+        requestNumber: loan.num,
+        assetTag: loan.tag,
+        model: loan.model,
+        sn: loan.sn,
+        category: loan.cat || 'Equipo TI',
+        specs: 'Recibido a conformidad en área de TI',
+        adminName: activeUser ? activeUser.name : 'Administrador TI',
+        adminEmail: activeUser ? activeUser.email : 'ti@sedic.com.co',
+        _t: Date.now()
+      });
+
+      const popup = window.open(`${appsScriptWebhookUrl}?${params.toString()}`, 'gscript_runner', 'width=350,height=250,left=2000,top=2000');
+      if (popup) setTimeout(() => { try { popup.close(); } catch(e){} }, 2500);
+
+      setTimeout(fetchCloudData, 3000);
+    }
+
+    function renderAll() {
+      renderStats();
+      renderSolicitudes();
+      renderInventario();
+      renderUsuarios();
+      renderCustody();
+    }
+
+    function renderStats() {
+      const avail = assets.filter(a => a.status === 'DISPONIBLE').length;
+      const inLoan = assets.filter(a => a.status === 'ASIGNADO_EN_PRESTAMO').length;
+      const pending = loans.filter(l => l.status === 'SOLICITADO').length;
+
+      const availEl = document.getElementById('stat-available');
+      if (availEl) {
+        availEl.innerText = `${avail} / ${assets.length}`;
+        document.getElementById('stat-loans').innerText = inLoan;
+        document.getElementById('stat-pending').innerText = pending;
+        document.getElementById('dash-total-assets').innerText = assets.length;
+        document.getElementById('dash-avail-assets').innerText = avail;
+        document.getElementById('dash-loan-assets').innerText = inLoan;
+      }
+    }
+
+    function renderSolicitudes() {
+      const tbody = document.getElementById('tbody-solicitudes');
+      let filteredLoans = loans;
+      if (currentRole === 'USER' && activeUser) {
+        filteredLoans = loans.filter(l => l.email.toLowerCase() === activeUser.email.toLowerCase());
+      }
+
+      if (filteredLoans.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:var(--text-muted); padding:2rem;">No hay solicitudes registradas en Google Sheets.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = filteredLoans.map(l => `
         <tr>
+          <td style="font-weight:700; font-family:monospace; color:var(--primary);">${l.num}</td>
+          <td><div><strong>${l.user}</strong></div><div style="font-size:0.75rem; color:var(--text-muted);">${l.email}</div></td>
+          <td><span class="g-badge" style="font-size:0.8rem;">${l.cat}</span></td>
+          <td>${l.tag ? `<div><strong>${l.tag}</strong></div><div style="font-size:0.75rem; color:var(--text-muted);">${l.model} (SN: <code>${l.sn}</code>)</div>` : '<span style="color:var(--warning);">No asignado</span>'}</td>
+          <td>${l.date || '2026-08-01'}</td>
+          <td>${getStatusBadge(l.status)}</td>
           <td>
-            <span class="ticket-id" data-id="${t.id}" title="Copiar ID o ver detalles">
-              ${t.id || '—'}
-            </span>
-            ${t.requerimiento ? `<div style="font-size:0.72rem; color:#8b5cf6; font-weight:700; margin-top:2px;">🏷️ ${esc(t.requerimiento)}</div>` : ''}
-          </td>
-          <td><strong>${esc(t.analista || '—')}</strong></td>
-          <td><span style="font-size:0.8rem; background:var(--bg-subtle); padding:2px 6px; border-radius:4px;">${esc(t.categoria || '—')}</span></td>
-          <td>${esc(t.falla || '—')}</td>
-          <td>${esc(t.usuario || '—')}</td>
-          <td>
-            ${t.descripcion ? 
-              `<span class="desc-preview" data-id="${t.id}" title="Haz clic para ver descripción completa">${esc(trunc(t.descripcion, 32))}</span>` 
-              : '<span style="color:var(--text-light)">—</span>'}
-          </td>
-          <td>${renderPriorityBadge(t.prioridad)}</td>
-          <td>${renderStatusBadge(t.estado)}</td>
-          <td style="font-size:0.78rem; color:var(--text-muted);">${fmtDate(t.fecha)}</td>
-          <td>
-            <div class="table-actions">
-              <!-- Botón icono profesional para ver detalle -->
-              <button class="btn-icon-action btn-detail" data-id="${t.id}" title="Ver todos los detalles del ticket">
-                <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-              </button>
-              <select class="action-select estado-select" data-id="${t.id}" title="Cambiar estado">
-                <option ${t.estado==='Abierto'?'selected':''}>Abierto</option>
-                <option ${t.estado==='En Proceso'?'selected':''}>En Proceso</option>
-                <option ${t.estado==='Cerrado'?'selected':''}>Cerrado</option>
-                <option ${t.estado==='Cancelado'?'selected':''}>Cancelado</option>
-              </select>
-              <select class="action-select prio-select" data-id="${t.id}" title="Cambiar prioridad">
-                <option ${t.prioridad==='Alta'?'selected':''}>Alta</option>
-                <option ${t.prioridad==='Media'?'selected':''}>Media</option>
-                <option ${t.prioridad==='Baja'?'selected':''}>Baja</option>
-              </select>
-            </div>
+            ${currentRole === 'ADMIN' && l.status === 'SOLICITADO' ? `
+              <div style="display:flex; gap:0.4rem; flex-wrap:wrap;">
+                <button class="btn btn-primary" style="padding:0.35rem 0.65rem; font-size:0.75rem;" onclick="assignLoan('${l.id}')">Assign & Drive PDF</button>
+                <button class="btn btn-danger" style="padding:0.35rem 0.65rem; font-size:0.75rem;" onclick="rejectLoan('${l.id}')">⛔ Rechazar</button>
+              </div>
+            ` : ''}
+            ${currentRole === 'ADMIN' && (l.status === 'ENTREGADO' || l.status === 'EN_MORA') ? `<button class="btn btn-success" style="padding:0.35rem 0.7rem; font-size:0.75rem;" onclick="returnLoan('${l.id}')">Registrar Devolución & Actualizar PDF</button>` : ''}
+            ${currentRole === 'USER' && l.status === 'SOLICITADO' ? '<span style="font-size:0.75rem; color:var(--purple);">En revisión por TI</span>' : ''}
+            ${l.status === 'RECHAZADO' ? '<span style="font-size:0.75rem; color:var(--danger);">Solicitud no aprobada</span>' : ''}
+            ${l.status === 'DEVUELTO' ? '<span style="font-size:0.75rem; color:var(--text-muted);">Completado</span>' : ''}
+            ${l.driveFile && !l.driveFile.startsWith('Motivo') && !l.driveFile.startsWith('Rechazado') ? `<br/><a href="https://drive.google.com/drive/u/0/folders/${driveFolderId}" target="_blank" style="color:var(--primary); font-size:0.72rem; text-decoration:none;">📄 Drive: ${l.driveFile} ↗</a>` : ''}
           </td>
         </tr>
       `).join('');
     }
 
-    /* Paginación click */
-    btnPrevPage.addEventListener('click', () => { if (currentPage > 1) { currentPage--; render(); } });
-    btnNextPage.addEventListener('click', () => { currentPage++; render(); });
-
-    /* ==================== EXPORTACIÓN A CSV (COMPATIBLE EXCEL) ==================== */
-    if (btnExportCSV) {
-      btnExportCSV.addEventListener('click', () => {
-        try {
-          const rows = currentFilteredRows();
-          if (!rows || !rows.length) {
-            showToast('No hay datos en la tabla para exportar', 'error');
-            return;
-          }
-
-          // Formato con punto y coma (;) para compatibilidad nativa con Excel en español
-          const headers = ['ID', 'Analista', 'Categoria', 'Servicio', 'Usuario', 'Descripcion', 'Prioridad', 'Estado', 'Requerimiento', 'Fecha', 'Solucion_Motivo'];
-          const lines = [headers.join(';')];
-
-          rows.forEach(r => {
-            const clean = str => `"${String(str || '').replace(/"/g, '""').replace(/[\r\n]+/g, ' ')}"`;
-            const row = [
-              clean(r.id),
-              clean(r.analista),
-              clean(r.categoria),
-              clean(r.falla),
-              clean(r.usuario),
-              clean(r.descripcion),
-              clean(r.prioridad),
-              clean(r.estado),
-              clean(r.requerimiento),
-              clean(fmtDate(r.fecha)),
-              clean(r.solucion || r.motivo || '')
-            ];
-            lines.push(row.join(';'));
-          });
-
-          const csvContent = '\uFEFF' + lines.join('\r\n');
-          const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-          const url = URL.createObjectURL(blob);
-          const link = document.createElement('a');
-          const fechaStr = new Date().toISOString().slice(0, 10);
-          
-          link.href = url;
-          link.download = `Reportes_TI_${fechaStr}.csv`;
-          document.body.appendChild(link);
-          link.click();
-          
-          setTimeout(() => {
-            document.body.removeChild(link);
-            URL.revokeObjectURL(url);
-          }, 100);
-
-          showToast(`Archivo Reportes_TI_${fechaStr}.csv descargado con éxito`, 'success');
-        } catch (err) {
-          console.error(err);
-          showToast('Error al exportar el archivo CSV', 'error');
-        }
-      });
-    }
-
-    /* ==================== MODAL DE DETALLES DEL TICKET ==================== */
-    document.addEventListener('click', e => {
-      // Copiar ID
-      const tid = e.target.closest('.ticket-id');
-      if (tid && !e.target.closest('.btn-detail')) {
-        const id = tid.dataset.id;
-        navigator.clipboard.writeText(id).then(() => {
-          showToast(`ID ${id} copiado al portapapeles`, 'success');
-        });
+    function renderInventario() {
+      const tbody = document.getElementById('tbody-inventario');
+      if (!tbody) return;
+      if (assets.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:2rem; color:var(--text-muted);">No hay activos registrados en Google Sheets.</td></tr>`;
+        return;
       }
+      tbody.innerHTML = assets.map(a => `
+        <tr>
+          <td style="font-weight:700; font-family:monospace; color:var(--primary);">${a.tag}</td>
+          <td style="font-family:monospace; font-size:0.8rem; font-weight:700;">${a.sn}</td>
+          <td><div><strong>${a.brand} ${a.model}</strong></div></td>
+          <td><span class="g-badge">${a.cat}</span></td>
+          <td style="font-size:0.75rem; font-family:monospace;">${a.specs}</td>
+          <td style="font-size:0.85rem;">${a.loc}</td>
+          <td><span class="badge ${a.status === 'DISPONIBLE' ? 'badge-disponible' : 'badge-prestamo'}">${a.status}</span></td>
+        </tr>
+      `).join('');
+    }
 
-      // Ver detalle completo
-      const btnD = e.target.closest('.btn-detail') || e.target.closest('.desc-preview');
-      if (btnD) {
-        const id = btnD.dataset.id;
-        const all = Array.isArray(ticketsRemote) ? ticketsRemote : ticketsLocal;
-        const t = all.find(x => x.id === id);
-        if (t) showTicketDetails(t);
+    function renderUsuarios() {
+      const tbody = document.getElementById('tbody-usuarios');
+      if (!tbody) return;
+      if (whitelistUsers.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:2rem; color:var(--text-muted);">No hay usuarios registrados.</td></tr>`;
+        return;
       }
-    });
-
-    function showTicketDetails(t) {
-      detailTitle.textContent = `Detalle del Ticket ${t.id}`;
-      detailBody.innerHTML = `
-        <div class="detail-grid">
-          <div class="detail-item"><span class="detail-label">Analista Responsable</span><span class="detail-val">${esc(t.analista || '—')}</span></div>
-          <div class="detail-item"><span class="detail-label">Usuario Solicitante</span><span class="detail-val">${esc(t.usuario || '—')}</span></div>
-          <div class="detail-item"><span class="detail-label">Categoría</span><span class="detail-val">${esc(t.categoria || '—')}</span></div>
-          <div class="detail-item"><span class="detail-label">Servicio / Falla</span><span class="detail-val">${esc(t.falla || '—')}</span></div>
-          <div class="detail-item"><span class="detail-label">Prioridad</span><span class="detail-val">${renderPriorityBadge(t.prioridad)}</span></div>
-          <div class="detail-item"><span class="detail-label">Estado</span><span class="detail-val">${renderStatusBadge(t.estado)}</span></div>
-          <div class="detail-item"><span class="detail-label">Requerimiento</span><span class="detail-val">${t.requerimiento ? `🏷️ ${esc(t.requerimiento)}` : 'No registra'}</span></div>
-          <div class="detail-item"><span class="detail-label">Fecha Creación</span><span class="detail-val">${fmtDate(t.fecha)}</span></div>
-        </div>
-
-        <div style="margin-top:14px;">
-          <span class="detail-label">Descripción del Ticket</span>
-          <div class="detail-box">${esc(t.descripcion || 'Sin descripción adicional.')}</div>
-        </div>
-
-        ${t.solucion ? `
-          <div style="margin-top:14px;">
-            <span class="detail-label" style="color:#059669;">Solución Registrada</span>
-            <div class="detail-box" style="border-color:#a7f3d0; background:#f0fdf4;">${esc(t.solucion)}</div>
-          </div>
-        ` : ''}
-
-        ${t.motivo ? `
-          <div style="margin-top:14px;">
-            <span class="detail-label" style="color:#dc2626;">Motivo de Cancelación</span>
-            <div class="detail-box" style="border-color:#fecaca; background:#fef2f2;">${esc(t.motivo)}</div>
-          </div>
-        ` : ''}
-      `;
-      detailModal.showModal();
+      tbody.innerHTML = whitelistUsers.map(u => `
+        <tr>
+          <td><strong>${u.name}</strong></td>
+          <td style="font-family:monospace; color:var(--primary);">${u.email}</td>
+          <td><span class="badge ${u.role.toUpperCase().includes('ADMIN') ? 'badge-disponible' : 'badge-prestamo'}">${u.role}</span></td>
+          <td><span class="badge badge-disponible">${u.status}</span></td>
+          <td>
+            <button class="btn btn-secondary" style="padding:0.25rem 0.55rem; font-size:0.72rem;" onclick="prefillUserEdit('${u.email}', '${u.name}', '${u.role}', '${u.status}')">✏️ Editar</button>
+          </td>
+        </tr>
+      `).join('');
     }
 
-    /* ==================== MÓDULO DE INFORME MENSUAL Y GRÁFICAS ==================== */
-    if (btnOpenMonthlyReport) {
-      btnOpenMonthlyReport.addEventListener('click', () => {
-        // Inicializar mes por defecto con el actual o el seleccionado
-        if (monthSelect.value && reportMonthSelect) {
-          reportMonthSelect.value = monthSelect.value;
-        }
-        updateMonthlyReport();
-        reportModal.showModal();
-      });
+    function prefillUserEdit(email, name, role, status) {
+      document.getElementById('new-user-name').value = name;
+      document.getElementById('new-user-email').value = email;
+      document.getElementById('new-user-role').value = role.includes('ADMIN') ? 'ADMIN_TI' : 'USUARIO';
+      document.getElementById('new-user-status').value = status;
+      openModal('modal-add-user');
     }
 
-    if (reportMonthSelect) reportMonthSelect.addEventListener('change', updateMonthlyReport);
-    if (reportAnalystSelect) reportAnalystSelect.addEventListener('change', updateMonthlyReport);
-
-    function updateMonthlyReport() {
-      const allTickets = Array.isArray(ticketsRemote) ? ticketsRemote : ticketsLocal;
-      const selYm = reportMonthSelect.value;
-      const selAnalyst = reportAnalystSelect.value;
-
-      // Filtrar tickets por mes y analista
-      let filtered = allTickets.filter(t => {
-        const d = new Date(t.fecha);
-        const ym = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
-        if (selYm && ym !== selYm) return false;
-        if (selAnalyst && String(t.analista) !== selAnalyst) return false;
-        return true;
-      });
-
-      // Calcular estadísticas
-      const total = filtered.length;
-      let cerrados = 0;
-      let abiertos = 0;
-      let enProceso = 0;
-      let cancelados = 0;
-
-      const countServices = {};
-      const countCategories = {};
-
-      filtered.forEach(t => {
-        const st = String(t.estado || '').toLowerCase();
-        if (st === 'cerrado') cerrados++;
-        else if (st === 'en proceso') enProceso++;
-        else if (st === 'cancelado') cancelados++;
-        else abiertos++;
-
-        const srv = t.falla || 'Otros servicios';
-        countServices[srv] = (countServices[srv] || 0) + 1;
-
-        const cat = t.categoria || 'Otro';
-        countCategories[cat] = (countCategories[cat] || 0) + 1;
-      });
-
-      const tramites = abiertos + enProceso;
-      const pctCerrados = total ? ((cerrados / total) * 100).toFixed(1) : '0.0';
-      const pctTramite = total ? ((tramites / total) * 100).toFixed(1) : '0.0';
-
-      const monthName = reportMonthSelect.options[reportMonthSelect.selectedIndex]?.text || 'el período seleccionado';
-
-      // 1. Redactar el Resumen Ejecutivo
-      reportSummaryText.innerHTML = `
-        <p>Durante el mes de <strong>${monthName}</strong>, el área de TI atendió un total de <strong>${total} solicitudes</strong>${selAnalyst ? ` asignadas a <strong>${selAnalyst}</strong>` : ''}, clasificados principalmente entre incidentes y requerimientos.</p>
-        <p style="margin-top:6px;">El <strong>${pctCerrados}%</strong> de las actividades fueron finalizadas satisfactoriamente, mientras que el <strong>${pctTramite}%</strong> permanecen en trámite.</p>
-      `;
-
-      // 2. Llenar tabla de Actividades Ejecutadas (ordenada de mayor a menor)
-      const sortedServices = Object.entries(countServices).sort((a, b) => b[1] - a[1]);
-      if (sortedServices.length) {
-        reportTableBody.innerHTML = sortedServices.map(([srv, cnt]) => `
-          <tr>
-            <td>${esc(srv)}</td>
-            <td style="text-align:right; font-weight:700;">${cnt}</td>
-          </tr>
-        `).join('');
+    function renderCustody() {
+      const container = document.getElementById('user-custody-list');
+      if (!container || !activeUser) return;
+      const userActiveLoans = loans.filter(l => l.email.toLowerCase() === activeUser.email.toLowerCase() && (l.status === 'ENTREGADO' || l.status === 'EN_MORA'));
+      
+      if (userActiveLoans.length === 0) {
+        container.innerHTML = `<span style="color:var(--success);">✔ No tienes ningún equipo físico bajo tu custodia en este momento.</span>`;
       } else {
-        reportTableBody.innerHTML = `<tr><td colspan="2" style="text-align:center; padding:20px; color:var(--text-muted);">Sin registros en este período.</td></tr>`;
-      }
-
-      // 3. Renderizar Gráfico Donut de Estados (Chart.js)
-      renderChartStatus(cerrados, abiertos, enProceso, cancelados);
-
-      // 4. Renderizar Gráfico de Categorías (Top)
-      renderChartCategory(countCategories);
-    }
-
-    function renderChartStatus(cerrados, abiertos, enProceso, cancelados) {
-      const ctx = document.getElementById('chartStatus');
-      if (!ctx) return;
-
-      if (chartStatusInstance) chartStatusInstance.destroy();
-
-      chartStatusInstance = new Chart(ctx, {
-        type: 'doughnut',
-        data: {
-          labels: ['Cerrado', 'Abierto', 'En Proceso', 'Cancelado'],
-          datasets: [{
-            data: [cerrados, abiertos, enProceso, cancelados],
-            backgroundColor: ['#3b82f6', '#f97316', '#eab308', '#94a3b8'],
-            borderWidth: 2,
-            borderColor: '#ffffff'
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: { position: 'bottom', labels: { boxWidth: 12, font: { family: 'Plus Jakarta Sans', size: 11 } } },
-            tooltip: {
-              callbacks: {
-                label: function(item) {
-                  const total = item.dataset.data.reduce((a, b) => a + b, 0);
-                  const val = item.raw;
-                  const pct = total ? ((val / total) * 100).toFixed(1) : 0;
-                  return ` ${item.label}: ${val} (${pct}%)`;
-                }
-              }
-            }
-          },
-          cutout: '65%'
-        }
-      });
-    }
-
-    function renderChartCategory(categories) {
-      const ctx = document.getElementById('chartCategory');
-      if (!ctx) return;
-
-      if (chartCategoryInstance) chartCategoryInstance.destroy();
-
-      const sorted = Object.entries(categories).sort((a, b) => b[1] - a[1]).slice(0, 5);
-      const labels = sorted.map(x => x[0]);
-      const values = sorted.map(x => x[1]);
-
-      chartCategoryInstance = new Chart(ctx, {
-        type: 'bar',
-        data: {
-          labels: labels,
-          datasets: [{
-            label: 'Tickets',
-            data: values,
-            backgroundColor: '#0284c7',
-            borderRadius: 6
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: { display: false }
-          },
-          scales: {
-            y: { beginAtZero: true, ticks: { precision: 0 } },
-            x: { ticks: { font: { size: 10 } } }
-          }
-        }
-      });
-    }
-
-    if (btnCopyReportText) {
-      btnCopyReportText.addEventListener('click', () => {
-        const text = reportSummaryText.innerText;
-        navigator.clipboard.writeText(text).then(() => {
-          showToast('Resumen ejecutivo copiado al portapapeles', 'success');
-        });
-      });
-    }
-
-    /* ==================== WHOAMI + LIST + CONTACTS ==================== */
-    async function fetchRemote(){
-      try {
-        const params = new URLSearchParams();
-        params.set('action', 'list');
-        params.set('view', viewSelect.value);
-        if (analystSelect.value) params.set('analyst', analystSelect.value);
-        if (statusSelect.value === 'pendientes') params.set('state', 'pendientes');
-        else if (statusSelect.value) params.set('status', statusSelect.value);
-        if (monthSelect.value) params.set('ym', monthSelect.value);
-        params.set('limit', '2500');
-
-        const res = await fetch(WEB_APP_URL + '?' + params.toString());
-        const data = await res.json();
-        if (data && data.ok && Array.isArray(data.items)){
-          ticketsRemote = data.items;
-          render(data.counters);
-        } else {
-          ticketsRemote = null;
-          render();
-        }
-      } catch (err) {
-        ticketsRemote = null;
-        render();
+        container.innerHTML = userActiveLoans.map(l => `
+          <div style="background:rgba(255,255,255,0.04); padding:0.85rem; border-radius:8px; border:1px solid var(--primary); margin-bottom:0.5rem;">
+            <div style="font-weight:700; color:var(--primary); font-size:0.95rem;">${l.tag} - ${l.model}</div>
+            <div style="font-size:0.82rem; color:var(--text-main); margin-top:0.2rem;">Número de Serie (SN): <code>${l.sn}</code></div>
+            <div style="margin-top:0.4rem;"><a href="https://drive.google.com/drive/u/0/folders/${driveFolderId}" target="_blank" style="color:var(--primary); font-size:0.75rem; text-decoration:none;">📄 Ver Acta PDF en Carpeta Drive ↗</a></div>
+          </div>
+        `).join('');
       }
     }
 
-    async function fetchContacts(){
-      try {
-        const params = new URLSearchParams({ action:'contacts' });
-        const res = await fetch(WEB_APP_URL + '?' + params.toString());
-        const data = await res.json();
-        if (data && data.ok && Array.isArray(data.contacts) && data.contacts.length){
-          USUARIOS = data.contacts;
-        }
-      } catch(e) {}
+    function getStatusBadge(status) {
+      if (status === 'ENTREGADO') return '<span class="badge badge-disponible">ENTREGADO</span>';
+      if (status === 'SOLICITADO') return '<span class="badge badge-solicitado">PENDIENTE TI</span>';
+      if (status === 'EN_MORA') return '<span class="badge badge-mora">VENCIDO EN MORA</span>';
+      if (status === 'DEVUELTO') return '<span class="badge badge-disponible">DEVUELTO</span>';
+      if (status === 'RECHAZADO') return '<span class="badge badge-rechazado">RECHAZADO</span>';
+      return `<span class="badge badge-prestamo">${status}</span>`;
     }
 
-    async function postJSON(payload){
-      const res = await fetch(WEB_APP_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify(payload)
-      });
-      try { return await res.json(); } catch { return { ok: false, error: 'Respuesta no-JSON' }; }
+    function switchTab(tabName) {
+      document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      
+      const btn = Array.from(document.querySelectorAll('.tab-button')).find(b => b.getAttribute('onclick') && b.getAttribute('onclick').includes(tabName));
+      if (btn) btn.classList.add('active');
+      
+      const tabEl = document.getElementById(`tab-${tabName}`);
+      if (tabEl) tabEl.classList.add('active');
     }
 
-    /* ==================== CREAR TICKET ==================== */
-    form.addEventListener('submit', async e => {
-      e.preventDefault();
-      const analista   = $('#analista').value;
-      const categoria  = $('#categoria').value;
-      const falla      = $('#falla').value;
-      const usuario    = $('#usuario').value.trim();
-      const prioridad  = $('#prioridad').value;
-      const descripcion = $('#descripcion').value.trim();
+    function openModal(id) { document.getElementById(id).classList.add('active'); }
+    function closeModal(id) { document.getElementById(id).classList.remove('active'); }
 
-      const tieneReq = $('#reqSi').checked;
-      const reqNum   = $('#reqNumber').value.trim();
-      if (tieneReq && !reqNum){
-        showToast('Escribe el número de requerimiento', 'error');
-        $('#reqNumber').focus();
-        return;
+    function applyTheme(theme) {
+      const root = document.documentElement;
+      if (theme === 'blue') {
+        root.style.setProperty('--primary', '#4285f4');
+        root.style.setProperty('--primary-hover', '#3367d6');
+        root.style.setProperty('--primary-glow', 'rgba(66, 133, 244, 0.25)');
+        root.style.setProperty('--bg-dark', '#0b0f17');
+        root.style.setProperty('--bg-card', 'rgba(18, 26, 43, 0.95)');
+        root.style.setProperty('--bg-glass', 'rgba(15, 23, 42, 0.9)');
+        root.style.setProperty('--border-color', 'rgba(255, 255, 255, 0.1)');
+        root.style.setProperty('--text-main', '#f8fafc');
+        root.style.setProperty('--text-muted', '#94a3b8');
+        root.style.setProperty('--input-bg', '#070a10');
+        root.style.setProperty('--input-color', '#f8fafc');
+        root.style.setProperty('--input-border', 'rgba(255, 255, 255, 0.15)');
+        root.style.setProperty('--table-th-bg', 'rgba(255, 255, 255, 0.04)');
+        root.style.setProperty('--table-hover', 'rgba(255, 255, 255, 0.03)');
+        root.style.setProperty('--modal-bg', '#111827');
+        root.style.setProperty('--banner-bg', 'linear-gradient(135deg, rgba(66,133,244,0.15), rgba(161,66,244,0.1))');
+      } else if (theme === 'emerald') {
+        root.style.setProperty('--primary', '#10b981');
+        root.style.setProperty('--primary-hover', '#059669');
+        root.style.setProperty('--primary-glow', 'rgba(16, 185, 129, 0.25)');
+        root.style.setProperty('--bg-dark', '#05140f');
+        root.style.setProperty('--bg-card', 'rgba(10, 35, 26, 0.95)');
+        root.style.setProperty('--bg-glass', 'rgba(8, 28, 21, 0.9)');
+        root.style.setProperty('--border-color', 'rgba(16, 185, 129, 0.2)');
+        root.style.setProperty('--text-main', '#f0fdf4');
+        root.style.setProperty('--text-muted', '#6ee7b7');
+        root.style.setProperty('--input-bg', '#020b08');
+        root.style.setProperty('--input-color', '#f0fdf4');
+        root.style.setProperty('--input-border', 'rgba(16, 185, 129, 0.3)');
+        root.style.setProperty('--table-th-bg', 'rgba(16, 185, 129, 0.1)');
+        root.style.setProperty('--table-hover', 'rgba(16, 185, 129, 0.06)');
+        root.style.setProperty('--modal-bg', '#082119');
+        root.style.setProperty('--banner-bg', 'linear-gradient(135deg, rgba(16,185,129,0.18), rgba(5,150,105,0.1))');
+      } else if (theme === 'purple') {
+        root.style.setProperty('--primary', '#a855f7');
+        root.style.setProperty('--primary-hover', '#9333ea');
+        root.style.setProperty('--primary-glow', 'rgba(168, 85, 247, 0.25)');
+        root.style.setProperty('--bg-dark', '#11071c');
+        root.style.setProperty('--bg-card', 'rgba(30, 15, 48, 0.95)');
+        root.style.setProperty('--bg-glass', 'rgba(24, 11, 38, 0.9)');
+        root.style.setProperty('--border-color', 'rgba(168, 85, 247, 0.25)');
+        root.style.setProperty('--text-main', '#faf5ff');
+        root.style.setProperty('--text-muted', '#d8b4fe');
+        root.style.setProperty('--input-bg', '#09030f');
+        root.style.setProperty('--input-color', '#faf5ff');
+        root.style.setProperty('--input-border', 'rgba(168, 85, 247, 0.35)');
+        root.style.setProperty('--table-th-bg', 'rgba(168, 85, 247, 0.1)');
+        root.style.setProperty('--table-hover', 'rgba(168, 85, 247, 0.06)');
+        root.style.setProperty('--modal-bg', '#1b0c2e');
+        root.style.setProperty('--banner-bg', 'linear-gradient(135deg, rgba(168,85,247,0.18), rgba(236,72,153,0.1))');
+      } else if (theme === 'amber') {
+        root.style.setProperty('--primary', '#f59e0b');
+        root.style.setProperty('--primary-hover', '#d97706');
+        root.style.setProperty('--primary-glow', 'rgba(245, 158, 11, 0.25)');
+        root.style.setProperty('--bg-dark', '#160f05');
+        root.style.setProperty('--bg-card', 'rgba(38, 27, 12, 0.95)');
+        root.style.setProperty('--bg-glass', 'rgba(30, 20, 8, 0.9)');
+        root.style.setProperty('--border-color', 'rgba(245, 158, 11, 0.25)');
+        root.style.setProperty('--text-main', '#fffbeb');
+        root.style.setProperty('--text-muted', '#fde68a');
+        root.style.setProperty('--input-bg', '#0c0702');
+        root.style.setProperty('--input-color', '#fffbeb');
+        root.style.setProperty('--input-border', 'rgba(245, 158, 11, 0.35)');
+        root.style.setProperty('--table-th-bg', 'rgba(245, 158, 11, 0.1)');
+        root.style.setProperty('--table-hover', 'rgba(245, 158, 11, 0.06)');
+        root.style.setProperty('--modal-bg', '#24180a');
+        root.style.setProperty('--banner-bg', 'linear-gradient(135deg, rgba(245,158,11,0.18), rgba(217,119,6,0.1))');
+      } else if (theme === 'crimson') {
+        root.style.setProperty('--primary', '#ef4444');
+        root.style.setProperty('--primary-hover', '#dc2626');
+        root.style.setProperty('--primary-glow', 'rgba(239, 68, 68, 0.25)');
+        root.style.setProperty('--bg-dark', '#160606');
+        root.style.setProperty('--bg-card', 'rgba(38, 14, 14, 0.95)');
+        root.style.setProperty('--bg-glass', 'rgba(30, 10, 10, 0.9)');
+        root.style.setProperty('--border-color', 'rgba(239, 68, 68, 0.25)');
+        root.style.setProperty('--text-main', '#fef2f2');
+        root.style.setProperty('--text-muted', '#fca5a5');
+        root.style.setProperty('--input-bg', '#0c0202');
+        root.style.setProperty('--input-color', '#fef2f2');
+        root.style.setProperty('--input-border', 'rgba(239, 68, 68, 0.35)');
+        root.style.setProperty('--table-th-bg', 'rgba(239, 68, 68, 0.1)');
+        root.style.setProperty('--table-hover', 'rgba(239, 68, 68, 0.06)');
+        root.style.setProperty('--modal-bg', '#240a0a');
+        root.style.setProperty('--banner-bg', 'linear-gradient(135deg, rgba(239,68,68,0.18), rgba(185,28,28,0.1))');
+      } else if (theme === 'slate') {
+        root.style.setProperty('--primary', '#38bdf8');
+        root.style.setProperty('--primary-hover', '#0284c7');
+        root.style.setProperty('--primary-glow', 'rgba(56, 189, 248, 0.25)');
+        root.style.setProperty('--bg-dark', '#0f172a');
+        root.style.setProperty('--bg-card', '#1e293b');
+        root.style.setProperty('--bg-glass', 'rgba(30, 41, 59, 0.9)');
+        root.style.setProperty('--border-color', '#334155');
+        root.style.setProperty('--text-main', '#f8fafc');
+        root.style.setProperty('--text-muted', '#94a3b8');
+        root.style.setProperty('--input-bg', '#0b1120');
+        root.style.setProperty('--input-color', '#f8fafc');
+        root.style.setProperty('--input-border', '#475569');
+        root.style.setProperty('--table-th-bg', '#0f172a');
+        root.style.setProperty('--table-hover', 'rgba(255, 255, 255, 0.03)');
+        root.style.setProperty('--modal-bg', '#1e293b');
+        root.style.setProperty('--banner-bg', 'linear-gradient(135deg, rgba(56,189,248,0.15), rgba(99,102,241,0.1))');
+      } else if (theme === 'light') {
+        root.style.setProperty('--primary', '#2563eb');
+        root.style.setProperty('--primary-hover', '#1d4ed8');
+        root.style.setProperty('--primary-glow', 'rgba(37, 99, 235, 0.15)');
+        root.style.setProperty('--bg-dark', '#f1f5f9');
+        root.style.setProperty('--bg-card', '#ffffff');
+        root.style.setProperty('--bg-glass', 'rgba(255, 255, 255, 0.95)');
+        root.style.setProperty('--border-color', '#cbd5e1');
+        root.style.setProperty('--text-main', '#0f172a');
+        root.style.setProperty('--text-muted', '#475569');
+        root.style.setProperty('--input-bg', '#f8fafc');
+        root.style.setProperty('--input-color', '#0f172a');
+        root.style.setProperty('--input-border', '#94a3b8');
+        root.style.setProperty('--table-th-bg', '#f8fafc');
+        root.style.setProperty('--table-hover', '#f1f5f9');
+        root.style.setProperty('--modal-bg', '#ffffff');
+        root.style.setProperty('--banner-bg', 'linear-gradient(135deg, rgba(37,99,235,0.08), rgba(99,102,241,0.05))');
       }
-
-      if (!analista || !categoria || !falla || !usuario || !prioridad){
-        showToast('Completa todos los campos obligatorios (*)', 'error');
-        return;
-      }
-
-      const btnSubmit = $('#btnSubmit');
-      btnSubmit.disabled = true;
-      btnSubmit.innerHTML = '<span>⏳ Guardando…</span>';
-
-      const correoAnalista = (ANALISTAS.find(a => a.nombre === analista)?.email) || '';
-      const id = 'T' + new Date().toISOString().replace(/\D/g, '').slice(0, 14);
-      const nowISO = new Date().toISOString();
-
-      const t = {
-        id, analista, correoAnalista, categoria, falla, usuario, prioridad, descripcion,
-        requerimiento: tieneReq ? (reqNum.startsWith('REQ') ? reqNum : `REQ-${reqNum}`) : '',
-        estado: 'Abierto', fecha: nowISO
-      };
-
-      ticketsLocal.unshift(t);
-      saveLocal(ticketsLocal);
-      render();
-      showToast(`Ticket ${id} creado. Sincronizando con Sheets…`, 'info');
-
-      try {
-        const d = await postJSON({
-          action: 'create', id: t.id, analista, correoAnalista, categoria, falla, usuario, prioridad,
-          descripcion, estado: t.estado, fechaISO: nowISO, requerimiento: t.requerimiento
-        });
-        if (!d || !d.ok){
-          showToast('Guardado localmente. Pendiente de sincronizar en Sheets.', 'info');
-        } else {
-          showToast(`¡Ticket ${id} registrado en Google Sheets!`, 'success');
-          fetchRemote();
-        }
-      } catch (err) {
-        showToast('Error de red al sincronizar con Sheets', 'error');
-      } finally {
-        btnSubmit.disabled = false;
-        btnSubmit.innerHTML = `<svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg><span>Guardar Reporte</span>`;
-        form.reset();
-        toggleReq();
-        const active = localStorage.getItem('active_analyst') || 'Jose Salas';
-        $('#analista').value = active;
-      }
-    });
-
-    /* ==================== MODAL REUTILIZABLE ==================== */
-    function askModal({ title, label, placeholder = '', required = false, okText = 'Aceptar', value = '' }){
-      return new Promise(resolve => {
-        modalTitle.textContent = title;
-        modalLabel.textContent = label;
-        modalText.placeholder = placeholder;
-        modalText.required = required;
-        modalOk.textContent = okText;
-        modalText.value = value;
-
-        const onOk = () => {
-          if (required && !modalText.value.trim()){
-            modalText.focus();
-            showToast('Este campo es obligatorio', 'error');
-            return;
-          }
-          cleanup();
-          statusModal.close();
-          resolve({ ok: true, text: modalText.value.trim() });
-        };
-        const onCancel = () => { cleanup(); statusModal.close(); resolve({ ok: false }); };
-        function cleanup(){
-          modalOk.removeEventListener('click', onOk);
-          modalCancel.removeEventListener('click', onCancel);
-          statusModal.removeEventListener('cancel', onCancel);
-        }
-        modalOk.addEventListener('click', onOk);
-        modalCancel.addEventListener('click', onCancel);
-        statusModal.addEventListener('cancel', onCancel);
-        statusModal.showModal();
-        setTimeout(() => modalText.focus(), 50);
-      });
+      localStorage.setItem('TI_SELECTED_THEME', theme);
     }
 
-    document.addEventListener('focusin', e => {
-      const s = e.target.closest('.estado-select');
-      if (s) s.dataset.prev = s.value;
-    });
+    const savedTheme = localStorage.getItem('TI_SELECTED_THEME') || 'blue';
+    applyTheme(savedTheme);
 
-    /* ==================== CAMBIO DE ESTADO Y PRIORIDAD ==================== */
-    document.addEventListener('change', async e => {
-      const selE = e.target.closest('.estado-select');
-      const selP = e.target.closest('.prio-select');
-
-      if (selE){
-        const id = selE.dataset.id;
-        const newStatus = selE.value;
-        const prev = selE.dataset.prev || 'Abierto';
-
-        if (newStatus === 'Cancelado'){
-          const r = await askModal({
-            title: `Cancelar ticket ${id}`,
-            label: 'Motivo de la cancelación',
-            placeholder: 'Describe detalladamente el motivo de la cancelación…',
-            required: true
-          });
-          if (!r.ok){ selE.value = prev; return; }
-          
-          const tL = ticketsLocal.find(x => x.id === id);
-          if (tL){ tL.estado = newStatus; tL.motivo = r.text; saveLocal(ticketsLocal); }
-          render();
-          showToast(`Cancelando ticket ${id}…`, 'info');
-          const d = await postJSON({ action: 'update_status', id, status: newStatus, reason: r.text });
-          if (d && d.ok) { showToast(`Ticket ${id} marcado como Cancelado`, 'success'); fetchRemote(); }
-          return;
-        }
-
-        if (newStatus === 'Cerrado'){
-          const r = await askModal({
-            title: `Cerrar ticket ${id}`,
-            label: 'Solución técnica brindada',
-            placeholder: 'Describe la solución realizada para resolver el reporte…',
-            required: true
-          });
-          if (!r.ok){ selE.value = prev; return; }
-
-          const tL = ticketsLocal.find(x => x.id === id);
-          if (tL){ tL.estado = newStatus; tL.solucion = r.text; saveLocal(ticketsLocal); }
-          render();
-          showToast(`Cerrando ticket ${id}…`, 'info');
-          const d = await postJSON({ action: 'update_status', id, status: newStatus, solution: r.text });
-          if (d && d.ok) { showToast(`Ticket ${id} marcado como Cerrado`, 'success'); fetchRemote(); }
-          return;
-        }
-
-        // Otros estados (Abierto / En Proceso)
-        const tL = ticketsLocal.find(x => x.id === id);
-        if (tL){ tL.estado = newStatus; saveLocal(ticketsLocal); }
-        render();
-        showToast(`Actualizando estado a "${newStatus}"…`, 'info');
-        const d2 = await postJSON({ action: 'update_status', id, status: newStatus });
-        if (d2 && d2.ok) { showToast(`Estado actualizado`, 'success'); fetchRemote(); }
-      }
-
-      if (selP){
-        const id = selP.dataset.id;
-        const pr = selP.value;
-        const tL = ticketsLocal.find(x => x.id === id);
-        if (tL){ tL.prioridad = pr; saveLocal(ticketsLocal); }
-        render();
-        showToast(`Prioridad de ${id} cambiada a ${pr}`, 'info');
-        const d3 = await postJSON({ action: 'update_priority', id, prioridad: pr });
-        if (d3 && d3.ok) fetchRemote();
-      }
-    });
-
-    /* ==================== INICIALIZACIÓN ==================== */
-    async function init(){
-      initActiveAnalyst();
-      await fetchContacts();
-      render();
-      fetchRemote();
-      setInterval(() => { if (!document.hidden) fetchRemote(); }, AUTO_REFRESH_MS);
-    }
-    init();
-  })();
+    fetchCloudData();
+    checkExistingSession();
   </script>
 </body>
 </html>
