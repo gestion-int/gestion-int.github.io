@@ -210,7 +210,7 @@
     .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
     @media (max-width: 900px) { .grid-2 { grid-template-columns: 1fr; } }
 
-    .form-group { margin-bottom: 1.1rem; text-align: left; }
+    .form-group { margin-bottom: 1.1rem; text-align: left; position: relative; }
     .form-label { display: block; font-size: 0.8rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.35rem; }
     .form-input, .form-select, .form-textarea {
       width: 100%; background: var(--input-bg); border: 1px solid var(--input-border);
@@ -218,6 +218,22 @@
       font-size: 0.88rem; outline: none; transition: border-color 0.2s;
     }
     .form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--primary); }
+
+    /* SUGERENCIAS DEL BUSCADOR */
+    .search-results-dropdown {
+      position: absolute; top: 100%; left: 0; right: 0; z-index: 1050;
+      background: #1e293b; border: 1px solid var(--primary);
+      border-radius: 8px; max-height: 220px; overflow-y: auto;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.6); display: none;
+      margin-top: 4px;
+    }
+    .search-result-item {
+      padding: 0.65rem 0.9rem; border-bottom: 1px solid rgba(255,255,255,0.06);
+      cursor: pointer; transition: background 0.15s;
+    }
+    .search-result-item:hover { background: rgba(66,133,244,0.2); }
+    .search-result-name { font-weight: 700; color: var(--text-main); font-size: 0.85rem; }
+    .search-result-sub { font-size: 0.75rem; color: var(--text-muted); margin-top: 2px; }
 
     .tab-content { display: none; }
     .tab-content.active { display: block; }
@@ -400,7 +416,7 @@
         <div style="background: rgba(255,255,255,0.03); padding: 1.25rem; border-radius: 12px; border: 1px solid var(--border-color);">
           <h4>📌 Procedimiento Oficial Multi-Sede TI</h4>
           <ol style="margin-left: 1.25rem; margin-top: 0.75rem; font-size: 0.85rem; color: var(--text-muted); line-height: 1.7;">
-            <li>El usuario busca y selecciona el tipo de activo mediante el <strong>buscador predictivo</strong>.</li>
+            <li>El usuario solicita un activo específico (Portátil, Monitor, Mouse, Teclado, etc.).</li>
             <li>El Administrador TI valida disponibilidad y el sistema <strong>asigna automáticamente el serial correspondiente</strong>.</li>
             <li>En caso de no haber disponibilidad, se puede <strong>Rechazar con un motivo</strong>.</li>
             <li>El sistema genera el acta oficial en PDF y notifica automáticamente al solicitante por Gmail.</li>
@@ -594,20 +610,23 @@
     </div>
   </div>
 
-  <!-- MODAL 2: Registrar Nuevo Usuario Con Búsqueda Maestra de Personal (Columna O) -->
+  <!-- MODAL 2: Registrar Nuevo Usuario CON AUTOCOMPLETE INTELIGENTE -->
   <div id="modal-add-user" class="modal-overlay">
     <div class="modal-content">
       <h3 style="margin-bottom: 0.4rem;">➕ Registrar Nuevo Usuario Autorizado</h3>
       <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1.25rem;">
-        Busca al empleado por nombre, apellido o cédula y se auto-completará su correo corporativo.
+        Escribe para buscar al empleado y se auto-completará su nombre y correo de la columna O.
       </p>
 
       <form onsubmit="submitNewUserForm(event)">
-        <!-- Buscador Inteligente -->
-        <div class="form-group" style="background: rgba(66, 133, 244, 0.08); padding: 0.85rem; border-radius: 8px; border: 1px dashed var(--primary);">
-          <label class="form-label" style="color: var(--primary);">🔍 Buscar en Base de Personal (Nombre o Cédula)</label>
-          <input type="text" class="form-input" id="employee-search-box" list="employees-datalist" placeholder="Escribe nombre, apellido o cédula..." oninput="handleEmployeeSearchInput(this.value)" autocomplete="off">
-          <datalist id="employees-datalist"></datalist>
+        <!-- Buscador Limpio Tipo Google (Sin chorrera) -->
+        <div class="form-group" style="background: rgba(66, 133, 244, 0.08); padding: 0.85rem; border-radius: 8px; border: 1px dashed var(--primary); position: relative;">
+          <label class="form-label" style="color: var(--primary);">🔍 Buscar en Base de Personal (Nombre, Apellido o Cédula)</label>
+          <input type="text" class="form-input" id="employee-search-box" placeholder="Escribe para buscar (ej: Carlos, 1098...)" oninput="filterEmployeeSuggestions(this.value)" autocomplete="off">
+          
+          <!-- Contenedor flotante dinámico -->
+          <div id="employee-suggestions-box" class="search-results-dropdown"></div>
+
           <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 0.3rem;" id="directory-status-text">
             📡 Sincronizado con Base de Personal Ituango (Columna O)
           </div>
@@ -650,7 +669,7 @@
   </div>
 
   <script>
-    const appsScriptWebhookUrl = 'https://script.google.com/macros/s/AKfycbxYo1whlXY1_xCmL91Y6NI_pwWPr43dsXhlkst2GZqFjGKpltQpBtCowME-Hi4EAdwunw/exec';
+    const appsScriptWebhookUrl = 'https://script.google.com/macros/s/AKfycbxcZYQu7vOABhV58kOgBqsPQMr81t74VzafF82axlcuRP0_Wy-eqByMpFE8m9Ro9wdGHg/exec';
     const driveFolderId = '1pV04KdGZ1Bqt-f97hyfFIEoO_F4HYb8a';
 
     let currentRole = 'ADMIN'; 
@@ -659,7 +678,7 @@
     let loans = [];
     let directoryEmployees = [];
 
-    // USUARIOS INICIALES DE RESPALDO (ACCESO GARANTIZADO)
+    // LISTA DE RESPALDO INMEDIATO
     let whitelistUsers = [
       { email: 'jsalas@sedic.com.co', name: 'Jose Salas', role: 'ADMIN_TI', status: 'ACTIVO' },
       { email: 'soportesistemasve@gmail.com', name: 'Sebastian Posada Moreno', role: 'ADMIN_TI', status: 'ACTIVO' },
@@ -677,7 +696,28 @@
       setTimeout(() => toast.classList.remove('show'), 3500);
     }
 
-    // CARGA DIRECTA Y ACTUALIZACIÓN EN VIVO
+    // DESPACHADOR DIRECTO Y SILENCIOSO JSONP (SIN POPUPS ABOUT:BLANK)
+    function dispatchCloudAction(params, onDone) {
+      const scriptId = 'jsonp-act-' + Date.now();
+      const callbackName = 'cb_act_' + Date.now();
+
+      window[callbackName] = function(resp) {
+        delete window[callbackName];
+        const s = document.getElementById(scriptId);
+        if (s) s.remove();
+        if (onDone) onDone(resp);
+      };
+
+      params.set('callback', callbackName);
+      params.set('_t', Date.now());
+
+      const script = document.createElement('script');
+      script.id = scriptId;
+      script.src = `${appsScriptWebhookUrl}?${params.toString()}`;
+      document.body.appendChild(script);
+    }
+
+    // CARGA DE DATOS CLOUD
     function fetchCloudData() {
       window.handleCloudDataResponse = function(data) {
         if (data && data.status === 'success') {
@@ -705,7 +745,6 @@
           }
 
           updateDynamicCategoriesDatalist();
-          updateEmployeesDatalist();
           renderAll();
           showToast(`✔ Sincronizado (${assets.length} Activos, ${directoryEmployees.length} Empleados)`, '📊');
         }
@@ -720,7 +759,6 @@
       document.body.appendChild(script);
     }
 
-    // ACTUALIZAR DATALIST DE CATEGORÍAS
     function updateDynamicCategoriesDatalist() {
       const datalist = document.getElementById('dynamic-categories-list');
       if (!datalist) return;
@@ -739,44 +777,60 @@
       datalist.innerHTML = uniqueCategories.map(cat => `<option value="${cat}">`).join('');
     }
 
-    // ACTUALIZAR DATALIST DE EMPLEADOS MAESTROS
-    function updateEmployeesDatalist() {
-      const datalist = document.getElementById('employees-datalist');
-      if (!datalist) return;
+    // BUSCADOR INTELIGENTE EN VIVO (SOLO MUESTRA COINCIDENCIAS AL ESCRIBIR)
+    function filterEmployeeSuggestions(query) {
+      const box = document.getElementById('employee-suggestions-box');
+      if (!box) return;
 
-      datalist.innerHTML = directoryEmployees.map(emp => `
-        <option value="${emp.name} | CC: ${emp.id}">
+      const cleanQuery = (query || '').toLowerCase().trim();
+
+      // Si hay menos de 2 caracteres, no muestra nada (limpio)
+      if (cleanQuery.length < 2) {
+        box.style.display = 'none';
+        box.innerHTML = '';
+        return;
+      }
+
+      const matches = directoryEmployees.filter(emp => {
+        const empName = (emp.name || '').toLowerCase();
+        const empId = String(emp.id || '').toLowerCase();
+        return empName.includes(cleanQuery) || empId.includes(cleanQuery);
+      }).slice(0, 6); // Solo muestra las 6 mejores coincidencias
+
+      if (matches.length === 0) {
+        box.innerHTML = `<div style="padding:0.75rem; font-size:0.8rem; color:var(--text-muted); text-align:center;">No se encontraron empleados coincidentes.</div>`;
+        box.style.display = 'block';
+        return;
+      }
+
+      box.innerHTML = matches.map(emp => `
+        <div class="search-result-item" onclick="selectEmployee('${emp.name.replace(/'/g, "\\'")}', '${emp.email.replace(/'/g, "\\'")}')">
+          <div class="search-result-name">👤 ${emp.name}</div>
+          <div class="search-result-sub">CC: ${emp.id} &nbsp;|&nbsp; 📧 ${emp.email || 'Sin correo en Col O'}</div>
+        </div>
       `).join('');
 
-      const dirStatus = document.getElementById('directory-status-text');
-      if (dirStatus && directoryEmployees.length > 0) {
-        dirStatus.innerText = `📡 ${directoryEmployees.length} Empleados listos en el buscador`;
-      }
+      box.style.display = 'block';
     }
 
-    // AUTO-COMPLETAR DATOS AL BUSCAR EMPLEADO
-    function handleEmployeeSearchInput(val) {
-      if (!val) return;
-      
-      const cleanVal = val.toLowerCase().trim();
-      const matched = directoryEmployees.find(emp => {
-        const empName = emp.name.toLowerCase();
-        const empId = String(emp.id).toLowerCase();
-        return empName === cleanVal || 
-               empId === cleanVal || 
-               `${empName} | cc: ${empId}` === cleanVal ||
-               cleanVal.includes(empName) ||
-               (empId && cleanVal.includes(empId));
-      });
-
-      if (matched) {
-        document.getElementById('new-user-name').value = matched.name;
-        document.getElementById('new-user-email').value = matched.email;
-        showToast(`✔ Datos cargados: ${matched.email}`, '⚡');
-      }
+    function selectEmployee(name, email) {
+      document.getElementById('new-user-name').value = name;
+      document.getElementById('new-user-email').value = email;
+      document.getElementById('employee-search-box').value = name;
+      document.getElementById('employee-suggestions-box').style.display = 'none';
+      showToast(`✔ Cargado: ${email}`, '⚡');
     }
 
-    // LOGIN DIRECTO E INSTANTÁNEO
+    // Cerrar sugerencias al hacer clic fuera
+    document.addEventListener('click', function(e) {
+      const box = document.getElementById('employee-suggestions-box');
+      const input = document.getElementById('employee-search-box');
+      if (box && e.target !== box && e.target !== input) {
+        box.style.display = 'none';
+      }
+    });
+
+    // LOGIN DIRECTO
     function handleUserLogin(e) {
       e.preventDefault();
       const emailInput = document.getElementById('login-email').value.trim().toLowerCase();
@@ -892,18 +946,18 @@
         newEmail: email,
         newRole: role,
         newStatus: status,
-        adminName: activeUser ? activeUser.name : 'Administrador TI',
-        _t: Date.now()
+        adminName: activeUser ? activeUser.name : 'Administrador TI'
       });
-
-      const popup = window.open(`${appsScriptWebhookUrl}?${params.toString()}`, 'gscript_runner', 'width=350,height=250,left=2000,top=2000');
-      if (popup) setTimeout(() => { try { popup.close(); } catch(e){} }, 2500);
 
       closeModal('modal-add-user');
       document.getElementById('employee-search-box').value = '';
       document.getElementById('new-user-name').value = '';
       document.getElementById('new-user-email').value = '';
-      setTimeout(fetchCloudData, 2500);
+
+      dispatchCloudAction(params, function(resp) {
+        showToast('✅ Usuario registrado y correo enviado', '✉️');
+        fetchCloudData();
+      });
     }
 
     // CREAR SOLICITUD
@@ -919,20 +973,20 @@
         user: activeUser ? activeUser.name : 'Usuario',
         email: activeUser ? activeUser.email : 'correo@sedic.com.co',
         cat: cat,
-        just: just,
-        _t: Date.now()
+        just: just
       });
-
-      const popup = window.open(`${appsScriptWebhookUrl}?${params.toString()}`, 'gscript_runner', 'width=350,height=250,left=2000,top=2000');
-      if (popup) setTimeout(() => { try { popup.close(); } catch(e){} }, 2500);
 
       closeModal('modal-loan');
       document.getElementById('loan-cat').value = '';
       document.getElementById('loan-just').value = '';
-      setTimeout(fetchCloudData, 2000);
+
+      dispatchCloudAction(params, function(resp) {
+        showToast('✅ Solicitud registrada exitosamente', '✔');
+        fetchCloudData();
+      });
     }
 
-    // ASIGNAR EQUIPO CON RESPONSABLE DINÁMICO
+    // ASIGNAR EQUIPO CON DRIVE PDF SIN POPUPS
     function assignLoan(loanId) {
       const loan = loans.find(l => l.id === loanId);
       if (!loan) return;
@@ -970,7 +1024,7 @@
         return;
       }
 
-      showToast(`Asignando ${selectedAsset.tag} por ${activeUser.name}...`, '📨');
+      showToast(`Generando Acta PDF en Google Drive para ${selectedAsset.tag}...`, '⏳');
 
       const params = new URLSearchParams({
         action: 'ASIGNAR_PRESTAMO',
@@ -983,14 +1037,13 @@
         category: selectedAsset.cat || loan.cat,
         specs: selectedAsset.specs,
         adminName: activeUser ? activeUser.name : 'Administrador TI',
-        adminEmail: activeUser ? activeUser.email : 'ti@sedic.com.co',
-        _t: Date.now()
+        adminEmail: activeUser ? activeUser.email : 'ti@sedic.com.co'
       });
 
-      const popup = window.open(`${appsScriptWebhookUrl}?${params.toString()}`, 'gscript_runner', 'width=350,height=250,left=2000,top=2000');
-      if (popup) setTimeout(() => { try { popup.close(); } catch(e){} }, 2500);
-
-      setTimeout(fetchCloudData, 3000);
+      dispatchCloudAction(params, function(resp) {
+        showToast('✅ Acta generada y correo enviado con éxito', '📄');
+        fetchCloudData();
+      });
     }
 
     // RECHAZAR SOLICITUD
@@ -1011,14 +1064,13 @@
         category: loan.cat,
         reason: reason,
         adminName: activeUser ? activeUser.name : 'Administrador TI',
-        adminEmail: activeUser ? activeUser.email : 'ti@sedic.com.co',
-        _t: Date.now()
+        adminEmail: activeUser ? activeUser.email : 'ti@sedic.com.co'
       });
 
-      const popup = window.open(`${appsScriptWebhookUrl}?${params.toString()}`, 'gscript_runner', 'width=350,height=250,left=2000,top=2000');
-      if (popup) setTimeout(() => { try { popup.close(); } catch(e){} }, 2500);
-
-      setTimeout(fetchCloudData, 2500);
+      dispatchCloudAction(params, function(resp) {
+        showToast('✅ Solicitud rechazada', '⛔');
+        fetchCloudData();
+      });
     }
 
     // DEVOLVER EQUIPO
@@ -1028,7 +1080,7 @@
 
       if (!confirm(`¿Confirmas la devolución del equipo ${loan.tag} de ${loan.user}?`)) return;
 
-      showToast('Actualizando acta de devolución en Drive y Sheets...', '📨');
+      showToast('Actualizando acta de devolución en Drive y Sheets...', '⏳');
 
       const params = new URLSearchParams({
         action: 'REGISTRAR_DEVOLUCION',
@@ -1041,14 +1093,13 @@
         category: loan.cat || 'Equipo TI',
         specs: 'Recibido a conformidad en área de TI',
         adminName: activeUser ? activeUser.name : 'Administrador TI',
-        adminEmail: activeUser ? activeUser.email : 'ti@sedic.com.co',
-        _t: Date.now()
+        adminEmail: activeUser ? activeUser.email : 'ti@sedic.com.co'
       });
 
-      const popup = window.open(`${appsScriptWebhookUrl}?${params.toString()}`, 'gscript_runner', 'width=350,height=250,left=2000,top=2000');
-      if (popup) setTimeout(() => { try { popup.close(); } catch(e){} }, 2500);
-
-      setTimeout(fetchCloudData, 3000);
+      dispatchCloudAction(params, function(resp) {
+        showToast('✅ Devolución registrada y PDF actualizado', '✔');
+        fetchCloudData();
+      });
     }
 
     function renderAll() {
@@ -1223,7 +1274,7 @@
       } else if (theme === 'emerald') {
         root.style.setProperty('--primary', '#10b981');
         root.style.setProperty('--primary-hover', '#059669');
-        root.style.setProperty('--primary-glow', 'rgba(16, 185, 129, 0.25)');
+        root.style.setProperty('--primary-glow', 'rgba(168, 185, 129, 0.25)');
         root.style.setProperty('--bg-dark', '#05140f');
         root.style.setProperty('--bg-card', 'rgba(10, 35, 26, 0.95)');
         root.style.setProperty('--bg-glass', 'rgba(8, 28, 21, 0.9)');
