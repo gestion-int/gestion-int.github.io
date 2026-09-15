@@ -53,7 +53,7 @@
 
     h1, h2, h3, h4 { font-family: 'Outfit', sans-serif; font-weight: 700; letter-spacing: -0.02em; }
 
-    /* LOGOS CORPORATIVOS */
+    /* LOGOS */
     .login-logo-container {
       background: #ffffff;
       padding: 10px 20px;
@@ -230,7 +230,7 @@
     .modal-overlay.active { display: flex; }
     .modal-content {
       background: var(--modal-bg); border: 1px solid var(--border-color);
-      width: 100%; max-width: 540px; border-radius: var(--radius-md); padding: 1.75rem;
+      width: 100%; max-width: 560px; border-radius: var(--radius-md); padding: 1.75rem;
       box-shadow: 0 10px 40px rgba(0,0,0,0.5); color: var(--text-main);
     }
 
@@ -287,7 +287,7 @@
         </button>
       </form>
       <div style="margin-top: 1.2rem; font-size: 0.72rem; color: var(--text-muted);" id="login-status-text">
-        🔐 6 Usuarios autorizados listos
+        🔐 Sincronizando con Google Sheets...
       </div>
     </div>
   </div>
@@ -489,7 +489,7 @@
       <div class="panel-header">
         <div>
           <h2 class="panel-title">👥 Gestión de Usuarios & Permisos</h2>
-          <p style="font-size: 0.85rem; color: var(--text-muted);">Al registrar un usuario, se guardará en <strong>04_Usuarios_Permisos</strong> y se le enviará automáticamente un correo de invitación.</p>
+          <p style="font-size: 0.85rem; color: var(--text-muted);">Registra o edita usuarios de <strong>04_Usuarios_Permisos</strong> con envío de invitación automática.</p>
         </div>
         <button class="btn btn-success" onclick="openModal('modal-add-user')">➕ Nuevo Usuario Autorizado</button>
       </div>
@@ -594,23 +594,33 @@
     </div>
   </div>
 
-  <!-- MODAL 2: Registrar Nuevo Usuario -->
+  <!-- MODAL 2: Registrar Nuevo Usuario Con Búsqueda Maestra de Personal (Columna O) -->
   <div id="modal-add-user" class="modal-overlay">
     <div class="modal-content">
-      <h3 style="margin-bottom: 1rem;">➕ Registrar Nuevo Usuario Autorizado</h3>
-      <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 1.25rem;">
-        El usuario se agregará a la base de datos y recibirá un correo automático con el enlace de acceso.
+      <h3 style="margin-bottom: 0.4rem;">➕ Registrar Nuevo Usuario Autorizado</h3>
+      <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1.25rem;">
+        Busca al empleado por nombre, apellido o cédula y se auto-completará su correo corporativo.
       </p>
 
       <form onsubmit="submitNewUserForm(event)">
-        <div class="form-group">
-          <label class="form-label">Nombre Completo</label>
-          <input type="text" class="form-input" id="new-user-name" required placeholder="Ej: Carlos Andrés Pérez">
+        <!-- Buscador Inteligente -->
+        <div class="form-group" style="background: rgba(66, 133, 244, 0.08); padding: 0.85rem; border-radius: 8px; border: 1px dashed var(--primary);">
+          <label class="form-label" style="color: var(--primary);">🔍 Buscar en Base de Personal (Nombre o Cédula)</label>
+          <input type="text" class="form-input" id="employee-search-box" list="employees-datalist" placeholder="Escribe nombre, apellido o cédula..." oninput="handleEmployeeSearchInput(this.value)" autocomplete="off">
+          <datalist id="employees-datalist"></datalist>
+          <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 0.3rem;" id="directory-status-text">
+            📡 Sincronizado con Base de Personal Ituango (Columna O)
+          </div>
         </div>
 
         <div class="form-group">
-          <label class="form-label">Correo Electrónico Corporativo</label>
-          <input type="email" class="form-input" id="new-user-email" required placeholder="Ej: cperez@sedic.com.co">
+          <label class="form-label">Nombre Completo</label>
+          <input type="text" class="form-input" id="new-user-name" required placeholder="Ej: Carlos Andrés Vargas">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Correo Electrónico Corporativo (Auto-completado)</label>
+          <input type="email" class="form-input" id="new-user-email" required placeholder="Ej: carlosvargas@ingetec.com.co">
         </div>
 
         <div class="grid-2">
@@ -647,8 +657,9 @@
     let activeUser = null;
     let assets = [];
     let loans = [];
+    let directoryEmployees = [];
 
-    // LISTA DE RESPALDO INMEDIATA PARA ACCESO 100% GARANTIZADO
+    // USUARIOS INICIALES DE RESPALDO (ACCESO GARANTIZADO)
     let whitelistUsers = [
       { email: 'jsalas@sedic.com.co', name: 'Jose Salas', role: 'ADMIN_TI', status: 'ACTIVO' },
       { email: 'soportesistemasve@gmail.com', name: 'Sebastian Posada Moreno', role: 'ADMIN_TI', status: 'ACTIVO' },
@@ -672,6 +683,8 @@
         if (data && data.status === 'success') {
           assets = data.assets || [];
           loans = data.loans || [];
+          directoryEmployees = data.directory || [];
+
           if (data.users && data.users.length > 0) {
             whitelistUsers = data.users;
             
@@ -692,8 +705,9 @@
           }
 
           updateDynamicCategoriesDatalist();
+          updateEmployeesDatalist();
           renderAll();
-          showToast(`✔ Sincronizado (${assets.length} Activos, ${whitelistUsers.length} Usuarios)`, '📊');
+          showToast(`✔ Sincronizado (${assets.length} Activos, ${directoryEmployees.length} Empleados)`, '📊');
         }
       };
 
@@ -706,6 +720,7 @@
       document.body.appendChild(script);
     }
 
+    // ACTUALIZAR DATALIST DE CATEGORÍAS
     function updateDynamicCategoriesDatalist() {
       const datalist = document.getElementById('dynamic-categories-list');
       if (!datalist) return;
@@ -722,6 +737,43 @@
       }
 
       datalist.innerHTML = uniqueCategories.map(cat => `<option value="${cat}">`).join('');
+    }
+
+    // ACTUALIZAR DATALIST DE EMPLEADOS MAESTROS
+    function updateEmployeesDatalist() {
+      const datalist = document.getElementById('employees-datalist');
+      if (!datalist) return;
+
+      datalist.innerHTML = directoryEmployees.map(emp => `
+        <option value="${emp.name} | CC: ${emp.id}">
+      `).join('');
+
+      const dirStatus = document.getElementById('directory-status-text');
+      if (dirStatus && directoryEmployees.length > 0) {
+        dirStatus.innerText = `📡 ${directoryEmployees.length} Empleados listos en el buscador`;
+      }
+    }
+
+    // AUTO-COMPLETAR DATOS AL BUSCAR EMPLEADO
+    function handleEmployeeSearchInput(val) {
+      if (!val) return;
+      
+      const cleanVal = val.toLowerCase().trim();
+      const matched = directoryEmployees.find(emp => {
+        const empName = emp.name.toLowerCase();
+        const empId = String(emp.id).toLowerCase();
+        return empName === cleanVal || 
+               empId === cleanVal || 
+               `${empName} | cc: ${empId}` === cleanVal ||
+               cleanVal.includes(empName) ||
+               (empId && cleanVal.includes(empId));
+      });
+
+      if (matched) {
+        document.getElementById('new-user-name').value = matched.name;
+        document.getElementById('new-user-email').value = matched.email;
+        showToast(`✔ Datos cargados: ${matched.email}`, '⚡');
+      }
     }
 
     // LOGIN DIRECTO E INSTANTÁNEO
@@ -848,6 +900,7 @@
       if (popup) setTimeout(() => { try { popup.close(); } catch(e){} }, 2500);
 
       closeModal('modal-add-user');
+      document.getElementById('employee-search-box').value = '';
       document.getElementById('new-user-name').value = '';
       document.getElementById('new-user-email').value = '';
       setTimeout(fetchCloudData, 2500);
