@@ -3,767 +3,552 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Interventoría TI - Sistema de Préstamos de Activos</title>
+  <title>Interventoría TI - Gestión Cloud de Préstamos (Google Drive & Sheets)</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg-dark: #0f172a;
-      --bg-card: #1e293b;
-      --border-color: #334155;
-      --primary: #38bdf8;
-      --primary-hover: #0284c7;
-      --primary-glow: rgba(56, 189, 248, 0.25);
+      --bg-dark: #0b0f17;
+      --bg-card: rgba(18, 26, 43, 0.95);
+      --bg-glass: rgba(15, 23, 42, 0.9);
+      --border-color: rgba(255, 255, 255, 0.1);
+      --primary: #4285f4;
+      --primary-hover: #3367d6;
+      --primary-glow: rgba(66, 133, 244, 0.25);
+      --success: #34a853;
+      --success-bg: rgba(52, 168, 83, 0.18);
+      --warning: #fbbc04;
+      --warning-bg: rgba(251, 188, 4, 0.18);
+      --danger: #ea4335;
+      --danger-bg: rgba(234, 67, 53, 0.18);
+      --purple: #a142f4;
+      --purple-bg: rgba(161, 66, 244, 0.18);
       --text-main: #f8fafc;
       --text-muted: #94a3b8;
-      --input-bg: #0b1120;
-      --input-border: #334155;
-      --badge-bg: rgba(56, 189, 248, 0.15);
-      --badge-text: #38bdf8;
-      --success: #10b981;
-      --success-bg: rgba(16, 185, 129, 0.18);
-      --warning: #fbbf24;
-      --warning-bg: rgba(251, 191, 36, 0.18);
-      --danger: #f87171;
-      --danger-bg: rgba(248, 113, 113, 0.18);
-      --modal-bg: #1e293b;
+      --input-bg: #070a10;
+      --input-color: #f8fafc;
+      --input-border: rgba(255, 255, 255, 0.15);
+      --table-th-bg: rgba(255, 255, 255, 0.04);
+      --table-hover: rgba(255, 255, 255, 0.03);
+      --modal-bg: #111827;
+      --banner-bg: linear-gradient(135deg, rgba(66,133,244,0.15), rgba(161,66,244,0.1));
+      --radius-sm: 6px;
+      --radius-md: 12px;
+      --radius-lg: 18px;
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: 'Inter', sans-serif;
-    }
-
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
+      font-family: 'Inter', sans-serif;
       background-color: var(--bg-dark);
       color: var(--text-main);
       min-height: 100vh;
-      display: flex;
-      flex-direction: column;
+      line-height: 1.5;
+      background-image: 
+        radial-gradient(at 0% 0%, var(--primary-glow) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(161, 66, 244, 0.08) 0px, transparent 50%);
+      transition: background-color 0.25s ease, color 0.25s ease;
     }
 
-    /* PANTALLA DE LOGIN */
+    h1, h2, h3, h4 { font-family: 'Outfit', sans-serif; font-weight: 700; letter-spacing: -0.02em; }
+
     .login-overlay {
-      position: fixed;
-      inset: 0;
-      background: #0f172a;
-      z-index: 100;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
+      position: fixed; inset: 0; background: rgba(5, 8, 15, 0.97);
+      backdrop-filter: blur(25px); z-index: 9999;
+      display: flex; align-items: center; justify-content: center; padding: 1.5rem;
+    }
+    .login-box {
+      background: var(--bg-card); border: 1px solid var(--border-color);
+      width: 100%; max-width: 440px; border-radius: var(--radius-lg); padding: 2.5rem;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.7); text-align: center;
+    }
+    .login-logo {
+      width: 60px; height: 60px; border-radius: 16px; margin: 0 auto 1.25rem;
+      background: linear-gradient(135deg, var(--primary), var(--purple));
+      display: flex; align-items: center; justify-content: center; font-size: 1.8rem;
+      box-shadow: 0 0 30px var(--primary-glow);
     }
 
-    .login-card {
-      background: #1e293b;
-      border: 1px solid var(--border-color);
-      border-radius: 16px;
-      width: 100%;
-      max-width: 440px;
-      padding: 36px 32px;
-      text-align: center;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.5);
-    }
-
-    .login-logo-box {
-      background: #ffffff;
-      color: #0f172a;
-      font-family: 'Outfit', sans-serif;
-      font-weight: 800;
-      font-size: 15px;
-      padding: 12px 24px;
-      border-radius: 14px;
-      display: inline-block;
-      margin-bottom: 20px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-      letter-spacing: 0.5px;
-    }
-
-    .login-title {
-      font-family: 'Outfit', sans-serif;
-      font-size: 26px;
-      font-weight: 800;
-      color: #ffffff;
-      margin-bottom: 6px;
-    }
-
-    .login-subtitle {
-      font-size: 13px;
-      color: var(--text-muted);
-      margin-bottom: 28px;
-    }
-
-    .login-label {
-      display: block;
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--text-muted);
-      text-align: left;
-      margin-bottom: 8px;
-    }
-
-    .login-input {
-      width: 100%;
-      background: var(--input-bg);
-      border: 1px solid var(--input-border);
-      color: #ffffff;
-      padding: 12px 16px;
-      border-radius: 8px;
-      font-size: 14px;
-      outline: none;
-      margin-bottom: 20px;
-      transition: border-color 0.2s;
-    }
-    .login-input:focus { border-color: var(--primary); }
-
-    .btn-login {
-      width: 100%;
-      background: var(--primary);
-      color: #0f172a;
-      font-weight: 700;
-      font-size: 15px;
-      padding: 12px;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      transition: all 0.2s;
-    }
-    .btn-login:hover { background: #7dd3fc; transform: translateY(-1px); }
-
-    .login-footer-sync {
-      margin-top: 24px;
-      font-size: 12px;
-      color: var(--text-muted);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-    }
-
-    /* BARRA SUPERIOR */
     .navbar {
-      background: #1e293b;
+      background: var(--bg-glass);
+      backdrop-filter: blur(16px);
       border-bottom: 1px solid var(--border-color);
-      padding: 12px 24px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+      position: sticky; top: 0; z-index: 100;
+      padding: 0.85rem 2rem;
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 1rem;
     }
-
-    .nav-left {
-      display: flex;
-      align-items: center;
-      gap: 14px;
+    .brand-section { display: flex; align-items: center; gap: 0.75rem; }
+    .brand-logo {
+      width: 42px; height: 42px; border-radius: var(--radius-md);
+      background: linear-gradient(135deg, var(--primary), var(--purple));
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 800; font-size: 1.2rem; color: white;
+      box-shadow: 0 0 20px var(--primary-glow);
     }
-
-    .brand-logo-pill {
-      background: #ffffff;
-      color: #0f172a;
-      font-family: 'Outfit', sans-serif;
-      font-weight: 800;
-      font-size: 12px;
-      padding: 6px 14px;
-      border-radius: 8px;
-      letter-spacing: 0.5px;
-    }
-
-    .nav-title {
-      font-family: 'Outfit', sans-serif;
-      font-size: 16px;
-      font-weight: 700;
-      color: #ffffff;
-    }
-
-    .nav-sub {
-      font-size: 11px;
-      color: var(--text-muted);
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .badge-live {
-      background: #0284c7;
-      color: #ffffff;
-      font-size: 10px;
-      padding: 2px 6px;
-      border-radius: 4px;
-      font-weight: 600;
-    }
-
-    .badge-role {
-      background: #0f172a;
-      color: #38bdf8;
-      border: 1px solid #0284c7;
-      font-size: 10px;
-      padding: 2px 6px;
-      border-radius: 4px;
-      font-weight: 700;
-    }
-
-    .nav-right {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .user-profile {
-      text-align: right;
-    }
-
-    .user-profile-name {
-      font-size: 13px;
-      font-weight: 600;
-      color: #ffffff;
-    }
-
-    .user-profile-email {
-      font-size: 11px;
-      color: var(--text-muted);
-    }
-
-    .avatar-circle {
-      width: 36px;
-      height: 36px;
-      background: #0284c7;
-      color: #ffffff;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 700;
-      font-size: 12px;
-    }
-
-    .btn-logout {
-      background: #334155;
-      color: #ffffff;
-      border: none;
-      padding: 6px 12px;
-      border-radius: 6px;
-      font-size: 12px;
-      font-weight: 600;
-      cursor: pointer;
-    }
-    .btn-logout:hover { background: #475569; }
-
-    /* CONTENEDOR PRINCIPAL */
-    .container {
-      max-width: 1300px;
-      width: 100%;
-      margin: 0 auto;
-      padding: 20px;
-      flex: 1;
-    }
-
-    /* PESTAÑAS */
-    .tabs-row {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 20px;
-    }
-
-    .tab-pill {
-      background: transparent;
-      border: none;
-      color: var(--text-muted);
-      font-size: 13px;
-      font-weight: 600;
-      padding: 8px 16px;
-      border-radius: 8px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      transition: all 0.2s;
-    }
-
-    .tab-pill.active {
-      background: rgba(56, 189, 248, 0.15);
-      color: #38bdf8;
-    }
-
-    /* TARJETA PRINCIPAL */
-    .card-panel {
-      background: #1e293b;
+    .brand-title { font-size: 1.15rem; color: var(--text-main); font-weight: 700; }
+    .brand-subtitle { font-size: 0.75rem; color: var(--text-muted); display: flex; align-items: center; gap: 0.35rem; }
+    .g-badge {
+      background: var(--primary-glow); color: var(--primary);
+      padding: 0.15rem 0.4rem; border-radius: var(--radius-sm); font-size: 0.7rem; font-weight: 700;
       border: 1px solid var(--border-color);
-      border-radius: 12px;
-      padding: 20px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    }
+    
+    .main-wrapper { max-width: 1400px; margin: 0 auto; padding: 2rem; }
+
+    .stats-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;
+    }
+    .stat-card {
+      background: var(--bg-card); border: 1px solid var(--border-color);
+      padding: 1.1rem; border-radius: var(--radius-md); backdrop-filter: blur(12px);
+      display: flex; align-items: center; gap: 0.85rem;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+    }
+    .stat-icon {
+      width: 42px; height: 42px; border-radius: var(--radius-md);
+      display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0;
+    }
+    .stat-val { font-size: 1.35rem; font-weight: 700; color: var(--text-main); }
+    .stat-lbl { font-size: 0.75rem; color: var(--text-muted); font-weight: 500; }
+
+    .role-banner {
+      background: var(--banner-bg);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 1.25rem 1.5rem; margin-bottom: 1.5rem;
+      display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;
     }
 
+    .tabs-header {
+      display: flex; gap: 0.5rem; border-bottom: 1px solid var(--border-color);
+      margin-bottom: 1.5rem; overflow-x: auto; padding-bottom: 0.25rem;
+    }
+    .tab-button {
+      background: transparent; border: none; color: var(--text-muted);
+      padding: 0.6rem 1.1rem; font-size: 0.9rem; font-weight: 600;
+      border-radius: var(--radius-sm); cursor: pointer; transition: all 0.2s;
+      white-space: nowrap; display: flex; align-items: center; gap: 0.4rem;
+    }
+    .tab-button:hover { color: var(--text-main); background: rgba(255,255,255,0.06); }
+    .tab-button.active { color: var(--primary); background: var(--primary-glow); border-bottom: 2px solid var(--primary); }
+
+    .glass-panel {
+      background: var(--bg-card); border: 1px solid var(--border-color);
+      border-radius: var(--radius-md); padding: 1.5rem; backdrop-filter: blur(12px);
+      box-shadow: 0 4px 25px rgba(0,0,0,0.06);
+    }
     .panel-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
-      flex-wrap: wrap;
-      gap: 12px;
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 1.25rem; flex-wrap: wrap; gap: 0.75rem;
     }
+    .panel-title { font-size: 1.15rem; display: flex; align-items: center; gap: 0.5rem; color: var(--text-main); }
 
-    .panel-title {
-      font-family: 'Outfit', sans-serif;
-      font-size: 18px;
-      font-weight: 700;
+    .table-container { overflow-x: auto; }
+    .custom-table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.88rem; }
+    .custom-table th {
+      padding: 0.85rem 1rem; background: var(--table-th-bg);
+      color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase;
+      letter-spacing: 0.05em; border-bottom: 1px solid var(--border-color);
     }
+    .custom-table td { padding: 0.9rem 1rem; border-bottom: 1px solid var(--border-color); color: var(--text-main); }
+    .custom-table tr:hover td { background: var(--table-hover); }
 
-    .panel-desc {
-      font-size: 12px;
-      color: var(--text-muted);
-      margin-top: 2px;
+    .badge {
+      display: inline-flex; align-items: center; padding: 0.25rem 0.6rem;
+      border-radius: 20px; font-size: 0.72rem; font-weight: 700; text-transform: uppercase;
     }
+    .badge-disponible { background: var(--success-bg); color: var(--success); border: 1px solid var(--success); }
+    .badge-prestamo { background: var(--warning-bg); color: var(--warning); border: 1px solid var(--warning); }
+    .badge-mora { background: var(--danger-bg); color: var(--danger); border: 1px solid var(--danger); }
+    .badge-solicitado { background: var(--purple-bg); color: var(--purple); border: 1px solid var(--purple); }
+    .badge-rechazado { background: var(--danger-bg); color: var(--danger); border: 1px solid var(--danger); }
 
-    .panel-actions {
-      display: flex;
-      gap: 10px;
+    .btn {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      padding: 0.55rem 1.1rem; border-radius: var(--radius-sm);
+      font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all 0.2s;
+      border: none; text-decoration: none;
     }
+    .btn-primary { background: var(--primary); color: white; }
+    .btn-primary:hover { background: var(--primary-hover); box-shadow: 0 0 15px var(--primary-glow); }
+    .btn-secondary { background: rgba(255,255,255,0.08); color: var(--text-main); border: 1px solid var(--border-color); }
+    .btn-secondary:hover { background: rgba(255,255,255,0.15); }
+    .btn-success { background: var(--success); color: white; }
+    .btn-success:hover { opacity: 0.9; }
+    .btn-danger { background: var(--danger); color: white; }
+    .btn-danger:hover { opacity: 0.9; }
 
-    .btn-cloud-sync {
-      background: #334155;
-      color: #ffffff;
-      border: none;
-      padding: 8px 14px;
-      border-radius: 6px;
-      font-size: 12px;
-      font-weight: 600;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 6px;
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+    @media (max-width: 900px) { .grid-2 { grid-template-columns: 1fr; } }
+
+    .form-group { margin-bottom: 1.1rem; text-align: left; }
+    .form-label { display: block; font-size: 0.8rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.35rem; }
+    .form-input, .form-select, .form-textarea {
+      width: 100%; background: var(--input-bg); border: 1px solid var(--input-border);
+      color: var(--input-color); padding: 0.65rem 0.85rem; border-radius: var(--radius-sm);
+      font-size: 0.88rem; outline: none; transition: border-color 0.2s;
     }
-    .btn-cloud-sync:hover { background: #475569; }
+    .form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--primary); }
 
-    .btn-new-req {
-      background: var(--primary);
-      color: #0f172a;
-      border: none;
-      padding: 8px 16px;
-      border-radius: 6px;
-      font-size: 13px;
-      font-weight: 700;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .btn-new-req:hover { background: #7dd3fc; }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
 
-    /* TABLA */
-    .table-responsive {
-      overflow-x: auto;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 13px;
-      text-align: left;
-    }
-
-    th {
-      color: var(--text-muted);
-      font-weight: 600;
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      padding: 12px 14px;
-      border-bottom: 1px solid var(--border-color);
-    }
-
-    td {
-      padding: 14px;
-      border-bottom: 1px solid rgba(255,255,255,0.04);
-    }
-
-    tr:hover td {
-      background: rgba(255, 255, 255, 0.02);
-    }
-
-    .req-link {
-      color: #38bdf8;
-      font-weight: 700;
-      text-decoration: none;
-    }
-
-    .category-badge {
-      background: rgba(56, 189, 248, 0.15);
-      color: #38bdf8;
-      padding: 4px 10px;
-      border-radius: 6px;
-      font-size: 11px;
-      font-weight: 600;
-      display: inline-block;
-    }
-
-    .status-tag {
-      padding: 4px 10px;
-      border-radius: 20px;
-      font-size: 11px;
-      font-weight: 700;
-      text-transform: uppercase;
-      display: inline-block;
-    }
-
-    .status-devuelto { background: var(--success-bg); color: #34d399; }
-    .status-rechazado { background: var(--danger-bg); color: #f87171; }
-    .status-solicitado { background: var(--warning-bg); color: #fbbf24; }
-    .status-entregado { background: rgba(56, 189, 248, 0.2); color: #38bdf8; }
-    .status-disponible { background: var(--success-bg); color: #34d399; }
-
-    .drive-pdf-link {
-      color: #38bdf8;
-      text-decoration: none;
-      font-size: 12px;
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-    }
-    .drive-pdf-link:hover { text-decoration: underline; }
-
-    .btn-action-assign {
-      background: var(--primary);
-      color: #0f172a;
-      border: none;
-      padding: 6px 12px;
-      border-radius: 6px;
-      font-size: 11px;
-      font-weight: 700;
-      cursor: pointer;
-    }
-    .btn-action-assign:hover { background: #7dd3fc; }
-
-    .btn-action-reject {
-      background: #ef4444;
-      color: #ffffff;
-      border: none;
-      padding: 6px 10px;
-      border-radius: 6px;
-      font-size: 11px;
-      font-weight: 700;
-      cursor: pointer;
-      margin-left: 4px;
-    }
-    .btn-action-reject:hover { filter: brightness(1.1); }
-
-    /* SELECTOR DE TEMA INFERIOR */
-    .footer-bar {
-      margin-top: 24px;
-      display: flex;
-      justify-content: flex-end;
-      align-items: center;
-      gap: 8px;
-      font-size: 12px;
-      color: var(--text-muted);
-    }
-
-    .theme-circle {
-      width: 18px;
-      height: 18px;
-      border-radius: 50%;
-      cursor: pointer;
-      border: 2px solid transparent;
-      transition: transform 0.2s;
-    }
-    .theme-circle:hover { transform: scale(1.2); }
-    .theme-blue { background: #38bdf8; }
-    .theme-green { background: #10b981; }
-    .theme-purple { background: #a855f7; }
-    .theme-orange { background: #f59e0b; }
-    .theme-red { background: #ef4444; }
-    .theme-slate { background: #64748b; }
-    .theme-white { background: #ffffff; }
-
-    /* MODAL NUEVA SOLICITUD (DISEÑO EXACTO) */
     .modal-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.75);
-      backdrop-filter: blur(4px);
-      z-index: 100;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
+      position: fixed; inset: 0; background: rgba(0,0,0,0.75);
+      backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center;
+      z-index: 1000; padding: 1.5rem;
     }
-
     .modal-overlay.active { display: flex; }
-
-    .modal-box {
-      background: #1e293b;
-      border: 1px solid var(--border-color);
-      border-radius: 14px;
-      width: 100%;
-      max-width: 500px;
-      padding: 24px;
-      box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+    .modal-content {
+      background: var(--modal-bg); border: 1px solid var(--border-color);
+      width: 100%; max-width: 540px; border-radius: var(--radius-md); padding: 1.75rem;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.5); color: var(--text-main);
     }
 
-    .modal-title {
-      font-family: 'Outfit', sans-serif;
-      font-size: 20px;
-      font-weight: 700;
-      margin-bottom: 20px;
-      color: #ffffff;
+    .theme-palette-widget {
+      position: fixed; bottom: 20px; right: 20px; z-index: 999;
+      background: var(--bg-card); border: 1px solid var(--border-color);
+      backdrop-filter: blur(16px); padding: 0.5rem 0.85rem; border-radius: 30px;
+      display: flex; align-items: center; gap: 0.65rem;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.3);
     }
+    .theme-label { font-size: 0.72rem; font-weight: 700; color: var(--text-muted); display: flex; align-items: center; gap: 0.3rem; }
+    .color-swatch {
+      width: 22px; height: 22px; border-radius: 50%; cursor: pointer;
+      border: 2px solid rgba(255,255,255,0.25); transition: transform 0.2s, border-color 0.2s;
+    }
+    .color-swatch:hover { transform: scale(1.3); border-color: #fff; }
 
-    .modal-label {
-      display: block;
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--text-muted);
-      margin-bottom: 6px;
+    .toast-msg {
+      position: fixed; top: 80px; right: 25px; z-index: 2000;
+      background: var(--bg-card); border: 1px solid var(--primary);
+      color: var(--text-main); padding: 0.85rem 1.25rem; border-radius: var(--radius-md);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.4); display: none; align-items: center; gap: 0.6rem;
+      font-size: 0.88rem; font-weight: 600;
     }
-
-    .modal-input, .modal-textarea, .modal-select {
-      width: 100%;
-      background: var(--input-bg);
-      border: 1px solid var(--input-border);
-      color: #ffffff;
-      padding: 10px 14px;
-      border-radius: 8px;
-      font-size: 13px;
-      outline: none;
-      margin-bottom: 6px;
-      transition: border-color 0.2s;
-    }
-    .modal-input:focus, .modal-textarea:focus, .modal-select:focus { border-color: var(--primary); }
-
-    .modal-hint {
-      font-size: 11px;
-      color: var(--text-muted);
-      margin-bottom: 16px;
-      display: block;
-    }
-
-    .modal-footer {
-      display: flex;
-      justify-content: flex-end;
-      gap: 10px;
-      margin-top: 20px;
-    }
-
-    .btn-modal-cancel {
-      background: #334155;
-      color: #ffffff;
-      border: none;
-      padding: 10px 18px;
-      border-radius: 8px;
-      font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
-    }
-    .btn-modal-cancel:hover { background: #475569; }
-
-    .btn-modal-submit {
-      background: var(--primary);
-      color: #0f172a;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 8px;
-      font-size: 13px;
-      font-weight: 700;
-      cursor: pointer;
-    }
-    .btn-modal-submit:hover { background: #7dd3fc; }
-
-    /* TOAST */
-    .toast {
-      position: fixed;
-      bottom: 24px;
-      right: 24px;
-      background: #1e293b;
-      border: 1px solid var(--border-color);
-      color: white;
-      padding: 12px 20px;
-      border-radius: 8px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      transform: translateY(100px);
-      opacity: 0;
-      transition: all 0.3s;
-      z-index: 200;
-      font-size: 13px;
-    }
-    .toast.show { transform: translateY(0); opacity: 1; }
+    .toast-msg.show { display: flex; animation: fadeIn 0.3s forwards; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
   </style>
 </head>
 <body>
 
-  <!-- PANTALLA LOGIN -->
+  <!-- LOGIN -->
   <div id="login-screen" class="login-overlay">
-    <div class="login-card">
-      <div class="login-logo-box">CONSORCIO INGETEC / SEDIC</div>
-      <h1 class="login-title">Interventoría TI</h1>
-      <p class="login-subtitle">Sistema de Préstamos de Activos (Google Cloud)</p>
+    <div class="login-box">
+      <div class="login-logo">💻</div>
+      <h2 style="font-size: 1.4rem; margin-bottom: 0.3rem;">Interventoría TI</h2>
+      <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 1.75rem;">Sistema de Préstamos de Activos (Google Cloud)</p>
+      
+      <form onsubmit="handleUserLogin(event)">
+        <div class="form-group">
+          <label class="form-label">Ingresa tu Correo Corporativo Autorizado</label>
+          <input type="email" class="form-input" id="login-email" required placeholder="ej: jsalas@sedic.com.co" style="padding:0.75rem; text-align:center;">
+        </div>
 
-      <label class="login-label">Ingresa tu Correo Corporativo Autorizado</label>
-      <input type="email" id="login-email" class="login-input" placeholder="ej: jsalas@sedic.com.co" autocomplete="off">
+        <div id="login-error-msg" style="display:none; color:var(--danger); font-size:0.8rem; margin-bottom:1rem; background:var(--danger-bg); padding:0.6rem; border-radius:6px; border:1px solid var(--danger);">
+          ⛔ Correo no autorizado. Comunícate con Jose Salas (jsalas@sedic.com.co).
+        </div>
 
-      <button onclick="handleLogin()" class="btn-login">
-        Ingresar al Sistema ➔
-      </button>
-
-      <div class="login-footer-sync">
-        🔐 <span id="login-users-count">11</span> Usuarios sincronizados con Google Sheets
+        <button type="submit" class="btn btn-primary" id="btn-login-submit" style="width:100%; justify-content:center; padding:0.75rem; font-size:0.95rem; margin-top:0.5rem;">
+          Ingresar al Sistema ➔
+        </button>
+      </form>
+      <div style="margin-top: 1.2rem; font-size: 0.72rem; color: var(--text-muted);" id="login-status-text">
+        🔐 Sincronizando usuarios desde Google Sheets...
       </div>
     </div>
   </div>
 
-  <!-- BARRA SUPERIOR -->
+  <div id="toast" class="toast-msg">
+    <span id="toast-icon">⚡</span>
+    <span id="toast-text">Petición despachada</span>
+  </div>
+
+  <!-- Navbar -->
   <header class="navbar">
-    <div class="nav-left">
-      <div class="brand-logo-pill">INGETEC / SEDIC</div>
+    <div class="brand-section">
+      <div class="brand-logo">💻</div>
       <div>
-        <div class="nav-title">Interventoría TI</div>
-        <div class="nav-sub">
+        <div class="brand-title">Interventoría TI</div>
+        <div class="brand-subtitle">
           Gestión Cloud de Activos & Custodia
-          <span class="badge-live">Google Sheets Live</span>
-          <span id="nav-role-badge" class="badge-role">USUARIO</span>
+          <span class="g-badge">Google Sheets Live</span>
+          <span class="g-badge" id="role-badge">ADMIN</span>
         </div>
       </div>
     </div>
 
-    <div class="nav-right">
-      <div class="user-profile">
-        <div id="nav-user-name" class="user-profile-name">Salas Elkin Jose</div>
-        <div id="nav-user-email" class="user-profile-email">soportesistemasve@gmail.com</div>
+    <div style="display: flex; align-items: center; gap: 1rem;">
+      <div style="text-align: right;">
+        <div style="font-size: 0.85rem; font-weight: 600;" id="nav-user-name">Jose Salas</div>
+        <div style="font-size: 0.72rem; color: var(--text-muted);" id="nav-user-email">jsalas@sedic.com.co</div>
       </div>
-      <div id="nav-avatar" class="avatar-circle">SEJ</div>
-      <button onclick="handleLogout()" class="btn-logout">Cerrar Sesión</button>
+      <div style="width:36px; height:36px; border-radius:50%; background:var(--primary); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:0.85rem;" id="nav-user-avatar">JS</div>
+      <button onclick="handleLogout()" class="btn btn-secondary" style="padding:0.35rem 0.65rem; font-size:0.75rem;">Cerrar Sesión</button>
     </div>
   </header>
 
-  <!-- CONTENEDOR PRINCIPAL -->
-  <div class="container">
-    
-    <!-- PESTAÑAS -->
-    <div class="tabs-row">
-      <button class="tab-pill active" onclick="switchTab('solicitudes')">📑 Mis Solicitudes</button>
-      <button class="tab-pill" onclick="switchTab('inventario')">👤 Mis Activos en Custodia</button>
+  <div class="main-wrapper">
+    <!-- Banner -->
+    <div class="role-banner">
+      <div>
+        <h3 id="banner-role-title">SESIÓN INICIADA</h3>
+        <p style="font-size: 0.82rem; color: var(--text-muted); margin-top: 0.2rem;" id="banner-role-desc"></p>
+      </div>
+      <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;" id="admin-action-links">
+        <a href="https://docs.google.com/spreadsheets/d/13Bci4AhSslwPWHsYoG09yRymXSDOcNhgrsOxNIi7jcY/edit" target="_blank" class="btn btn-primary" style="font-size: 0.8rem;">
+          📊 Base de Datos Sheets ↗
+        </a>
+        <a href="https://drive.google.com/drive/u/0/folders/1pV04KdGZ1Bqt-f97hyfFIEoO_F4HYb8a" target="_blank" class="btn btn-secondary" style="font-size: 0.8rem;">
+          📁 Carpeta Actas Drive ↗
+        </a>
+      </div>
     </div>
 
-    <!-- TARJETA PRINCIPAL -->
-    <div class="card-panel">
+    <!-- Indicadores -->
+    <div class="stats-grid" id="stats-grid-container">
+      <div class="stat-card">
+        <div class="stat-icon" style="background: var(--primary-glow); color: var(--primary);">👥</div>
+        <div>
+          <div class="stat-val" id="stat-total-users">4</div>
+          <div class="stat-lbl">Usuarios Autorizados</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon" style="background: var(--success-bg); color: var(--success);">✔</div>
+        <div>
+          <div class="stat-val" id="stat-available">-</div>
+          <div class="stat-lbl">Activos Disponibles</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon" style="background: var(--warning-bg); color: var(--warning);">💻</div>
+        <div>
+          <div class="stat-val" id="stat-loans">-</div>
+          <div class="stat-lbl">En Préstamo Activo</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon" style="background: var(--purple-bg); color: var(--purple);">⏳</div>
+        <div>
+          <div class="stat-val" id="stat-pending">-</div>
+          <div class="stat-lbl">Solicitudes Pendientes</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon" style="background: var(--danger-bg); color: var(--danger);">⚠️</div>
+        <div>
+          <div class="stat-val" id="stat-overdue">0</div>
+          <div class="stat-lbl">Préstamos en Mora</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pestañas -->
+    <div class="tabs-header" id="tabs-header-container"></div>
+
+    <!-- 1. 🏠 DASHBOARD -->
+    <div id="tab-dashboard" class="tab-content active glass-panel">
       <div class="panel-header">
         <div>
-          <h2 id="panel-title-text" class="panel-title">📑 Mis Solicitudes de Préstamo</h2>
-          <p class="panel-desc">Sincronizadas en vivo con Google Sheets.</p>
+          <h2 class="panel-title">📊 Resumen Cloud de Custodia & Préstamos TI</h2>
+          <p style="font-size: 0.85rem; color: var(--text-muted);">Sincronización en vivo con la Base de Datos central en Google Sheets.</p>
         </div>
-        <div class="panel-actions">
-          <button onclick="fetchCloudData()" class="btn-cloud-sync">🔄 Actualizar Datos Cloud</button>
-          <button onclick="openModalNuevaSolicitud()" class="btn-new-req">+ Nueva Solicitud</button>
+        <button class="btn btn-primary" onclick="openModal('modal-loan')">+ Nueva Solicitud de Préstamo</button>
+      </div>
+
+      <div class="grid-2">
+        <div style="background: rgba(255,255,255,0.03); padding: 1.25rem; border-radius: 12px; border: 1px solid var(--border-color);">
+          <h4>📌 Procedimiento Oficial Multi-Sede TI</h4>
+          <ol style="margin-left: 1.25rem; margin-top: 0.75rem; font-size: 0.85rem; color: var(--text-muted); line-height: 1.7;">
+            <li>El usuario solicita un activo específico (Portátil, Pantalla, Mouse, Cable HDMI, etc.).</li>
+            <li>El ADMINISTRADOR TI valida disponibilidad y el sistema <strong>asigna automáticamente el serial correspondiente</strong>.</li>
+            <li>En caso de no haber disponibilidad, se puede <strong>Rechazar con un motivo</strong>.</li>
+            <li>El sistema genera el acta oficial en PDF y notifica automáticamente al solicitante por Gmail.</li>
+          </ol>
+        </div>
+
+        <div style="background: rgba(255,255,255,0.03); padding: 1.25rem; border-radius: 12px; border: 1px solid var(--border-color);">
+          <h4>⚡ Estado de la Conexión Cloud</h4>
+          <div style="margin-top: 0.75rem; font-size: 0.85rem; line-height: 1.8;">
+            <div>• Base de Datos Sheets: <strong style="color: var(--success);">BD_Gestion_Prestamos_TI</strong></div>
+            <div>• Carpeta Actas Drive: <strong style="color: var(--primary);">01-Actas de Entregas y devoluciones</strong></div>
+            <div>• Total Activos Registrados: <strong id="dash-total-assets">-</strong></div>
+            <div>• Activos Disponibles: <strong id="dash-avail-assets" style="color:var(--success);">-</strong></div>
+            <div>• En Préstamo Activo: <strong id="dash-loan-assets" style="color:var(--warning);">-</strong></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. 📋 SOLICITUDES -->
+    <div id="tab-solicitudes" class="tab-content glass-panel">
+      <div class="panel-header">
+        <div>
+          <h2 class="panel-title" id="solicitudes-title">📋 Solicitudes de Préstamo</h2>
+          <p style="font-size: 0.85rem; color: var(--text-muted);">Sincronizadas en vivo con Google Sheets.</p>
+        </div>
+        <div style="display:flex; gap:0.5rem;">
+          <button class="btn btn-secondary" onclick="fetchCloudData()">🔄 Actualizar Datos Cloud</button>
+          <button class="btn btn-primary" onclick="openModal('modal-loan')">+ Nueva Solicitud</button>
         </div>
       </div>
 
-      <div class="table-responsive">
-        <table>
+      <div class="table-container">
+        <table class="custom-table">
           <thead>
             <tr>
-              <th>NO. SOLICITUD</th>
-              <th>SOLICITANTE / CORREO</th>
-              <th>CATEGORÍA SOLICITADA</th>
-              <th>ACTIVO ASIGNADO & SERIAL</th>
-              <th>FECHA REGISTRO</th>
-              <th>ESTADO</th>
-              <th>ACCIONES</th>
+              <th>No. Solicitud</th>
+              <th>Solicitante / Correo</th>
+              <th>Categoría Solicitada</th>
+              <th>Activo Asignado & Serial</th>
+              <th>Fecha Registro</th>
+              <th>Estado</th>
+              <th>Acciones</th>
             </tr>
           </thead>
-          <tbody id="table-body">
-            <tr><td colspan="7" style="text-align: center; color: var(--text-muted);">Cargando solicitudes...</td></tr>
-          </tbody>
+          <tbody id="tbody-solicitudes"></tbody>
         </table>
       </div>
     </div>
 
-    <!-- SELECTOR DE COLOR TEMA -->
-    <div class="footer-bar">
-      <span>🎨 Tema:</span>
-      <div class="theme-circle theme-blue" onclick="setTheme('blue')"></div>
-      <div class="theme-circle theme-green" onclick="setTheme('green')"></div>
-      <div class="theme-circle theme-purple" onclick="setTheme('purple')"></div>
-      <div class="theme-circle theme-orange" onclick="setTheme('orange')"></div>
-      <div class="theme-circle theme-red" onclick="setTheme('red')"></div>
-      <div class="theme-circle theme-slate" onclick="setTheme('slate')"></div>
-      <div class="theme-circle theme-white" onclick="setTheme('white')"></div>
+    <!-- 3. 💻 INVENTARIO (300+ ACTIVOS EN SHEETS) -->
+    <div id="tab-inventario" class="tab-content glass-panel">
+      <div class="panel-header">
+        <div>
+          <h2 class="panel-title">💻 Inventario de Activos TI (Desde Google Sheets)</h2>
+          <p style="font-size: 0.85rem; color: var(--text-muted);">Gestiona tus más de 300 activos directamente en la pestaña <strong>01_Inventario_Activos</strong> de Google Sheets.</p>
+        </div>
+        <div style="display:flex; gap:0.5rem;">
+          <button class="btn btn-secondary" onclick="fetchCloudData()">🔄 Actualizar Datos Cloud</button>
+          <a href="https://docs.google.com/spreadsheets/d/13Bci4AhSslwPWHsYoG09yRymXSDOcNhgrsOxNIi7jcY/edit" target="_blank" class="btn btn-primary">
+            📝 Editar / Importar Activos en Sheets ↗
+          </a>
+        </div>
+      </div>
+
+      <div class="table-container">
+        <table class="custom-table">
+          <thead>
+            <tr>
+              <th>Placa (Asset Tag)</th>
+              <th>Número de Serie</th>
+              <th>Marca / Modelo</th>
+              <th>Categoría</th>
+              <th>Especificaciones</th>
+              <th>Ubicación</th>
+              <th>Estado</th>
+            </tr>
+          </thead>
+          <tbody id="tbody-inventario"></tbody>
+        </table>
+      </div>
     </div>
 
-  </div>
+    <!-- 4. ⚙️ CONFIGURACIÓN -->
+    <div id="tab-configuracion" class="tab-content glass-panel">
+      <div class="panel-header">
+        <div>
+          <h2 class="panel-title">⚙️ Configuración Cloud</h2>
+          <p style="font-size: 0.85rem; color: var(--text-muted);">Conexión a Google Drive y Sheets.</p>
+        </div>
+      </div>
+      <div class="grid-2">
+        <div style="background: rgba(255,255,255,0.03); padding: 1.25rem; border-radius: 12px; border: 1px solid var(--border-color);">
+          <h4>📁 ID de Carpeta Actas (Drive)</h4>
+          <p style="font-family:monospace; color:var(--primary); margin-top:0.5rem;">1pV04KdGZ1Bqt-f97hyfFIEoO_F4HYb8a</p>
+          <div style="font-size: 0.78rem; color: var(--success); margin-top:0.5rem;">✔ Enlazado a 01-Actas de Entregas y devoluciones</div>
+        </div>
 
-  <!-- MODAL: NUEVA SOLICITUD (DISEÑO EXACTO DEL PANTALLAZO 3) -->
-  <div id="modal-solicitud" class="modal-overlay">
-    <div class="modal-box">
-      <h3 class="modal-title">Nueva Solicitud de Préstamo</h3>
+        <div style="background: rgba(255,255,255,0.03); padding: 1.25rem; border-radius: 12px; border: 1px solid var(--border-color);">
+          <h4>📊 Base de Datos Google Sheets</h4>
+          <p style="font-family:monospace; color:var(--success); margin-top:0.5rem;">13Bci4AhSslwPWHsYoG09yRymXSDOcNhgrsOxNIi7jcY</p>
+          <div style="font-size: 0.78rem; color: var(--text-muted); margin-top:0.5rem;">Pestañas: 01_Inventario_Activos | 02_Solicitudes_Prestamos | 04_Usuarios_Permisos</div>
+        </div>
+      </div>
+    </div>
 
-      <label class="modal-label">Buscar Tipo de Activo Requerido (Escribe para filtrar)</label>
-      <input type="text" id="sol-category-input" class="modal-input" placeholder="Escribe: Portátil, Monitor, Mouse, Teclado..." list="categories-datalist">
-      <datalist id="categories-datalist">
-        <option value="Portátil">
-        <option value="Monitor">
-        <option value="Mouse">
-        <option value="Teclado">
-        <option value="Cable HDMI">
-        <option value="PC Escritorio">
-        <option value="Cargador / Adaptador">
-        <option value="Memoria USB / Token">
-        <option value="Diadema / Auriculares">
-      </datalist>
-      <span class="modal-hint">💡 Se autocompleta automáticamente con las categorías de tu inventario.</span>
+    <!-- 5. 👤 MI PERFIL -->
+    <div id="tab-perfil" class="tab-content glass-panel">
+      <div class="panel-header">
+        <div>
+          <h2 class="panel-title">👤 Perfil de Usuario</h2>
+        </div>
+      </div>
+      <div class="grid-2">
+        <div style="background: rgba(255,255,255,0.03); padding: 1.25rem; border-radius: 12px; border: 1px solid var(--border-color);">
+          <h4 id="perfil-name">Usuario</h4>
+          <p style="font-size: 0.85rem; color: var(--text-muted);" id="perfil-email">correo@sedic.com.co</p>
+          <p style="font-size: 0.85rem; color: var(--text-muted);" id="perfil-role">Rol: USUARIO</p>
+        </div>
 
-      <label class="modal-label">Justificación Operativa de Interventoría</label>
-      <textarea id="sol-justification" class="modal-textarea" rows="3" placeholder="Ej: Inspección técnica en proyecto vías norte..."></textarea>
-
-      <div class="modal-footer">
-        <button onclick="closeModal('modal-solicitud')" class="btn-modal-cancel">Cancelar</button>
-        <button onclick="submitNuevaSolicitud()" class="btn-modal-submit">Enviar Solicitud a Sheets</button>
+        <div style="background: rgba(255,255,255,0.03); padding: 1.25rem; border-radius: 12px; border: 1px solid var(--border-color);">
+          <h4>📦 Mis Activos Actualmente en Custodia</h4>
+          <div id="user-custody-list" style="margin-top: 0.5rem; font-size: 0.85rem;"></div>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- MODAL: ASIGNAR ACTIVO (ADMIN) -->
-  <div id="modal-asignar" class="modal-overlay">
-    <div class="modal-box">
-      <h3 class="modal-title">Asignar Activo & Crear Acta PDF</h3>
-      <input type="hidden" id="asig-req-number">
-      <input type="hidden" id="asig-req-name">
-      <input type="hidden" id="asig-req-email">
-      <input type="hidden" id="asig-req-category">
-      <input type="hidden" id="asig-req-just">
+  <!-- PALETA -->
+  <div class="theme-palette-widget">
+    <div class="theme-label">🎨 Tema:</div>
+    <div class="color-swatch" style="background: #4285f4;" onclick="applyTheme('blue')" title="Midnight Blue"></div>
+    <div class="color-swatch" style="background: #10b981;" onclick="applyTheme('emerald')" title="Cyber Emerald"></div>
+    <div class="color-swatch" style="background: #a855f7;" onclick="applyTheme('purple')" title="Neon Cyberpunk"></div>
+    <div class="color-swatch" style="background: #f59e0b;" onclick="applyTheme('amber')" title="Solar Amber"></div>
+    <div class="color-swatch" style="background: #ef4444;" onclick="applyTheme('crimson')" title="Crimson Security"></div>
+    <div class="color-swatch" style="background: #64748b;" onclick="applyTheme('slate')" title="Nordic Slate"></div>
+    <div class="color-swatch" style="background: #ffffff; border-color:#94a3b8;" onclick="applyTheme('light')" title="Light Corporate"></div>
+  </div>
 
-      <label class="modal-label">Seleccione el Activo Disponible</label>
-      <select id="asig-asset-select" class="modal-select"></select>
-
-      <div class="modal-footer">
-        <button onclick="closeModal('modal-asignar')" class="btn-modal-cancel">Cancelar</button>
-        <button onclick="confirmarAsignacion()" class="btn-modal-submit">Assign & Drive PDF 📄</button>
-      </div>
+  <!-- Modal Solicitud -->
+  <div id="modal-loan" class="modal-overlay">
+    <div class="modal-content">
+      <h3 style="margin-bottom: 1rem;">Nueva Solicitud de Préstamo</h3>
+      <form onsubmit="submitLoanForm(event)">
+        <div class="form-group">
+          <label class="form-label">Tipo de Activo Requerido</label>
+          <select class="form-select" id="loan-cat" required>
+            <option value="Portátil">💻 Portátil (Laptop)</option>
+            <option value="Pantalla">🖥️ Pantalla (Monitor)</option>
+            <option value="Mouse">🖱️ Mouse</option>
+            <option value="Cable HDMI">🔌 Cable HDMI / Adaptador</option>
+            <option value="Teclado">⌨️ Teclado</option>
+            <option value="Memoria USB / Token">🔐 Memoria USB / Token de Seguridad</option>
+            <option value="Cargador">⚡ Cargador de Portátil</option>
+            <option value="Diadema / Auriculares">🎧 Diadema / Auriculares</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Justificación Operativa de Interventoría</label>
+          <textarea class="form-textarea" id="loan-just" rows="3" required placeholder="Ej: Inspección técnica en proyecto vías norte..."></textarea>
+        </div>
+        <div style="display:flex; justify-content:flex-end; gap:0.75rem; margin-top:1.5rem;">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('modal-loan')">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Enviar Solicitud a Sheets</button>
+        </div>
+      </form>
     </div>
   </div>
 
-  <!-- TOAST -->
-  <div id="toast" class="toast">
-    <span id="toast-icon">🚀</span>
-    <span id="toast-text">Mensaje</span>
-  </div>
-
-  <!-- LÓGICA JAVASCRIPT -->
   <script>
-    const appsScriptUrl = 'https://script.google.com/macros/s/AKfycbyLtV6-UY5Km_l82wYiqXo9LtmOSQ_uJttbEJ7U0OM6DHVc2Pf1AYReaATesIuy41G7Bw/exec';
-    const driveFolderGeneral = 'https://drive.google.com/drive/folders/1pV04KdGZ1Bqt-f97hyfFIEoO_F4HYb8a';
+    const appsScriptWebhookUrl = 'https://script.google.com/macros/s/AKfycbw1s5IlZPsCUVCx8TZYmnX0damxx-JUDvnuZU0IACHW-fimAkgvjkzqbTx9QPd1PyhIlw/exec';
+    const driveFolderId = '1pV04KdGZ1Bqt-f97hyfFIEoO_F4HYb8a';
 
-    let currentUser = null;
+    let currentRole = 'ADMIN'; 
+    let activeUser = null;
     let assets = [];
     let loans = [];
-    let users = [];
-    let activeTab = 'solicitudes';
+    
+    let whitelistUsers = [
+      { email: 'jsalas@sedic.com.co', name: 'Jose Salas', role: 'ADMIN_TI', status: 'ACTIVO' },
+      { email: 'soportesistemasve@gmail.com', name: 'Sebastian Posada', role: 'ADMIN_TI', status: 'ACTIVO' },
+      { email: 'carambitave@gmail.com', name: 'Leonardo', role: 'ADMIN_TI', status: 'ACTIVO' },
+      { email: 'financierave@gmail.com', name: 'Patricia Vellojin', role: 'USUARIO', status: 'ACTIVO' }
+    ];
 
     function showToast(text, icon = '🚀') {
       const toast = document.getElementById('toast');
@@ -773,355 +558,532 @@
       setTimeout(() => toast.classList.remove('show'), 3500);
     }
 
-    function openModal(id) { document.getElementById(id).classList.add('active'); }
-    function closeModal(id) { document.getElementById(id).classList.remove('active'); }
-
-    // CARGA DE DATOS DESDE GOOGLE SHEETS VIA JSONP
+    // CARGA DIRECTA Y ACTUALIZACIÓN DE ROLES EN TIEMPO REAL
     function fetchCloudData() {
-      showToast('Sincronizando con Google Sheets...', '🔄');
+      window.handleCloudDataResponse = function(data) {
+        if (data && data.status === 'success') {
+          assets = data.assets || [];
+          loans = data.loans || [];
+          if (data.users && data.users.length > 0) {
+            whitelistUsers = data.users;
+            
+            // Actualizar el rol del usuario en sesión en vivo
+            if (activeUser) {
+              const freshUser = whitelistUsers.find(u => u.email.toLowerCase() === activeUser.email.toLowerCase());
+              if (freshUser) {
+                activeUser = freshUser;
+                const isAdmin = freshUser.role.toUpperCase().includes('ADMIN');
+                currentRole = isAdmin ? 'ADMIN' : 'USER';
+                setupUIForLoggedUser();
+              }
+            }
 
-      window.handleCloudData = function(res) {
-        if (res && res.status === 'success') {
-          assets = res.assets || [];
-          loans = res.loans || [];
-          users = res.users || [];
-
-          document.getElementById('login-users-count').innerText = users.length || 11;
-          renderCurrentTab();
-          showToast(`Sincronizado: ${loans.length} Solicitudes, ${assets.length} Activos`, '✔');
+            const loginStatus = document.getElementById('login-status-text');
+            if (loginStatus) loginStatus.innerText = `🔐 ${whitelistUsers.length} Usuarios sincronizados con Google Sheets`;
+            const statUsers = document.getElementById('stat-total-users');
+            if (statUsers) statUsers.innerText = whitelistUsers.length;
+          }
+          renderAll();
+          showToast(`✔ Sincronizado (${assets.length} Activos)`, '📊');
         }
       };
 
-      const old = document.getElementById('jsonp-script');
-      if (old) old.remove();
+      const oldScript = document.getElementById('jsonp-cloud-loader');
+      if (oldScript) oldScript.remove();
 
       const script = document.createElement('script');
-      script.id = 'jsonp-script';
-      script.src = `${appsScriptUrl}?action=GET_ALL_DATA&callback=handleCloudData&_t=${Date.now()}`;
+      script.id = 'jsonp-cloud-loader';
+      script.src = `${appsScriptWebhookUrl}?action=GET_ALL_DATA&callback=handleCloudDataResponse&_t=${Date.now()}`;
       document.body.appendChild(script);
     }
 
     // LOGIN
-    function handleLogin() {
-      const email = document.getElementById('login-email').value.trim().toLowerCase();
-      if (!email) return;
+    function handleUserLogin(e) {
+      e.preventDefault();
+      const emailInput = document.getElementById('login-email').value.trim().toLowerCase();
+      const errorMsg = document.getElementById('login-error-msg');
 
-      const found = users.find(u => u.email.toLowerCase() === email);
-      if (found) {
-        currentUser = found;
-      } else {
-        const isAdmin = email.includes('admin') || email.includes('sistemas') || email.includes('jsalas');
-        const defaultName = email.split('@')[0].replace('.', ' ').toUpperCase();
-        currentUser = {
-          email: email,
-          name: defaultName,
-          role: isAdmin ? 'ADMIN_TI' : 'USUARIO'
-        };
+      const foundUser = whitelistUsers.find(u => u.email.toLowerCase() === emailInput && u.status.toUpperCase() === 'ACTIVO');
+
+      if (!foundUser) {
+        errorMsg.style.display = 'block';
+        return;
       }
 
-      localStorage.setItem('TI_USER_SESSION', JSON.stringify(currentUser));
-      initSession();
-    }
+      errorMsg.style.display = 'none';
+      activeUser = foundUser;
+      const isAdmin = foundUser.role.toUpperCase().includes('ADMIN');
+      currentRole = isAdmin ? 'ADMIN' : 'USER';
+      localStorage.setItem('LOGGED_USER_EMAIL_CLOUD', foundUser.email);
 
-    function initSession() {
       document.getElementById('login-screen').style.display = 'none';
-      document.getElementById('nav-user-name').innerText = currentUser.name;
-      document.getElementById('nav-user-email').innerText = currentUser.email;
-      
-      const initials = currentUser.name.split(' ').map(n => n[0]).join('').substring(0, 3).toUpperCase();
-      document.getElementById('nav-avatar').innerText = initials || 'TI';
-      
-      const roleBadge = document.getElementById('nav-role-badge');
-      roleBadge.innerText = currentUser.role;
-
+      setupUIForLoggedUser();
       fetchCloudData();
     }
 
     function handleLogout() {
-      localStorage.removeItem('TI_USER_SESSION');
-      currentUser = null;
+      localStorage.removeItem('LOGGED_USER_EMAIL_CLOUD');
+      activeUser = null;
       document.getElementById('login-screen').style.display = 'flex';
       document.getElementById('login-email').value = '';
     }
 
-    function switchTab(tab) {
-      activeTab = tab;
-      document.querySelectorAll('.tab-pill').forEach((btn, idx) => {
-        btn.classList.toggle('active', (tab === 'solicitudes' && idx === 0) || (tab === 'inventario' && idx === 1));
-      });
-      renderCurrentTab();
-    }
-
-    function renderCurrentTab() {
-      const tbody = document.getElementById('table-body');
-
-      if (activeTab === 'solicitudes') {
-        document.getElementById('panel-title-text').innerText = '📑 Mis Solicitudes de Préstamo';
-
-        if (loans.length === 0) {
-          tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: var(--text-muted);">No hay solicitudes registradas</td></tr>';
+    function checkExistingSession() {
+      const savedEmail = localStorage.getItem('LOGGED_USER_EMAIL_CLOUD');
+      if (savedEmail) {
+        const found = whitelistUsers.find(u => u.email.toLowerCase() === savedEmail.toLowerCase() && u.status.toUpperCase() === 'ACTIVO');
+        if (found) {
+          activeUser = found;
+          const isAdmin = found.role.toUpperCase().includes('ADMIN');
+          currentRole = isAdmin ? 'ADMIN' : 'USER';
+          document.getElementById('login-screen').style.display = 'none';
+          setupUIForLoggedUser();
+          fetchCloudData();
           return;
         }
+      }
+      document.getElementById('login-screen').style.display = 'flex';
+    }
 
-        tbody.innerHTML = loans.map(l => {
-          const isOwner = currentUser && currentUser.email.toLowerCase() === l.requesterEmail.toLowerCase();
-          const isAdmin = currentUser && currentUser.role === 'ADMIN_TI';
+    function setupUIForLoggedUser() {
+      document.getElementById('nav-user-name').innerText = activeUser.name;
+      document.getElementById('nav-user-email').innerText = activeUser.email;
+      document.getElementById('nav-user-avatar').innerText = activeUser.name.split(' ').map(n=>n[0]).join('');
+      document.getElementById('role-badge').innerText = activeUser.role;
 
-          // Link al PDF directo en Drive
-          const hasRealLink = l.pdfDriveLink && l.pdfDriveLink.startsWith('http');
-          const pdfUrl = hasRealLink ? l.pdfDriveLink : driveFolderGeneral;
+      document.getElementById('perfil-name').innerText = activeUser.name;
+      document.getElementById('perfil-email').innerText = activeUser.email;
+      document.getElementById('perfil-role').innerText = `Rol: ${activeUser.role}`;
 
-          let accionCol = '';
-          if (l.status === 'ENTREGADO' || l.status === 'DEVUELTO') {
-            accionCol = `
-              <div>Completado</div>
-              <a href="${pdfUrl}" target="_blank" class="drive-pdf-link">
-                📄 Drive: Acta_${l.assignedAssetTag || 'PDF'}.pdf ↗
-              </a>
-            `;
-          } else if (l.status === 'RECHAZADO') {
-            accionCol = `<span style="color: #f87171; font-size: 12px;">Solicitud no aprobada</span>`;
-          } else if (l.status === 'SOLICITADO') {
-            if (isAdmin) {
-              accionCol = `
-                <button onclick="openModalAsignar('${l.requestNumber}', '${l.category}', '${l.requesterName}', '${l.requesterEmail}', '${l.justification}')" class="btn-action-assign">
-                  Assign & Drive PDF
-                </button>
-                <button onclick="rechazarSolicitud('${l.requestNumber}')" class="btn-action-reject">
-                  ⛔ Rechazar
-                </button>
-              `;
-            } else {
-              accionCol = `<span style="color: var(--text-muted); font-size: 12px;">En revisión por TI</span>`;
-            }
-          }
+      const bannerDesc = document.getElementById('banner-role-desc');
+      const bannerTitle = document.getElementById('banner-role-title');
+      const actionLinks = document.getElementById('admin-action-links');
 
-          const assetInfo = l.assignedAssetTag 
-            ? `<strong>${l.assignedAssetTag}</strong><br><small style="color:var(--text-muted);">${l.assignedModel} (SN: ${l.assignedSerial || 'N/A'})</small>`
-            : `<span style="color: #fbbf24;">No asignado</span>`;
-
-          return `
-            <tr>
-              <td><a href="#" class="req-link">${l.requestNumber}</a></td>
-              <td>
-                <strong>${l.requesterName}</strong><br>
-                <small style="color: var(--text-muted);">${l.requesterEmail}</small>
-              </td>
-              <td><span class="category-badge">${l.category}</span></td>
-              <td>${assetInfo}</td>
-              <td style="font-size: 12px; color: var(--text-muted);">${l.date}</td>
-              <td><span class="status-tag status-${l.status.toLowerCase()}">${l.status}</span></td>
-              <td>${accionCol}</td>
-            </tr>
-          `;
-        }).join('');
-
+      if (currentRole === 'ADMIN') {
+        bannerTitle.innerText = `ADMINISTRADOR TI: ${activeUser.name.toUpperCase()}`;
+        bannerDesc.innerText = 'Gestión de activos y aprobación de solicitudes.';
+        actionLinks.style.display = 'flex';
       } else {
-        // Pestaña: Mis Activos en Custodia
-        document.getElementById('panel-title-text').innerText = '👤 Mis Activos en Custodia';
-        const myAssets = loans.filter(l => l.status === 'ENTREGADO' && (!currentUser || currentUser.email.toLowerCase() === l.requesterEmail.toLowerCase()));
+        bannerTitle.innerText = `PANEL DE USUARIO: ${activeUser.name.toUpperCase()}`;
+        bannerDesc.innerText = 'Consulta tus solicitudes de préstamo y los equipos físicos bajo tu custodia.';
+        actionLinks.style.display = 'none';
+      }
 
-        if (myAssets.length === 0) {
-          tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: var(--text-muted);">No tienes activos en custodia actualmente</td></tr>';
-          return;
-        }
+      renderTabsForRole();
+    }
 
-        tbody.innerHTML = myAssets.map(l => {
-          const pdfUrl = (l.pdfDriveLink && l.pdfDriveLink.startsWith('http')) ? l.pdfDriveLink : driveFolderGeneral;
-          return `
-            <tr>
-              <td><span class="req-link">${l.requestNumber}</span></td>
-              <td><strong>${l.requesterName}</strong></td>
-              <td><span class="category-badge">${l.category}</span></td>
-              <td><strong>${l.assignedAssetTag}</strong> (${l.assignedModel})</td>
-              <td>${l.date}</td>
-              <td><span class="status-tag status-entregado">EN CUSTODIA</span></td>
-              <td>
-                <a href="${pdfUrl}" target="_blank" class="drive-pdf-link">📄 Ver Acta Drive ↗</a>
-              </td>
-            </tr>
-          `;
-        }).join('');
+    function renderTabsForRole() {
+      const container = document.getElementById('tabs-header-container');
+      if (currentRole === 'ADMIN') {
+        document.getElementById('stats-grid-container').style.display = 'grid';
+        container.innerHTML = `
+          <button class="tab-button active" onclick="switchTab('dashboard')">🏠 Dashboard</button>
+          <button class="tab-button" onclick="switchTab('solicitudes')">📋 Solicitudes & Aprobaciones TI</button>
+          <button class="tab-button" onclick="switchTab('inventario')">💻 Inventario & Equipos</button>
+          <button class="tab-button" onclick="switchTab('configuracion')">⚙️ Configuración Cloud</button>
+          <button class="tab-button" onclick="switchTab('perfil')">👤 Mi Perfil</button>
+        `;
+        document.getElementById('solicitudes-title').innerText = '📋 Solicitudes de Préstamo & Aprobaciones TI';
+        switchTab('dashboard');
+      } else {
+        document.getElementById('stats-grid-container').style.display = 'none';
+        container.innerHTML = `
+          <button class="tab-button active" onclick="switchTab('solicitudes')">📋 Mis Solicitudes</button>
+          <button class="tab-button" onclick="switchTab('perfil')">👤 Mis Activos en Custodia</button>
+        `;
+        document.getElementById('solicitudes-title').innerText = '📋 Mis Solicitudes de Préstamo';
+        switchTab('solicitudes');
       }
     }
 
-    // ABRIR MODAL SOLICITUD
-    function openModalNuevaSolicitud() {
-      document.getElementById('sol-category-input').value = '';
-      document.getElementById('sol-justification').value = '';
-      openModal('modal-solicitud');
-    }
+    // CREAR SOLICITUD
+    function submitLoanForm(e) {
+      e.preventDefault();
+      const cat = document.getElementById('loan-cat').value;
+      const just = document.getElementById('loan-just').value;
 
-    // ENVIAR SOLICITUD A SHEETS
-    function submitNuevaSolicitud() {
-      const category = document.getElementById('sol-category-input').value.trim();
-      const justification = document.getElementById('sol-justification').value.trim();
-
-      if (!category) {
-        showToast('Por favor ingrese el tipo de activo', '⚠️');
-        return;
-      }
-
-      showToast('Enviando solicitud a Google Sheets...', '⏳');
-      closeModal('modal-solicitud');
+      showToast('Enviando solicitud a Google Sheets...', '📨');
 
       const params = new URLSearchParams({
         action: 'CREAR_SOLICITUD',
-        requesterName: currentUser.name,
-        requesterEmail: currentUser.email,
-        category: category,
-        justification: justification || 'Sin justificación especificada',
-        callback: 'handleSolicitudResponse'
+        user: activeUser ? activeUser.name : 'Usuario',
+        email: activeUser ? activeUser.email : 'correo@sedic.com.co',
+        cat: cat,
+        just: just,
+        _t: Date.now()
       });
 
-      window.handleSolicitudResponse = function(res) {
-        showToast('✔ Solicitud guardada en Sheets con éxito', '🚀');
-        fetchCloudData();
-      };
+      const popup = window.open(`${appsScriptWebhookUrl}?${params.toString()}`, 'gscript_runner', 'width=350,height=250,left=2000,top=2000');
+      if (popup) setTimeout(() => { try { popup.close(); } catch(e){} }, 2500);
 
-      const script = document.createElement('script');
-      script.src = `${appsScriptUrl}?${params.toString()}&_t=${Date.now()}`;
-      document.body.appendChild(script);
+      closeModal('modal-loan');
+      setTimeout(fetchCloudData, 2000);
     }
 
-    // MODAL ASIGNAR
-    function openModalAsignar(reqNumber, category, name, email, just) {
-      document.getElementById('asig-req-number').value = reqNumber;
-      document.getElementById('asig-req-name').value = name;
-      document.getElementById('asig-req-email').value = email;
-      document.getElementById('asig-req-category').value = category;
-      document.getElementById('asig-req-just').value = just;
+    // ASIGNAR EQUIPO
+    function assignLoan(loanId) {
+      const loan = loans.find(l => l.id === loanId);
+      if (!loan) return;
 
-      const selectEl = document.getElementById('asig-asset-select');
-      const disponibles = assets.filter(a => a.status === 'DISPONIBLE');
+      const loanCatLower = (loan.cat || '').toLowerCase();
+      
+      const matchingAssets = assets.filter(a => {
+        if (a.status !== 'DISPONIBLE') return false;
+        const assetCatLower = (a.cat || '').toLowerCase();
+        
+        if (loanCatLower.includes('portátil') || loanCatLower.includes('laptop')) {
+          return assetCatLower.includes('portátil') || assetCatLower.includes('laptop') || assetCatLower.includes('desarrollo') || assetCatLower.includes('rendimiento');
+        }
+        if (loanCatLower.includes('pantalla') || loanCatLower.includes('monitor')) {
+          return assetCatLower.includes('pantalla') || assetCatLower.includes('monitor');
+        }
+        if (loanCatLower.includes('mouse')) return assetCatLower.includes('mouse');
+        if (loanCatLower.includes('teclado')) return assetCatLower.includes('teclado');
+        if (loanCatLower.includes('hdmi')) return assetCatLower.includes('hdmi') || assetCatLower.includes('cable');
+        if (loanCatLower.includes('usb') || loanCatLower.includes('token')) return assetCatLower.includes('usb') || assetCatLower.includes('token') || assetCatLower.includes('yubi');
+        if (loanCatLower.includes('cargador')) return assetCatLower.includes('cargador') || assetCatLower.includes('adaptador');
+        if (loanCatLower.includes('diadema') || loanCatLower.includes('auricular')) return assetCatLower.includes('diadema') || assetCatLower.includes('auricular');
 
-      if (disponibles.length === 0) {
-        selectEl.innerHTML = '<option value="">⚠️ No hay activos disponibles en bodega</option>';
-      } else {
-        selectEl.innerHTML = disponibles.map(a => `
-          <option value="${a.assetTag}|${a.model}|${a.serialNumber}">
-            ${a.assetTag} - ${a.brand} ${a.model} (S/N: ${a.serialNumber}) [${a.category}]
-          </option>
-        `).join('');
+        return assetCatLower === loanCatLower;
+      });
+
+      if (matchingAssets.length === 0) {
+        alert(`⚠️ No hay ningún activo de tipo "${loan.cat}" disponible en el inventario.\n\nPuedes agregar uno en Google Sheets o Rechazar la solicitud indicando el motivo.`);
+        return;
       }
 
-      openModal('modal-asignar');
-    }
+      const selectedAsset = matchingAssets[0];
 
-    function confirmarAsignacion() {
-      const reqNumber = document.getElementById('asig-req-number').value;
-      const assetVal = document.getElementById('asig-asset-select').value;
-      if (!assetVal) return;
+      if (!confirm(`¿Confirmas asignar el siguiente equipo a ${loan.user}?\n\n• Equipo: ${selectedAsset.brand} ${selectedAsset.model}\n• Placa: ${selectedAsset.tag}\n• Serial: ${selectedAsset.sn}`)) {
+        return;
+      }
 
-      const [assetTag, assetModel, assetSerial] = assetVal.split('|');
-      const name = document.getElementById('asig-req-name').value;
-      const email = document.getElementById('asig-req-email').value;
-      const category = document.getElementById('asig-req-category').value;
-      const just = document.getElementById('asig-req-just').value;
-
-      showToast('Generando Acta en Drive & Enviando Correo...', '⏳');
-      closeModal('modal-asignar');
+      showToast(`Asignando ${selectedAsset.tag} y generando PDF...`, '📨');
 
       const params = new URLSearchParams({
         action: 'ASIGNAR_PRESTAMO',
-        reqNumber: reqNumber,
-        assetTag: assetTag,
-        assetModel: assetModel,
-        assetSerial: assetSerial,
-        requesterName: name,
-        requesterEmail: email,
-        category: category,
-        justification: just,
-        adminName: currentUser.name,
-        adminEmail: currentUser.email,
-        callback: 'handleAsignacionResponse'
+        to: loan.email,
+        recipientName: loan.user,
+        requestNumber: loan.num,
+        assetTag: selectedAsset.tag,
+        model: `${selectedAsset.brand} ${selectedAsset.model}`,
+        sn: selectedAsset.sn,
+        category: selectedAsset.cat || loan.cat,
+        specs: selectedAsset.specs,
+        _t: Date.now()
       });
 
-      window.handleAsignacionResponse = function(res) {
-        showToast('✔ Acta generada en Drive y enviada al correo', '📄');
-        fetchCloudData();
-      };
+      const popup = window.open(`${appsScriptWebhookUrl}?${params.toString()}`, 'gscript_runner', 'width=350,height=250,left=2000,top=2000');
+      if (popup) setTimeout(() => { try { popup.close(); } catch(e){} }, 2500);
 
-      const script = document.createElement('script');
-      script.src = `${appsScriptUrl}?${params.toString()}&_t=${Date.now()}`;
-      document.body.appendChild(script);
+      setTimeout(fetchCloudData, 3000);
     }
 
-    function rechazarSolicitud(reqNumber) {
-      const reason = prompt('Ingrese el motivo del rechazo de la solicitud:', 'No hay disponibilidad en bodega');
-      if (reason === null) return;
+    // RECHAZAR SOLICITUD
+    function rejectLoan(loanId) {
+      const loan = loans.find(l => l.id === loanId);
+      if (!loan) return;
 
-      showToast('Rechazando solicitud...', '⏳');
+      const reason = prompt(`Indica el motivo del rechazo para ${loan.user} (${loan.num}):`, 'No hay disponibilidad de equipos en bodega en este momento.');
+      if (!reason) return;
+
+      showToast('Registrando rechazo y notificando por correo...', '📨');
 
       const params = new URLSearchParams({
         action: 'RECHAZAR_SOLICITUD',
-        reqNumber: reqNumber,
+        to: loan.email,
+        recipientName: loan.user,
+        requestNumber: loan.num,
+        category: loan.cat,
         reason: reason,
-        adminName: currentUser.name,
-        callback: 'handleRechazoResponse'
+        _t: Date.now()
       });
 
-      window.handleRechazoResponse = function(res) {
-        showToast('✔ Solicitud rechazada correctamente', '⛔');
-        fetchCloudData();
-      };
+      const popup = window.open(`${appsScriptWebhookUrl}?${params.toString()}`, 'gscript_runner', 'width=350,height=250,left=2000,top=2000');
+      if (popup) setTimeout(() => { try { popup.close(); } catch(e){} }, 2500);
 
-      const script = document.createElement('script');
-      script.src = `${appsScriptUrl}?${params.toString()}&_t=${Date.now()}`;
-      document.body.appendChild(script);
+      setTimeout(fetchCloudData, 2500);
     }
 
-    // GESTIÓN DE TEMAS
-    function setTheme(color) {
+    // DEVOLVER EQUIPO
+    function returnLoan(loanId) {
+      const loan = loans.find(l => l.id === loanId);
+      if (!loan) return;
+
+      if (!confirm(`¿Confirmas la devolución del equipo ${loan.tag} de ${loan.user}?`)) return;
+
+      showToast('Actualizando acta de devolución en Drive y Sheets...', '📨');
+
+      const params = new URLSearchParams({
+        action: 'REGISTRAR_DEVOLUCION',
+        to: loan.email,
+        recipientName: loan.user,
+        requestNumber: loan.num,
+        assetTag: loan.tag,
+        model: loan.model,
+        sn: loan.sn,
+        category: loan.cat || 'Equipo TI',
+        specs: 'Recibido a conformidad en área de TI',
+        _t: Date.now()
+      });
+
+      const popup = window.open(`${appsScriptWebhookUrl}?${params.toString()}`, 'gscript_runner', 'width=350,height=250,left=2000,top=2000');
+      if (popup) setTimeout(() => { try { popup.close(); } catch(e){} }, 2500);
+
+      setTimeout(fetchCloudData, 3000);
+    }
+
+    function renderAll() {
+      renderStats();
+      renderSolicitudes();
+      renderInventario();
+      renderCustody();
+    }
+
+    function renderStats() {
+      const avail = assets.filter(a => a.status === 'DISPONIBLE').length;
+      const inLoan = assets.filter(a => a.status === 'ASIGNADO_EN_PRESTAMO').length;
+      const pending = loans.filter(l => l.status === 'SOLICITADO').length;
+
+      const availEl = document.getElementById('stat-available');
+      if (availEl) {
+        availEl.innerText = `${avail} / ${assets.length}`;
+        document.getElementById('stat-loans').innerText = inLoan;
+        document.getElementById('stat-pending').innerText = pending;
+        document.getElementById('dash-total-assets').innerText = assets.length;
+        document.getElementById('dash-avail-assets').innerText = avail;
+        document.getElementById('dash-loan-assets').innerText = inLoan;
+      }
+    }
+
+    function renderSolicitudes() {
+      const tbody = document.getElementById('tbody-solicitudes');
+      let filteredLoans = loans;
+      if (currentRole === 'USER' && activeUser) {
+        filteredLoans = loans.filter(l => l.email.toLowerCase() === activeUser.email.toLowerCase());
+      }
+
+      if (filteredLoans.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:var(--text-muted); padding:2rem;">No hay solicitudes registradas en Google Sheets.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = filteredLoans.map(l => `
+        <tr>
+          <td style="font-weight:700; font-family:monospace; color:var(--primary);">${l.num}</td>
+          <td><div><strong>${l.user}</strong></div><div style="font-size:0.75rem; color:var(--text-muted);">${l.email}</div></td>
+          <td><strong>${l.cat}</strong></td>
+          <td>${l.tag ? `<div><strong>${l.tag}</strong></div><div style="font-size:0.75rem; color:var(--text-muted);">${l.model} (SN: <code>${l.sn}</code>)</div>` : '<span style="color:var(--warning);">No asignado</span>'}</td>
+          <td>${l.date || '2026-08-01'}</td>
+          <td>${getStatusBadge(l.status)}</td>
+          <td>
+            ${currentRole === 'ADMIN' && l.status === 'SOLICITADO' ? `
+              <div style="display:flex; gap:0.4rem; flex-wrap:wrap;">
+                <button class="btn btn-primary" style="padding:0.35rem 0.65rem; font-size:0.75rem;" onclick="assignLoan('${l.id}')">Assign & Drive PDF</button>
+                <button class="btn btn-danger" style="padding:0.35rem 0.65rem; font-size:0.75rem;" onclick="rejectLoan('${l.id}')">⛔ Rechazar</button>
+              </div>
+            ` : ''}
+            ${currentRole === 'ADMIN' && (l.status === 'ENTREGADO' || l.status === 'EN_MORA') ? `<button class="btn btn-success" style="padding:0.35rem 0.7rem; font-size:0.75rem;" onclick="returnLoan('${l.id}')">Registrar Devolución & Actualizar PDF</button>` : ''}
+            ${currentRole === 'USER' && l.status === 'SOLICITADO' ? '<span style="font-size:0.75rem; color:var(--purple);">En revisión por TI</span>' : ''}
+            ${l.status === 'RECHAZADO' ? '<span style="font-size:0.75rem; color:var(--danger);">Solicitud no aprobada</span>' : ''}
+            ${l.status === 'DEVUELTO' ? '<span style="font-size:0.75rem; color:var(--text-muted);">Completado</span>' : ''}
+            ${l.driveFile && !l.driveFile.startsWith('Motivo') ? `<br/><a href="https://drive.google.com/drive/u/0/folders/${driveFolderId}" target="_blank" style="color:var(--primary); font-size:0.72rem; text-decoration:none;">📄 Drive: ${l.driveFile} ↗</a>` : ''}
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function renderInventario() {
+      const tbody = document.getElementById('tbody-inventario');
+      if (!tbody) return;
+      if (assets.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:2rem; color:var(--text-muted);">No hay activos registrados en Google Sheets.</td></tr>`;
+        return;
+      }
+      tbody.innerHTML = assets.map(a => `
+        <tr>
+          <td style="font-weight:700; font-family:monospace; color:var(--primary);">${a.tag}</td>
+          <td style="font-family:monospace; font-size:0.8rem; font-weight:700;">${a.sn}</td>
+          <td><div><strong>${a.brand} ${a.model}</strong></div></td>
+          <td><span class="g-badge">${a.cat}</span></td>
+          <td style="font-size:0.75rem; font-family:monospace;">${a.specs}</td>
+          <td style="font-size:0.85rem;">${a.loc}</td>
+          <td><span class="badge ${a.status === 'DISPONIBLE' ? 'badge-disponible' : 'badge-prestamo'}">${a.status}</span></td>
+        </tr>
+      `).join('');
+    }
+
+    function renderCustody() {
+      const container = document.getElementById('user-custody-list');
+      if (!container || !activeUser) return;
+      const userActiveLoans = loans.filter(l => l.email.toLowerCase() === activeUser.email.toLowerCase() && (l.status === 'ENTREGADO' || l.status === 'EN_MORA'));
+      
+      if (userActiveLoans.length === 0) {
+        container.innerHTML = `<span style="color:var(--success);">✔ No tienes ningún equipo físico bajo tu custodia en este momento.</span>`;
+      } else {
+        container.innerHTML = userActiveLoans.map(l => `
+          <div style="background:rgba(255,255,255,0.04); padding:0.85rem; border-radius:8px; border:1px solid var(--primary); margin-bottom:0.5rem;">
+            <div style="font-weight:700; color:var(--primary); font-size:0.95rem;">${l.tag} - ${l.model}</div>
+            <div style="font-size:0.82rem; color:var(--text-main); margin-top:0.2rem;">Número de Serie (SN): <code>${l.sn}</code></div>
+            <div style="margin-top:0.4rem;"><a href="https://drive.google.com/drive/u/0/folders/${driveFolderId}" target="_blank" style="color:var(--primary); font-size:0.75rem; text-decoration:none;">📄 Ver Acta PDF en Carpeta Drive ↗</a></div>
+          </div>
+        `).join('');
+      }
+    }
+
+    function getStatusBadge(status) {
+      if (status === 'ENTREGADO') return '<span class="badge badge-disponible">ENTREGADO</span>';
+      if (status === 'SOLICITADO') return '<span class="badge badge-solicitado">PENDIENTE TI</span>';
+      if (status === 'EN_MORA') return '<span class="badge badge-mora">VENCIDO EN MORA</span>';
+      if (status === 'DEVUELTO') return '<span class="badge badge-disponible">DEVUELTO</span>';
+      if (status === 'RECHAZADO') return '<span class="badge badge-rechazado">RECHAZADO</span>';
+      return `<span class="badge badge-prestamo">${status}</span>`;
+    }
+
+    function switchTab(tabName) {
+      document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      
+      const btn = Array.from(document.querySelectorAll('.tab-button')).find(b => b.getAttribute('onclick') && b.getAttribute('onclick').includes(tabName));
+      if (btn) btn.classList.add('active');
+      
+      const tabEl = document.getElementById(`tab-${tabName}`);
+      if (tabEl) tabEl.classList.add('active');
+    }
+
+    function openModal(id) { document.getElementById(id).classList.add('active'); }
+    function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+
+    function applyTheme(theme) {
       const root = document.documentElement;
-      if (color === 'blue') {
+      if (theme === 'blue') {
+        root.style.setProperty('--primary', '#4285f4');
+        root.style.setProperty('--primary-hover', '#3367d6');
+        root.style.setProperty('--primary-glow', 'rgba(66, 133, 244, 0.25)');
+        root.style.setProperty('--bg-dark', '#0b0f17');
+        root.style.setProperty('--bg-card', 'rgba(18, 26, 43, 0.95)');
+        root.style.setProperty('--bg-glass', 'rgba(15, 23, 42, 0.9)');
+        root.style.setProperty('--border-color', 'rgba(255, 255, 255, 0.1)');
+        root.style.setProperty('--text-main', '#f8fafc');
+        root.style.setProperty('--text-muted', '#94a3b8');
+        root.style.setProperty('--input-bg', '#070a10');
+        root.style.setProperty('--input-color', '#f8fafc');
+        root.style.setProperty('--input-border', 'rgba(255, 255, 255, 0.15)');
+        root.style.setProperty('--table-th-bg', 'rgba(255, 255, 255, 0.04)');
+        root.style.setProperty('--table-hover', 'rgba(255, 255, 255, 0.03)');
+        root.style.setProperty('--modal-bg', '#111827');
+        root.style.setProperty('--banner-bg', 'linear-gradient(135deg, rgba(66,133,244,0.15), rgba(161,66,244,0.1))');
+      } else if (theme === 'emerald') {
+        root.style.setProperty('--primary', '#10b981');
+        root.style.setProperty('--primary-hover', '#059669');
+        root.style.setProperty('--primary-glow', 'rgba(16, 185, 129, 0.25)');
+        root.style.setProperty('--bg-dark', '#05140f');
+        root.style.setProperty('--bg-card', 'rgba(10, 35, 26, 0.95)');
+        root.style.setProperty('--bg-glass', 'rgba(8, 28, 21, 0.9)');
+        root.style.setProperty('--border-color', 'rgba(16, 185, 129, 0.2)');
+        root.style.setProperty('--text-main', '#f0fdf4');
+        root.style.setProperty('--text-muted', '#6ee7b7');
+        root.style.setProperty('--input-bg', '#020b08');
+        root.style.setProperty('--input-color', '#f0fdf4');
+        root.style.setProperty('--input-border', 'rgba(16, 185, 129, 0.3)');
+        root.style.setProperty('--table-th-bg', 'rgba(16, 185, 129, 0.1)');
+        root.style.setProperty('--table-hover', 'rgba(16, 185, 129, 0.06)');
+        root.style.setProperty('--modal-bg', '#082119');
+        root.style.setProperty('--banner-bg', 'linear-gradient(135deg, rgba(16,185,129,0.18), rgba(5,150,105,0.1))');
+      } else if (theme === 'purple') {
+        root.style.setProperty('--primary', '#a855f7');
+        root.style.setProperty('--primary-hover', '#9333ea');
+        root.style.setProperty('--primary-glow', 'rgba(168, 85, 247, 0.25)');
+        root.style.setProperty('--bg-dark', '#11071c');
+        root.style.setProperty('--bg-card', 'rgba(30, 15, 48, 0.95)');
+        root.style.setProperty('--bg-glass', 'rgba(24, 11, 38, 0.9)');
+        root.style.setProperty('--border-color', 'rgba(168, 85, 247, 0.25)');
+        root.style.setProperty('--text-main', '#faf5ff');
+        root.style.setProperty('--text-muted', '#d8b4fe');
+        root.style.setProperty('--input-bg', '#09030f');
+        root.style.setProperty('--input-color', '#faf5ff');
+        root.style.setProperty('--input-border', 'rgba(168, 85, 247, 0.35)');
+        root.style.setProperty('--table-th-bg', 'rgba(168, 85, 247, 0.1)');
+        root.style.setProperty('--table-hover', 'rgba(168, 85, 247, 0.06)');
+        root.style.setProperty('--modal-bg', '#1b0c2e');
+        root.style.setProperty('--banner-bg', 'linear-gradient(135deg, rgba(168,85,247,0.18), rgba(236,72,153,0.1))');
+      } else if (theme === 'amber') {
+        root.style.setProperty('--primary', '#f59e0b');
+        root.style.setProperty('--primary-hover', '#d97706');
+        root.style.setProperty('--primary-glow', 'rgba(245, 158, 11, 0.25)');
+        root.style.setProperty('--bg-dark', '#160f05');
+        root.style.setProperty('--bg-card', 'rgba(38, 27, 12, 0.95)');
+        root.style.setProperty('--bg-glass', 'rgba(30, 20, 8, 0.9)');
+        root.style.setProperty('--border-color', 'rgba(245, 158, 11, 0.25)');
+        root.style.setProperty('--text-main', '#fffbeb');
+        root.style.setProperty('--text-muted', '#fde68a');
+        root.style.setProperty('--input-bg', '#0c0702');
+        root.style.setProperty('--input-color', '#fffbeb');
+        root.style.setProperty('--input-border', 'rgba(245, 158, 11, 0.35)');
+        root.style.setProperty('--table-th-bg', 'rgba(245, 158, 11, 0.1)');
+        root.style.setProperty('--table-hover', 'rgba(245, 158, 11, 0.06)');
+        root.style.setProperty('--modal-bg', '#24180a');
+        root.style.setProperty('--banner-bg', 'linear-gradient(135deg, rgba(245,158,11,0.18), rgba(217,119,6,0.1))');
+      } else if (theme === 'crimson') {
+        root.style.setProperty('--primary', '#ef4444');
+        root.style.setProperty('--primary-hover', '#dc2626');
+        root.style.setProperty('--primary-glow', 'rgba(239, 68, 68, 0.25)');
+        root.style.setProperty('--bg-dark', '#160606');
+        root.style.setProperty('--bg-card', 'rgba(38, 14, 14, 0.95)');
+        root.style.setProperty('--bg-glass', 'rgba(30, 10, 10, 0.9)');
+        root.style.setProperty('--border-color', 'rgba(239, 68, 68, 0.25)');
+        root.style.setProperty('--text-main', '#fef2f2');
+        root.style.setProperty('--text-muted', '#fca5a5');
+        root.style.setProperty('--input-bg', '#0c0202');
+        root.style.setProperty('--input-color', '#fef2f2');
+        root.style.setProperty('--input-border', 'rgba(239, 68, 68, 0.35)');
+        root.style.setProperty('--table-th-bg', 'rgba(239, 68, 68, 0.1)');
+        root.style.setProperty('--table-hover', 'rgba(239, 68, 68, 0.06)');
+        root.style.setProperty('--modal-bg', '#240a0a');
+        root.style.setProperty('--banner-bg', 'linear-gradient(135deg, rgba(239,68,68,0.18), rgba(185,28,28,0.1))');
+      } else if (theme === 'slate') {
         root.style.setProperty('--primary', '#38bdf8');
+        root.style.setProperty('--primary-hover', '#0284c7');
+        root.style.setProperty('--primary-glow', 'rgba(56, 189, 248, 0.25)');
         root.style.setProperty('--bg-dark', '#0f172a');
         root.style.setProperty('--bg-card', '#1e293b');
-      } else if (color === 'green') {
-        root.style.setProperty('--primary', '#10b981');
-        root.style.setProperty('--bg-dark', '#062016');
-        root.style.setProperty('--bg-card', '#0b3324');
-      } else if (color === 'purple') {
-        root.style.setProperty('--primary', '#a855f7');
-        root.style.setProperty('--bg-dark', '#180d2b');
-        root.style.setProperty('--bg-card', '#271545');
-      } else if (color === 'orange') {
-        root.style.setProperty('--primary', '#f59e0b');
-        root.style.setProperty('--bg-dark', '#1f1305');
-        root.style.setProperty('--bg-card', '#382208');
-      } else if (color === 'red') {
-        root.style.setProperty('--primary', '#ef4444');
-        root.style.setProperty('--bg-dark', '#1f0a0a');
-        root.style.setProperty('--bg-card', '#381212');
-      } else if (color === 'slate') {
-        root.style.setProperty('--primary', '#94a3b8');
-        root.style.setProperty('--bg-dark', '#18202c');
-        root.style.setProperty('--bg-card', '#243042');
-      } else if (color === 'white') {
-        root.style.setProperty('--primary', '#0284c7');
-        root.style.setProperty('--bg-dark', '#f8fafc');
+        root.style.setProperty('--bg-glass', 'rgba(30, 41, 59, 0.9)');
+        root.style.setProperty('--border-color', '#334155');
+        root.style.setProperty('--text-main', '#f8fafc');
+        root.style.setProperty('--text-muted', '#94a3b8');
+        root.style.setProperty('--input-bg', '#0b1120');
+        root.style.setProperty('--input-color', '#f8fafc');
+        root.style.setProperty('--input-border', '#475569');
+        root.style.setProperty('--table-th-bg', '#0f172a');
+        root.style.setProperty('--table-hover', 'rgba(255, 255, 255, 0.03)');
+        root.style.setProperty('--modal-bg', '#1e293b');
+        root.style.setProperty('--banner-bg', 'linear-gradient(135deg, rgba(56,189,248,0.15), rgba(99,102,241,0.1))');
+      } else if (theme === 'light') {
+        root.style.setProperty('--primary', '#2563eb');
+        root.style.setProperty('--primary-hover', '#1d4ed8');
+        root.style.setProperty('--primary-glow', 'rgba(37, 99, 235, 0.15)');
+        root.style.setProperty('--bg-dark', '#f1f5f9');
         root.style.setProperty('--bg-card', '#ffffff');
-        root.style.setProperty('--text-main', '#0f172a');
+        root.style.setProperty('--bg-glass', 'rgba(255, 255, 255, 0.95)');
         root.style.setProperty('--border-color', '#cbd5e1');
-        root.style.setProperty('--input-bg', '#f1f5f9');
+        root.style.setProperty('--text-main', '#0f172a');
+        root.style.setProperty('--text-muted', '#475569');
+        root.style.setProperty('--input-bg', '#f8fafc');
+        root.style.setProperty('--input-color', '#0f172a');
+        root.style.setProperty('--input-border', '#94a3b8');
+        root.style.setProperty('--table-th-bg', '#f8fafc');
+        root.style.setProperty('--table-hover', '#f1f5f9');
+        root.style.setProperty('--modal-bg', '#ffffff');
+        root.style.setProperty('--banner-bg', 'linear-gradient(135deg, rgba(37,99,235,0.08), rgba(99,102,241,0.05))');
       }
+      localStorage.setItem('TI_SELECTED_THEME', theme);
     }
 
-    // INICIALIZAR
-    window.addEventListener('DOMContentLoaded', () => {
-      const saved = localStorage.getItem('TI_USER_SESSION');
-      if (saved) {
-        try {
-          currentUser = JSON.parse(saved);
-          initSession();
-        } catch (e) {
-          fetchCloudData();
-        }
-      } else {
-        fetchCloudData();
-      }
-    });
+    const savedTheme = localStorage.getItem('TI_SELECTED_THEME') || 'blue';
+    applyTheme(savedTheme);
+
+    fetchCloudData();
+    checkExistingSession();
   </script>
 </body>
 </html>
