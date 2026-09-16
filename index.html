@@ -248,51 +248,47 @@
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      background: #eff6ff;
-      border: 1px solid #bfdbfe;
-      color: #1d4ed8;
-      font-size: 0.8rem;
-      font-weight: 700;
+      background: linear-gradient(135deg, #0284c7 0%, #2563eb 100%);
+      color: #ffffff;
+      border: none;
       padding: 6px 12px;
       border-radius: var(--radius-md);
+      font-size: 0.78rem;
+      font-weight: 700;
       cursor: pointer;
-      transition: all 0.15s;
+      box-shadow: 0 2px 4px rgba(37, 99, 235, 0.2);
+      transition: all 0.2s ease;
     }
     .btn-report-nav:hover {
-      background: #dbeafe;
       transform: translateY(-1px);
+      box-shadow: 0 4px 8px rgba(37, 99, 235, 0.3);
     }
 
     .theme-select {
       background: var(--bg-subtle);
-      color: var(--text-main);
       border: 1px solid var(--border-color);
+      color: var(--text-main);
       padding: 5px 8px;
       border-radius: var(--radius-md);
-      font-size: 0.8rem;
-      cursor: pointer;
+      font-size: 0.75rem;
+      font-weight: 600;
       outline: none;
+      cursor: pointer;
     }
 
     /* ==========================================================================
-       04. GRID PRINCIPAL (FORMULARIO + TABLA COMPACTA)
+       04. GRID PRINCIPAL (FORMULARIO + TABLA)
        ========================================================================== */
     .main-grid {
       display: grid;
-      grid-template-columns: 1fr;
-      gap: 16px;
+      grid-template-columns: 340px 1fr;
+      gap: 14px;
       align-items: start;
     }
 
-    @media (min-width: 1280px) {
+    @media (max-width: 1100px) {
       .main-grid {
-        grid-template-columns: 440px 1fr;
-      }
-    }
-
-    @media (min-width: 1600px) {
-      .main-grid {
-        grid-template-columns: 460px 1fr;
+        grid-template-columns: 1fr;
       }
     }
 
@@ -458,7 +454,7 @@
       border: 1.5px solid var(--primary);
       border-radius: var(--radius-md);
       box-shadow: 0 10px 25px rgba(0, 0, 0, 0.18);
-      max-height: 240px;
+      max-height: 220px;
       overflow-y: auto;
       z-index: 999999 !important;
       padding: 4px;
@@ -599,54 +595,81 @@
        ========================================================================== */
     .table-toolbar {
       display: flex;
-      flex-wrap: wrap;
       align-items: center;
       justify-content: space-between;
       gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
       background: var(--bg-subtle);
       padding: 10px 12px;
       border-radius: var(--radius-md);
       border: 1px solid var(--border-color);
-      margin-bottom: 12px;
     }
 
-    .filter-group { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-    .filter-item { display: flex; align-items: center; gap: 4px; }
-    .filter-label { font-size: 0.74rem; font-weight: 700; color: var(--text-muted); }
+    .filters-cluster {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .filter-item {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
     .filter-select {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
       padding: 5px 8px;
       font-size: 0.78rem;
-      background: var(--bg-input);
-      border: 1px solid var(--border-color);
+      font-weight: 600;
       border-radius: var(--radius-sm);
-      color: var(--text-main);
       outline: none;
+      cursor: pointer;
     }
 
-    .search-wrapper { position: relative; flex: 1; min-width: 180px; max-width: 280px; }
-    .search-icon { position: absolute; left: 8px; top: 50%; transform: translateY(-50%); color: var(--text-light); pointer-events: none; display: flex; }
-    .search-input { padding-left: 28px !important; font-size: 0.78rem; padding-top: 5px; padding-bottom: 5px; }
+    .search-wrapper {
+      position: relative;
+      flex: 1;
+      min-width: 180px;
+      max-width: 260px;
+    }
+    .search-icon {
+      position: absolute;
+      left: 9px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-light);
+      pointer-events: none;
+    }
+    .search-input {
+      padding-left: 28px !important;
+      font-size: 0.78rem !important;
+      padding-top: 5px !important;
+      padding-bottom: 5px !important;
+    }
 
-    /* Menú Desplegable de Exportación */
-    .export-dropdown { position: relative; display: inline-block; }
+    .export-dropdown { position: relative; }
     .export-menu {
       position: absolute;
-      right: 0;
       top: calc(100% + 4px);
+      right: 0;
       background: var(--bg-card);
       border: 1px solid var(--border-color);
       border-radius: var(--radius-md);
       box-shadow: var(--shadow-lg);
-      min-width: 200px;
-      z-index: 50;
-      padding: 4px;
       list-style: none;
+      min-width: 210px;
+      z-index: 100;
       display: none;
+      padding: 6px;
     }
     .export-menu.show { display: block; }
     .export-item {
       padding: 8px 12px;
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       font-weight: 600;
       color: var(--text-main);
       border-radius: var(--radius-sm);
@@ -659,93 +682,78 @@
     .export-item:hover { background: var(--primary-light); color: var(--primary); }
 
     /* ==========================================================================
-       09. TABLA DE TICKETS COMPACTA (SIN SCROLL HORIZONTAL)
+       09. TABLA DE TICKETS (COMPACTA Y SIN SCROLL HORIZONTAL)
        ========================================================================== */
     .table-container {
+      width: 100%;
+      overflow-x: hidden;
       border: 1px solid var(--border-color);
       border-radius: var(--radius-md);
       background: var(--bg-card);
-      max-height: calc(100vh - 300px);
-      overflow-y: auto;
-      scrollbar-width: thin;
     }
 
     .data-table {
       width: 100%;
+      table-layout: fixed;
       border-collapse: collapse;
       font-size: 0.8rem;
-      text-align: left;
-      table-layout: auto;
-    }
-
-    .data-table thead {
-      position: sticky;
-      top: 0;
-      z-index: 10;
-      background: var(--bg-subtle);
     }
 
     .data-table th {
-      padding: 10px 8px;
-      font-size: 0.7rem;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
+      background: var(--bg-subtle);
       color: var(--text-muted);
+      font-weight: 700;
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      padding: 8px 10px;
       border-bottom: 1px solid var(--border-color);
-      white-space: nowrap;
-    }
-
-    .data-table tbody tr {
-      border-bottom: 1px solid var(--border-color);
-      transition: background 0.12s ease;
-    }
-    .data-table tbody tr:hover {
-      background: color-mix(in srgb, var(--primary) 4%, var(--bg-card));
+      text-align: left;
     }
 
     .data-table td {
-      padding: 8px 8px;
+      padding: 8px 10px;
+      border-bottom: 1px solid var(--border-subtle);
       vertical-align: middle;
       color: var(--text-main);
-      line-height: 1.25;
+    }
+
+    .data-table tbody tr:hover {
+      background-color: var(--primary-light);
     }
 
     .ticket-id {
       font-family: monospace;
       font-weight: 700;
-      font-size: 0.74rem;
       color: var(--primary);
-      background: var(--primary-light);
-      padding: 2px 4px;
-      border-radius: 4px;
-      display: inline-block;
+      font-size: 0.78rem;
       cursor: pointer;
     }
+    .ticket-id:hover { text-decoration: underline; }
 
     .service-cell {
       display: flex;
       flex-direction: column;
       gap: 2px;
-      max-width: 220px;
+      min-width: 0;
     }
     .service-name {
-      font-weight: 600;
-      font-size: 0.78rem;
+      font-weight: 700;
       color: var(--text-main);
-      white-space: normal;
+      font-size: 0.8rem;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
     .category-tag {
       font-size: 0.68rem;
       color: var(--text-muted);
-      background: var(--bg-subtle);
-      padding: 1px 5px;
-      border-radius: 4px;
-      align-self: flex-start;
-      border: 1px solid var(--border-color);
+      font-weight: 600;
     }
 
     .user-cell {
+      overflow: hidden;
+      text-overflow: ellipsis;
       font-weight: 600;
       font-size: 0.78rem;
       max-width: 140px;
@@ -898,84 +906,172 @@
     }
 
     /* ==========================================================================
-       11. PANTALLA DE AUTENTICACIÓN / ACCESO SEGURO
+       11. INFORME MENSUAL Y GRÁFICAS EJECUTIVAS
        ========================================================================== */
-    #authOverlay {
-      position: fixed;
-      inset: 0;
-      z-index: 99999;
-      background: var(--bg-body);
+    .report-filter-bar {
       display: flex;
       align-items: center;
-      justify-content: center;
-      padding: 20px;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border-color);
     }
+
+    .report-summary-box {
+      background: linear-gradient(135deg, #eff6ff 0%, #f0fdf4 100%);
+      border: 1px solid #bfdbfe;
+      border-radius: var(--radius-md);
+      padding: 14px;
+      margin-bottom: 16px;
+      font-size: 0.86rem;
+      line-height: 1.5;
+      color: #1e3a8a;
+    }
+    body[data-theme="dark"] .report-summary-box {
+      background: #172554;
+      border-color: #1e40af;
+      color: #dbeafe;
+    }
+
+    .report-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+
+    @media (max-width: 680px) {
+      .report-grid { grid-template-columns: 1fr; }
+    }
+
+    .chart-card {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .chart-card h4 {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+      text-transform: uppercase;
+    }
+    .chart-container {
+      width: 100%;
+      height: 220px;
+      position: relative;
+    }
+
+    .report-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.8rem;
+    }
+    .report-table th, .report-table td {
+      padding: 7px 10px;
+      border-bottom: 1px solid var(--border-color);
+    }
+    .report-table th { background: var(--bg-subtle); font-size: 0.72rem; }
+
+    /* ==========================================================================
+       12. MODAL DE AUTENTICACIÓN / LOGIN
+       ========================================================================== */
+    .auth-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.8);
+      backdrop-filter: blur(8px);
+      z-index: 999999;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
     .auth-card {
       background: var(--bg-card);
       border: 1px solid var(--border-color);
       border-radius: var(--radius-lg);
+      padding: 24px;
+      width: min(400px, 94vw);
       box-shadow: var(--shadow-xl);
-      width: min(440px, 94vw);
-      padding: 30px;
+      text-align: center;
       display: flex;
       flex-direction: column;
+      gap: 14px;
+      animation: modal-in 0.25s ease-out;
+    }
+
+    .auth-avatar-big {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: var(--primary-light);
+      color: var(--primary);
+      display: flex;
       align-items: center;
-      text-align: center;
-      gap: 16px;
+      justify-content: center;
+      margin: 0 auto;
+      font-size: 1.5rem;
     }
-
-    /* ==========================================================================
-       12. INFORME MENSUAL
-       ========================================================================== */
-    .report-filter-bar {
-      display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;
-      background: var(--bg-subtle); padding: 10px 14px; border-radius: var(--radius-md);
-      border: 1px solid var(--border-color); margin-bottom: 14px;
-    }
-    .report-summary-box {
-      background: var(--bg-subtle); border: 1px solid var(--border-color);
-      border-left: 4px solid var(--primary); border-radius: var(--radius-md);
-      padding: 12px 16px; font-size: 0.88rem; line-height: 1.55; margin-bottom: 16px;
-    }
-    .report-grid { display: grid; grid-template-columns: 1fr; gap: 16px; margin-bottom: 16px; }
-    @media(min-width: 768px) { .report-grid { grid-template-columns: 1fr 1fr; } }
-    .chart-card {
-      background: var(--bg-card); border: 1px solid var(--border-color);
-      border-radius: var(--radius-md); padding: 14px; display: flex; flex-direction: column; align-items: center;
-    }
-    .chart-card h4 { font-size: 0.82rem; font-weight: 700; margin-bottom: 10px; }
-    .chart-container { position: relative; width: 100%; max-height: 250px; display: flex; justify-content: center; }
-
-    .report-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
-    .report-table th { background: var(--bg-subtle); padding: 8px 10px; text-align: left; border: 1px solid var(--border-color); color: var(--text-muted); }
-    .report-table td { padding: 6px 10px; border: 1px solid var(--border-color); }
-    .report-table tr:nth-child(even) { background: var(--bg-subtle); }
 
     /* Toasts */
-    .toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 8px; max-width: 360px; }
+    .toast-container {
+      position: fixed;
+      bottom: 16px;
+      right: 16px;
+      z-index: 9999999;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
     .toast {
-      background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-md);
-      padding: 10px 14px; box-shadow: var(--shadow-lg); display: flex; align-items: center; gap: 10px; font-size: 0.82rem; font-weight: 500;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      padding: 10px 14px;
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-lg);
+      font-size: 0.82rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 240px;
+      animation: toast-in 0.25s cubic-bezier(0.16, 1, 0.3, 1);
     }
     .toast.success { border-left: 4px solid #10b981; }
     .toast.error { border-left: 4px solid #ef4444; }
-    .toast.info { border-left: 4px solid var(--primary); }
+    .toast.info { border-left: 4px solid #3b82f6; }
 
-    footer { margin-top: 24px; text-align: center; font-size: 0.78rem; color: var(--text-muted); }
+    @keyframes toast-in {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
+    footer {
+      margin-top: 24px;
+      text-align: center;
+      font-size: 0.74rem;
+      color: var(--text-light);
+    }
   </style>
 </head>
 <body data-theme="light">
 
-  <!-- ==================== CONTENEDOR TOASTS ==================== -->
   <div id="toastContainer" class="toast-container"></div>
 
-  <!-- ==================== PANTALLA DE BLOQUEO / AUTENTICACIÓN ==================== -->
-  <div id="authOverlay">
+  <!-- ==================== OVERLAY LOGIN / ACCESO RESTRINGIDO ==================== -->
+  <div id="authOverlay" class="auth-overlay">
     <div class="auth-card">
-      <img src="Imagen/logo-empresas.jpg" alt="Logo" style="height:48px;" onerror="this.onerror=null;this.src='https://jose01ve.github.io/GESTION-TI/Imagen/logo-empresas.jpg';">
+      <div class="auth-avatar-big">🔐</div>
       <div>
-        <h2 style="font-size:1.2rem; font-weight:800; color:var(--text-main);">Gestión TI Interventoría Ituango</h2>
-        <p style="font-size:0.82rem; color:var(--text-muted); margin-top:4px;">Acceso restringido a analistas autorizados</p>
+        <h2 style="font-size:1.15rem; font-weight:800; color:var(--text-main);">Acceso Mesa de Ayuda TI</h2>
+        <p style="font-size:0.78rem; color:var(--text-muted); margin-top:3px;">Autenticación para analistas autorizados</p>
       </div>
 
       <div style="width:100%; text-align:left;">
@@ -1255,27 +1351,27 @@
               <span class="kpi-title">Cancelados</span>
               <div class="kpi-value" id="kpiCa" style="color:var(--status-cancelled);">0</div>
             </div>
-            <div class="kpi-card" data-kpi="req" title="Filtrar Con Requerimiento">
-              <span class="kpi-title">Con Requerimiento</span>
+            <div class="kpi-card" data-kpi="req" title="Filtrar con Requerimiento">
+              <span class="kpi-title">Con REQ</span>
               <div class="kpi-value" id="kpiRq" style="color:#8b5cf6;">0</div>
             </div>
           </div>
 
-          <!-- Toolbar / Filtros -->
+          <!-- Barra de Filtros y Búsqueda -->
           <div class="table-toolbar">
-            <div class="filter-group">
+            <div class="filters-cluster">
               <div class="filter-item">
-                <span class="filter-label">Vista:</span>
+                <span style="font-size:0.75rem; color:var(--text-muted); font-weight:600;">Vista:</span>
                 <select id="viewSelect" class="filter-select">
-                  <option value="mis">Asignados a mí</option>
-                  <option value="todos">Todos los analistas</option>
+                  <option value="todos">Todos los reportes</option>
+                  <option value="mis">Mis reportes</option>
                 </select>
               </div>
 
               <div class="filter-item">
-                <span class="filter-label">Analista:</span>
+                <span style="font-size:0.75rem; color:var(--text-muted); font-weight:600;">Analista:</span>
                 <select id="analystSelect" class="filter-select">
-                  <option value="">Todos</option>
+                  <option value="">Todos los analistas</option>
                   <option>Jose Salas</option>
                   <option>Sebastián Cataño</option>
                   <option>Sebastián Posada</option>
@@ -1284,10 +1380,10 @@
               </div>
 
               <div class="filter-item">
-                <span class="filter-label">Estado:</span>
+                <span style="font-size:0.75rem; color:var(--text-muted); font-weight:600;">Estado:</span>
                 <select id="statusSelect" class="filter-select">
                   <option value="">Todos los estados</option>
-                  <option value="pendientes">Pendientes</option>
+                  <option value="pendientes">Pendientes (Abiertos + En Proceso)</option>
                   <option value="Abierto">Abierto</option>
                   <option value="En Proceso">En Proceso</option>
                   <option value="Cerrado">Cerrado</option>
@@ -1296,7 +1392,7 @@
               </div>
 
               <div class="filter-item">
-                <span class="filter-label">Mes:</span>
+                <span style="font-size:0.75rem; color:var(--text-muted); font-weight:600;">Mes:</span>
                 <select id="monthSelect" class="filter-select">
                   <option value="">Todos los meses</option>
                 </select>
@@ -1455,7 +1551,7 @@
     'use strict';
 
     /* ==================== CONFIGURACIÓN & ANALISTAS AUTORIZADOS ==================== */
-    const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxDYuz9WHDkK6zXh__gyWN9zkt2tSoFtINKfxTS1MUaUxbGprCeZdMT2f6WrKyhEn4neg/exec';
+    const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbx14TXqJeqhSxe-Pi9FUXqnZdhQiuMAS5hbgFSdcWhzNvtB9qDnx049tsGrKAd2BSlBBg/exec';
     const DIRECTORY_SPREADSHEET_ID = '1JCORZBlWL0DPs9DuZQsvd1VFuMy1ZVBT8RgM1S_eNZ0';
     const AUTO_REFRESH_MS = 30000;
     const PAGE_SIZE = 25;
@@ -1468,17 +1564,42 @@
       { nombre:'Pablo Calle',       email:'pablocalle@ingetec.com.co', init:'PC', pin:'1234' }
     ];
 
-    // Directorio de Personal Interventoría Ituango (Columna B de la hoja ACTIVOS)
+    // Directorio de Personal Interventoría Ituango (Columna B de la hoja ACTIVOS - ID: 1JCORZBlWL0DPs9DuZQsvd1VFuMy1ZVBT8RgM1S_eNZ0)
     let USUARIOS = [
-      'Fragozo Ibarra Kleyver Andres', 'Hoyos Villalba Jose David', 'Paniagua Otalvaro Leonardo Francisco',
-      'Arbelaez Fernandez Cristian Camilo', 'Acosta Rojas Susan Daniela', 'Cossio Sepulveda Juan Diego',
-      'Valencia Guerra Ricardo Wilson', 'Hidalgo Mendez Henry de Jesús', 'Montoya Gonzalez Yeferson Davison',
-      'Padilla Caballero Yormi Alexander', 'Blandon Puerta Cristian Camilo', 'Naranjo Jaramillo Nelson Enrique',
-      'Buelvas Arango Julio Cesar', 'Guerrero Oropeza Nestor Eduardo', 'Espinosa Cardenal Andres Mauricio',
-      'Durango Muñoz Carlos Emerson', 'Peña Guerrero Luis Alberto', 'Vargas Méndez Daniel Eduardo',
-      'Franco Franco Carlos Alberto', 'Sanchez Giraldo Alexander', 'Arango Betancur Yesid Orlando',
-      'Maria Camila Gomez', 'Maria Victoria Lopez', 'Maria Elena Restrepo', 'Maria Jose Perez',
-      'Marcela Pareja', 'Jhon Madrid', 'Juan Carlos Betancur', 'Jose Salas', 'Sebastián Cataño', 'Sebastián Posada', 'Pablo Calle'
+      'Guerrero Carvajal Diego Fernando',
+      'Fragozo Ibarra Kleyver Andres',
+      'Hoyos Villalba Jose David',
+      'Paniagua Otalvaro Leonardo Francisco',
+      'Arbelaez Fernandez Cristian Camilo',
+      'Acosta Rojas Susan Daniela',
+      'Cossio Sepulveda Juan Diego',
+      'Valencia Guerra Ricardo Wilson',
+      'Hidalgo Mendez Henry de Jesús',
+      'Montoya Gonzalez Yeferson Davison',
+      'Padilla Caballero Yormi Alexander',
+      'Blandon Puerta Cristian Camilo',
+      'Naranjo Jaramillo Nelson Enrique',
+      'Buelvas Arango Julio Cesar',
+      'Guerrero Oropeza Nestor Eduardo',
+      'Espinosa Cardenal Andres Mauricio',
+      'Durango Muñoz Carlos Emerson',
+      'Peña Guerrero Luis Alberto',
+      'Vargas Méndez Daniel Eduardo',
+      'Franco Franco Carlos Alberto',
+      'Sanchez Giraldo Alexander',
+      'Arango Betancur Yesid Orlando',
+      'Carlos Andres Vargas',
+      'Maria Camila Gomez',
+      'Maria Victoria Lopez',
+      'Maria Elena Restrepo',
+      'Maria Jose Perez',
+      'Marcela Pareja',
+      'Jhon Madrid',
+      'Juan Carlos Betancur',
+      'Jose Salas',
+      'Sebastián Cataño',
+      'Sebastián Posada',
+      'Pablo Calle'
     ];
 
     /* ==================== PARSER UNIVERSAL DE FECHAS ==================== */
@@ -1679,12 +1800,14 @@
       return USUARIOS.filter(u => {
         const nu = norm(u);
         return terms.every(term => nu.includes(term));
-      }).slice(0, 15);
+      }).slice(0, 20);
     }
 
     function renderAcList(items){
+      if (!acList) return;
       if (!items || !items.length) { 
-        acList.hidden = true; 
+        acList.hidden = true;
+        acList.style.display = 'none';
         acList.innerHTML = ''; 
         return; 
       }
@@ -1694,23 +1817,57 @@
         </li>
       `).join('');
       acList.hidden = false;
+      acList.style.display = 'block';
     }
 
     if (inputUsuario) {
-      inputUsuario.addEventListener('input', () => renderAcList(filtraUsuarios(inputUsuario.value)));
+      inputUsuario.addEventListener('input', () => {
+        renderAcList(filtraUsuarios(inputUsuario.value));
+      });
       inputUsuario.addEventListener('focus', () => {
         if (inputUsuario.value.trim().length >= 1) {
           renderAcList(filtraUsuarios(inputUsuario.value));
         }
       });
+      inputUsuario.addEventListener('keydown', e => {
+        const items = acList.querySelectorAll('.ac-item');
+        if (!items.length || acList.hidden) return;
+        let selectedIndex = Array.from(items).findIndex(el => el.getAttribute('aria-selected') === 'true');
+        
+        if (e.key === 'ArrowDown') {
+          e.preventDefault();
+          if (selectedIndex >= 0) items[selectedIndex].removeAttribute('aria-selected');
+          selectedIndex = (selectedIndex + 1) % items.length;
+          items[selectedIndex].setAttribute('aria-selected', 'true');
+          items[selectedIndex].scrollIntoView({ block: 'nearest' });
+        } else if (e.key === 'ArrowUp') {
+          e.preventDefault();
+          if (selectedIndex >= 0) items[selectedIndex].removeAttribute('aria-selected');
+          selectedIndex = (selectedIndex - 1 + items.length) % items.length;
+          items[selectedIndex].setAttribute('aria-selected', 'true');
+          items[selectedIndex].scrollIntoView({ block: 'nearest' });
+        } else if (e.key === 'Enter') {
+          if (selectedIndex >= 0 && items[selectedIndex]) {
+            e.preventDefault();
+            const val = items[selectedIndex].getAttribute('data-name') || items[selectedIndex].textContent.replace('👤', '').trim();
+            inputUsuario.value = val;
+            acList.hidden = true;
+            acList.style.display = 'none';
+            showToast(`Usuario seleccionado: ${val}`, 'info');
+          }
+        }
+      });
       document.addEventListener('click', e => {
         const item = e.target.closest('#acList li');
         if (item) {
-          inputUsuario.value = item.getAttribute('data-name') || item.textContent.replace('👤', '').trim();
+          const val = item.getAttribute('data-name') || item.textContent.replace('👤', '').trim();
+          inputUsuario.value = val;
           acList.hidden = true;
-          showToast(`Usuario seleccionado: ${inputUsuario.value}`, 'info');
+          acList.style.display = 'none';
+          showToast(`Usuario seleccionado: ${val}`, 'info');
         } else if (!e.target.closest('.ac-wrapper')) {
           acList.hidden = true;
+          acList.style.display = 'none';
         }
       });
     }
@@ -1719,23 +1876,34 @@
     async function fetchContacts(){
       // 1. Intento vía Google Visualization API directo a la hoja ACTIVOS
       try {
-        const gvizUrl = `https://docs.google.com/spreadsheets/d/${DIRECTORY_SPREADSHEET_ID}/gviz/tq?tqx=out:json&sheet=ACTIVOS`;
-        const res = await fetch(gvizUrl);
-        const txt = await res.text();
-        const jsonStr = txt.replace(/^[/*\s]*google\.visualization\.Query\.setResponse\(/, '').replace(/\);?[/*\s]*$/, '');
-        const data = JSON.parse(jsonStr);
-        if (data && data.table && Array.isArray(data.table.rows)) {
-          const names = [];
-          data.table.rows.forEach(r => {
-            const val = r.c && r.c[1] ? (r.c[1].v || r.c[1].f) : null;
-            if (val && String(val).trim().length > 2 && !String(val).toLowerCase().includes('nombre')) {
-              names.push(String(val).trim());
+        const sheetNames = ['ACTIVOS', 'Sheet1', 'Hoja 1', 'PERSONAL'];
+        for (const sheet of sheetNames) {
+          try {
+            const gvizUrl = `https://docs.google.com/spreadsheets/d/${DIRECTORY_SPREADSHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(sheet)}`;
+            const res = await fetch(gvizUrl);
+            const txt = await res.text();
+            const jsonStr = txt.replace(/^[/*\s]*google\.visualization\.Query\.setResponse\(/, '').replace(/\);?[/*\s]*$/, '');
+            const data = JSON.parse(jsonStr);
+            if (data && data.table && Array.isArray(data.table.rows) && data.table.rows.length > 0) {
+              const names = [];
+              data.table.rows.forEach(r => {
+                if (r.c) {
+                  const valB = r.c[1] ? (r.c[1].v || r.c[1].f) : null;
+                  if (valB && String(valB).trim().length > 2 && !String(valB).toLowerCase().includes('nombre') && !String(valB).toLowerCase().includes('apellidos')) {
+                    names.push(String(valB).trim());
+                  }
+                  const valA = r.c[0] ? (r.c[0].v || r.c[0].f) : null;
+                  if (valA && String(valA).trim().length > 2 && !String(valA).toLowerCase().includes('nombre') && isNaN(valA)) {
+                    names.push(String(valA).trim());
+                  }
+                }
+              });
+              if (names.length > 0) {
+                USUARIOS = Array.from(new Set([...USUARIOS, ...names]));
+                break;
+              }
             }
-          });
-          if (names.length > 0) {
-            USUARIOS = Array.from(new Set([...names, ...USUARIOS]));
-            return;
-          }
+          } catch(e){}
         }
       } catch(e){}
 
@@ -1744,7 +1912,7 @@
         const res2 = await fetch(`${WEB_APP_URL}?action=contacts`);
         const data2 = await res2.json();
         if (data2 && data2.ok && Array.isArray(data2.contacts) && data2.contacts.length) {
-          USUARIOS = Array.from(new Set([...data2.contacts, ...USUARIOS]));
+          USUARIOS = Array.from(new Set([...USUARIOS, ...data2.contacts]));
         }
       } catch(e){}
     }
@@ -1772,13 +1940,26 @@
     if (reqSi) reqSi.addEventListener('change', toggleReq);
     if (reqNo) reqNo.addEventListener('change', toggleReq);
 
-    /* Generación dinámica de meses */
+    /* Generación dinámica y completa de meses */
     function populateMonthsOptions(tickets) {
       const ymSet = new Set();
-      tickets.forEach(t => {
-        const ym = extractYm(t.fecha);
-        if (ym && ym.length === 7) ymSet.add(ym);
-      });
+      
+      // 1. Años 2024, 2025, 2026, 2027 (todos los meses disponibles para informe y filtro)
+      const curYear = new Date().getFullYear();
+      for (let y = Math.max(curYear + 1, 2026); y >= 2024; y--) {
+        for (let m = 12; m >= 1; m--) {
+          const ym = `${y}-${String(m).padStart(2, '0')}`;
+          ymSet.add(ym);
+        }
+      }
+
+      // 2. Meses adicionales encontrados en los registros
+      if (Array.isArray(tickets)) {
+        tickets.forEach(t => {
+          const ym = extractYm(t.fecha);
+          if (ym && ym.length === 7) ymSet.add(ym);
+        });
+      }
 
       const sortedYm = Array.from(ymSet).sort().reverse();
       const optionsHtml = ['<option value="">Todos los meses</option>'];
@@ -1791,12 +1972,15 @@
         optionsHtml.push(`<option value="${ym}">${text}</option>`);
       });
 
-      if (sortedYm.length > 0) {
-        const prevMonth = monthSelect.value;
-        const prevRepMonth = reportMonthSelect.value;
+      const prevMonth = monthSelect ? monthSelect.value : '';
+      const prevRepMonth = reportMonthSelect ? reportMonthSelect.value : '';
+      
+      if (monthSelect) {
         monthSelect.innerHTML = optionsHtml.join('');
-        reportMonthSelect.innerHTML = optionsHtml.join('');
         if (prevMonth) monthSelect.value = prevMonth;
+      }
+      if (reportMonthSelect) {
+        reportMonthSelect.innerHTML = optionsHtml.join('');
         if (prevRepMonth) reportMonthSelect.value = prevRepMonth;
       }
     }
