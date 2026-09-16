@@ -3,34 +3,31 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Interventoría TI - Gestión Cloud de Préstamos (Consorcio Ingetec - SEDIC)</title>
+  <title>Interventoría TI - Sistema de Préstamos de Activos</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg-dark: #0b0f17;
-      --bg-card: rgba(18, 26, 43, 0.95);
-      --bg-glass: rgba(15, 23, 42, 0.9);
-      --border-color: rgba(255, 255, 255, 0.1);
-      --primary: #0284c7;
-      --primary-hover: #0369a1;
-      --primary-glow: rgba(2, 132, 199, 0.25);
-      --success: #10b981;
-      --success-bg: rgba(16, 185, 129, 0.18);
-      --warning: #f59e0b;
-      --warning-bg: rgba(245, 158, 11, 0.18);
-      --danger: #ef4444;
-      --danger-bg: rgba(239, 68, 68, 0.18);
+      --bg-dark: #0f172a;
+      --bg-card: #1e293b;
+      --border-color: #334155;
+      --primary: #38bdf8;
+      --primary-hover: #0284c7;
+      --primary-glow: rgba(56, 189, 248, 0.25);
       --text-main: #f8fafc;
       --text-muted: #94a3b8;
-      --input-bg: #0f172a;
-      --input-color: #f8fafc;
+      --input-bg: #0b1120;
       --input-border: #334155;
-      --table-th-bg: #0f172a;
-      --table-hover: rgba(255, 255, 255, 0.03);
+      --badge-bg: rgba(56, 189, 248, 0.15);
+      --badge-text: #38bdf8;
+      --success: #10b981;
+      --success-bg: rgba(16, 185, 129, 0.18);
+      --warning: #fbbf24;
+      --warning-bg: rgba(251, 191, 36, 0.18);
+      --danger: #f87171;
+      --danger-bg: rgba(248, 113, 113, 0.18);
       --modal-bg: #1e293b;
-      --banner-bg: linear-gradient(135deg, rgba(2, 132, 199, 0.15), rgba(99, 102, 241, 0.1));
     }
 
     * {
@@ -48,92 +45,11 @@
       flex-direction: column;
     }
 
-    /* BARRA SUPERIOR / NAVBAR */
-    .navbar {
-      background: var(--bg-card);
-      border-bottom: 1px solid var(--border-color);
-      padding: 12px 24px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      position: sticky;
-      top: 0;
-      z-index: 50;
-      backdrop-filter: blur(12px);
-    }
-
-    .brand-section {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-    }
-
-    .brand-badge {
-      background: linear-gradient(135deg, #0284c7, #2563eb);
-      color: #fff;
-      padding: 6px 12px;
-      border-radius: 8px;
-      font-family: 'Outfit', sans-serif;
-      font-weight: 800;
-      font-size: 14px;
-      letter-spacing: 0.5px;
-      box-shadow: 0 4px 12px var(--primary-glow);
-    }
-
-    .brand-title {
-      font-family: 'Outfit', sans-serif;
-      font-weight: 700;
-      font-size: 16px;
-      color: var(--text-main);
-    }
-
-    .brand-subtitle {
-      font-size: 11px;
-      color: var(--text-muted);
-    }
-
-    .nav-actions {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .user-info-badge {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid var(--border-color);
-      padding: 6px 14px;
-      border-radius: 30px;
-      font-size: 13px;
-    }
-
-    .role-tag {
-      font-size: 10px;
-      padding: 2px 8px;
-      border-radius: 12px;
-      font-weight: 700;
-      text-transform: uppercase;
-    }
-
-    .role-admin { background: rgba(2, 132, 199, 0.3); color: #38bdf8; border: 1px solid #0284c7; }
-    .role-user { background: rgba(16, 185, 129, 0.3); color: #34d399; border: 1px solid #10b981; }
-
-    /* CONTENEDOR PRINCIPAL */
-    .main-container {
-      flex: 1;
-      max-width: 1300px;
-      width: 100%;
-      margin: 0 auto;
-      padding: 24px 20px;
-    }
-
-    /* PANTALLA LOGIN */
+    /* PANTALLA DE LOGIN */
     .login-overlay {
       position: fixed;
       inset: 0;
-      background: radial-gradient(circle at top right, rgba(2, 132, 199, 0.15), transparent), var(--bg-dark);
+      background: #0f172a;
       z-index: 100;
       display: flex;
       align-items: center;
@@ -142,306 +58,434 @@
     }
 
     .login-card {
-      background: var(--bg-card);
+      background: #1e293b;
       border: 1px solid var(--border-color);
       border-radius: 16px;
       width: 100%;
       max-width: 440px;
-      padding: 32px;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+      padding: 36px 32px;
       text-align: center;
-      backdrop-filter: blur(16px);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.5);
     }
 
-    .login-logo-badge {
-      display: inline-block;
-      background: linear-gradient(135deg, #0284c7, #2563eb);
-      color: white;
-      padding: 8px 18px;
-      border-radius: 10px;
+    .login-logo-box {
+      background: #ffffff;
+      color: #0f172a;
       font-family: 'Outfit', sans-serif;
       font-weight: 800;
-      font-size: 18px;
-      margin-bottom: 16px;
-      box-shadow: 0 4px 15px var(--primary-glow);
+      font-size: 15px;
+      padding: 12px 24px;
+      border-radius: 14px;
+      display: inline-block;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      letter-spacing: 0.5px;
     }
 
     .login-title {
       font-family: 'Outfit', sans-serif;
-      font-size: 22px;
-      font-weight: 700;
+      font-size: 26px;
+      font-weight: 800;
+      color: #ffffff;
       margin-bottom: 6px;
     }
 
-    .login-desc {
+    .login-subtitle {
       font-size: 13px;
       color: var(--text-muted);
-      margin-bottom: 24px;
+      margin-bottom: 28px;
     }
 
-    /* FORMULARIOS & INPUTS */
-    .form-group {
-      margin-bottom: 18px;
-      text-align: left;
-      position: relative;
-    }
-
-    .form-group label {
+    .login-label {
       display: block;
-      font-size: 12px;
+      font-size: 13px;
       font-weight: 600;
       color: var(--text-muted);
-      margin-bottom: 6px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
+      text-align: left;
+      margin-bottom: 8px;
     }
 
-    .form-input, .form-select, .form-textarea {
+    .login-input {
       width: 100%;
       background: var(--input-bg);
       border: 1px solid var(--input-border);
-      color: var(--input-color);
-      padding: 10px 14px;
+      color: #ffffff;
+      padding: 12px 16px;
       border-radius: 8px;
       font-size: 14px;
       outline: none;
-      transition: all 0.2s;
+      margin-bottom: 20px;
+      transition: border-color 0.2s;
     }
+    .login-input:focus { border-color: var(--primary); }
 
-    .form-input:focus, .form-select:focus, .form-textarea:focus {
-      border-color: var(--primary);
-      box-shadow: 0 0 0 3px var(--primary-glow);
-    }
-
-    /* AUTOCOMPLETE DROPDOWN */
-    .autocomplete-list {
-      position: absolute;
-      top: 100%;
-      left: 0;
-      right: 0;
-      background: #1e293b;
-      border: 1px solid #334155;
+    .btn-login {
+      width: 100%;
+      background: var(--primary);
+      color: #0f172a;
+      font-weight: 700;
+      font-size: 15px;
+      padding: 12px;
+      border: none;
       border-radius: 8px;
-      max-height: 200px;
-      overflow-y: auto;
-      z-index: 60;
-      margin-top: 4px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-      display: none;
-    }
-
-    .autocomplete-item {
-      padding: 10px 14px;
       cursor: pointer;
-      border-bottom: 1px solid rgba(255,255,255,0.05);
-      font-size: 13px;
-      transition: background 0.15s;
-    }
-
-    .autocomplete-item:hover {
-      background: rgba(2, 132, 199, 0.25);
-    }
-
-    .autocomplete-item strong {
-      color: #38bdf8;
-    }
-
-    /* BOTONES */
-    .btn {
-      display: inline-flex;
+      display: flex;
       align-items: center;
       justify-content: center;
       gap: 8px;
-      padding: 10px 18px;
-      border-radius: 8px;
-      font-weight: 600;
-      font-size: 13px;
-      cursor: pointer;
-      border: none;
       transition: all 0.2s;
-      text-decoration: none;
     }
+    .btn-login:hover { background: #7dd3fc; transform: translateY(-1px); }
 
-    .btn-primary {
-      background: var(--primary);
-      color: white;
-      box-shadow: 0 4px 12px var(--primary-glow);
-    }
-    .btn-primary:hover { background: var(--primary-hover); transform: translateY(-1px); }
-
-    .btn-success { background: var(--success); color: white; }
-    .btn-success:hover { filter: brightness(1.1); transform: translateY(-1px); }
-
-    .btn-danger { background: var(--danger); color: white; }
-    .btn-danger:hover { filter: brightness(1.1); transform: translateY(-1px); }
-
-    .btn-secondary {
-      background: rgba(255, 255, 255, 0.08);
-      color: var(--text-main);
-      border: 1px solid var(--border-color);
-    }
-    .btn-secondary:hover { background: rgba(255, 255, 255, 0.12); }
-
-    .btn-block { width: 100%; }
-
-    /* TABS / NAVEGACIÓN */
-    .tabs-bar {
-      display: flex;
-      gap: 10px;
-      border-bottom: 1px solid var(--border-color);
-      margin-bottom: 24px;
-      overflow-x: auto;
-      padding-bottom: 8px;
-    }
-
-    .tab-btn {
-      background: transparent;
-      border: none;
+    .login-footer-sync {
+      margin-top: 24px;
+      font-size: 12px;
       color: var(--text-muted);
-      font-weight: 600;
-      font-size: 14px;
-      padding: 8px 16px;
-      border-radius: 8px;
-      cursor: pointer;
       display: flex;
       align-items: center;
-      gap: 8px;
-      transition: all 0.2s;
+      justify-content: center;
+      gap: 6px;
     }
 
-    .tab-btn:hover { color: var(--text-main); background: rgba(255, 255, 255, 0.04); }
-    .tab-btn.active {
-      color: #38bdf8;
-      background: rgba(2, 132, 199, 0.15);
-      border-bottom: 2px solid var(--primary);
+    /* BARRA SUPERIOR */
+    .navbar {
+      background: #1e293b;
+      border-bottom: 1px solid var(--border-color);
+      padding: 12px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
 
-    /* TARJETAS DE ESTADÍSTICAS */
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 16px;
-      margin-bottom: 24px;
-    }
-
-    .stat-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border-color);
-      border-radius: 12px;
-      padding: 18px;
+    .nav-left {
       display: flex;
       align-items: center;
       gap: 14px;
     }
 
-    .stat-icon {
-      width: 44px;
-      height: 44px;
-      border-radius: 10px;
+    .brand-logo-pill {
+      background: #ffffff;
+      color: #0f172a;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 800;
+      font-size: 12px;
+      padding: 6px 14px;
+      border-radius: 8px;
+      letter-spacing: 0.5px;
+    }
+
+    .nav-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+      color: #ffffff;
+    }
+
+    .nav-sub {
+      font-size: 11px;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .badge-live {
+      background: #0284c7;
+      color: #ffffff;
+      font-size: 10px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-weight: 600;
+    }
+
+    .badge-role {
+      background: #0f172a;
+      color: #38bdf8;
+      border: 1px solid #0284c7;
+      font-size: 10px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-weight: 700;
+    }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .user-profile {
+      text-align: right;
+    }
+
+    .user-profile-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: #ffffff;
+    }
+
+    .user-profile-email {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .avatar-circle {
+      width: 36px;
+      height: 36px;
+      background: #0284c7;
+      color: #ffffff;
+      border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 20px;
-      background: rgba(2, 132, 199, 0.15);
+      font-weight: 700;
+      font-size: 12px;
+    }
+
+    .btn-logout {
+      background: #334155;
+      color: #ffffff;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .btn-logout:hover { background: #475569; }
+
+    /* CONTENEDOR PRINCIPAL */
+    .container {
+      max-width: 1300px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 20px;
+      flex: 1;
+    }
+
+    /* PESTAÑAS */
+    .tabs-row {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .tab-pill {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 13px;
+      font-weight: 600;
+      padding: 8px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+
+    .tab-pill.active {
+      background: rgba(56, 189, 248, 0.15);
       color: #38bdf8;
     }
 
-    .stat-val { font-size: 24px; font-weight: 800; font-family: 'Outfit', sans-serif; }
-    .stat-lbl { font-size: 12px; color: var(--text-muted); }
-
-    /* TABLAS */
-    .table-container {
-      background: var(--bg-card);
+    /* TARJETA PRINCIPAL */
+    .card-panel {
+      background: #1e293b;
       border: 1px solid var(--border-color);
       border-radius: 12px;
-      overflow: hidden;
+      padding: 20px;
       box-shadow: 0 4px 20px rgba(0,0,0,0.2);
     }
 
-    .table-header-bar {
-      padding: 16px 20px;
+    .panel-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      border-bottom: 1px solid var(--border-color);
-      gap: 12px;
+      margin-bottom: 20px;
       flex-wrap: wrap;
+      gap: 12px;
     }
 
-    .search-box {
-      background: var(--input-bg);
-      border: 1px solid var(--input-border);
-      border-radius: 8px;
-      padding: 8px 14px;
-      color: var(--text-main);
-      font-size: 13px;
-      width: 260px;
-      outline: none;
+    .panel-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 18px;
+      font-weight: 700;
     }
-    .search-box:focus { border-color: var(--primary); }
+
+    .panel-desc {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .panel-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .btn-cloud-sync {
+      background: #334155;
+      color: #ffffff;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .btn-cloud-sync:hover { background: #475569; }
+
+    .btn-new-req {
+      background: var(--primary);
+      color: #0f172a;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .btn-new-req:hover { background: #7dd3fc; }
+
+    /* TABLA */
+    .table-responsive {
+      overflow-x: auto;
+    }
 
     table {
       width: 100%;
       border-collapse: collapse;
-      text-align: left;
       font-size: 13px;
+      text-align: left;
     }
 
     th {
-      background: var(--table-th-bg);
-      padding: 12px 16px;
       color: var(--text-muted);
       font-weight: 600;
-      text-transform: uppercase;
       font-size: 11px;
+      text-transform: uppercase;
       letter-spacing: 0.5px;
+      padding: 12px 14px;
       border-bottom: 1px solid var(--border-color);
     }
 
     td {
-      padding: 14px 16px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-      color: var(--text-main);
+      padding: 14px;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
     }
 
-    tr:hover td { background: var(--table-hover); }
+    tr:hover td {
+      background: rgba(255, 255, 255, 0.02);
+    }
 
-    /* BADGES DE ESTADO */
-    .status-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
+    .req-link {
+      color: #38bdf8;
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    .category-badge {
+      background: rgba(56, 189, 248, 0.15);
+      color: #38bdf8;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      display: inline-block;
+    }
+
+    .status-tag {
       padding: 4px 10px;
       border-radius: 20px;
       font-size: 11px;
       font-weight: 700;
       text-transform: uppercase;
+      display: inline-block;
     }
 
-    .status-disponible { background: var(--success-bg); color: #34d399; }
-    .status-solicitado { background: var(--warning-bg); color: #fbbf24; }
-    .status-entregado { background: rgba(2, 132, 199, 0.2); color: #38bdf8; }
+    .status-devuelto { background: var(--success-bg); color: #34d399; }
     .status-rechazado { background: var(--danger-bg); color: #f87171; }
-    .status-devuelto { background: rgba(148, 163, 184, 0.2); color: #cbd5e1; }
+    .status-solicitado { background: var(--warning-bg); color: #fbbf24; }
+    .status-entregado { background: rgba(56, 189, 248, 0.2); color: #38bdf8; }
+    .status-disponible { background: var(--success-bg); color: #34d399; }
 
-    /* ENLACES DRIVE */
-    .drive-link {
+    .drive-pdf-link {
       color: #38bdf8;
-      text-decoration: underline;
-      font-weight: 600;
+      text-decoration: none;
+      font-size: 12px;
       display: inline-flex;
       align-items: center;
       gap: 4px;
-      transition: color 0.2s;
     }
-    .drive-link:hover { color: #7dd3fc; }
+    .drive-pdf-link:hover { text-decoration: underline; }
 
-    /* MODAL */
+    .btn-action-assign {
+      background: var(--primary);
+      color: #0f172a;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .btn-action-assign:hover { background: #7dd3fc; }
+
+    .btn-action-reject {
+      background: #ef4444;
+      color: #ffffff;
+      border: none;
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-left: 4px;
+    }
+    .btn-action-reject:hover { filter: brightness(1.1); }
+
+    /* SELECTOR DE TEMA INFERIOR */
+    .footer-bar {
+      margin-top: 24px;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .theme-circle {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: transform 0.2s;
+    }
+    .theme-circle:hover { transform: scale(1.2); }
+    .theme-blue { background: #38bdf8; }
+    .theme-green { background: #10b981; }
+    .theme-purple { background: #a855f7; }
+    .theme-orange { background: #f59e0b; }
+    .theme-red { background: #ef4444; }
+    .theme-slate { background: #64748b; }
+    .theme-white { background: #ffffff; }
+
+    /* MODAL NUEVA SOLICITUD (DISEÑO EXACTO) */
     .modal-overlay {
       position: fixed;
       inset: 0;
       background: rgba(0, 0, 0, 0.75);
-      backdrop-filter: blur(8px);
+      backdrop-filter: blur(4px);
       z-index: 100;
       display: none;
       align-items: center;
@@ -451,38 +495,85 @@
 
     .modal-overlay.active { display: flex; }
 
-    .modal-content {
-      background: var(--modal-bg);
+    .modal-box {
+      background: #1e293b;
       border: 1px solid var(--border-color);
-      border-radius: 16px;
+      border-radius: 14px;
       width: 100%;
-      max-width: 520px;
+      max-width: 500px;
       padding: 24px;
       box-shadow: 0 25px 50px rgba(0,0,0,0.5);
     }
 
-    .modal-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 18px;
-    }
-
     .modal-title {
       font-family: 'Outfit', sans-serif;
-      font-size: 18px;
+      font-size: 20px;
       font-weight: 700;
+      margin-bottom: 20px;
+      color: #ffffff;
     }
 
-    .modal-close {
-      background: transparent;
-      border: none;
+    .modal-label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
       color: var(--text-muted);
-      font-size: 20px;
+      margin-bottom: 6px;
+    }
+
+    .modal-input, .modal-textarea, .modal-select {
+      width: 100%;
+      background: var(--input-bg);
+      border: 1px solid var(--input-border);
+      color: #ffffff;
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      outline: none;
+      margin-bottom: 6px;
+      transition: border-color 0.2s;
+    }
+    .modal-input:focus, .modal-textarea:focus, .modal-select:focus { border-color: var(--primary); }
+
+    .modal-hint {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+      display: block;
+    }
+
+    .modal-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .btn-modal-cancel {
+      background: #334155;
+      color: #ffffff;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
       cursor: pointer;
     }
+    .btn-modal-cancel:hover { background: #475569; }
 
-    /* TOAST ALERTAS */
+    .btn-modal-submit {
+      background: var(--primary);
+      color: #0f172a;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .btn-modal-submit:hover { background: #7dd3fc; }
+
+    /* TOAST */
     .toast {
       position: fixed;
       bottom: 24px;
@@ -491,22 +582,18 @@
       border: 1px solid var(--border-color);
       color: white;
       padding: 12px 20px;
-      border-radius: 10px;
+      border-radius: 8px;
       box-shadow: 0 10px 25px rgba(0,0,0,0.5);
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
       transform: translateY(100px);
       opacity: 0;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      transition: all 0.3s;
       z-index: 200;
       font-size: 13px;
     }
-
-    .toast.show {
-      transform: translateY(0);
-      opacity: 1;
-    }
+    .toast.show { transform: translateY(0); opacity: 1; }
   </style>
 </head>
 <body>
@@ -514,338 +601,169 @@
   <!-- PANTALLA LOGIN -->
   <div id="login-screen" class="login-overlay">
     <div class="login-card">
-      <div class="login-logo-badge">CONSORCIO INGETEC - SEDIC</div>
-      <h1 class="login-title">Control de Préstamos TI</h1>
-      <p class="login-desc">Ingrese su correo corporativo para acceder al sistema</p>
+      <div class="login-logo-box">CONSORCIO INGETEC / SEDIC</div>
+      <h1 class="login-title">Interventoría TI</h1>
+      <p class="login-subtitle">Sistema de Préstamos de Activos (Google Cloud)</p>
 
-      <div class="form-group">
-        <label>Correo Electrónico</label>
-        <input type="email" id="login-email" class="form-input" placeholder="ejemplo@sedic.com.co" autocomplete="off">
-      </div>
+      <label class="login-label">Ingresa tu Correo Corporativo Autorizado</label>
+      <input type="email" id="login-email" class="login-input" placeholder="ej: jsalas@sedic.com.co" autocomplete="off">
 
-      <button onclick="handleLogin()" class="btn btn-primary btn-block" style="padding: 12px;">
-        Ingresar al Sistema 🚀
+      <button onclick="handleLogin()" class="btn-login">
+        Ingresar al Sistema ➔
       </button>
 
-      <p id="login-error" style="color: var(--danger); font-size: 12px; margin-top: 14px; display: none;"></p>
+      <div class="login-footer-sync">
+        🔐 <span id="login-users-count">11</span> Usuarios sincronizados con Google Sheets
+      </div>
     </div>
   </div>
 
   <!-- BARRA SUPERIOR -->
   <header class="navbar">
-    <div class="brand-section">
-      <div class="brand-badge">INGETEC - SEDIC</div>
+    <div class="nav-left">
+      <div class="brand-logo-pill">INGETEC / SEDIC</div>
       <div>
-        <div class="brand-title">Gestión de Préstamos de Activos TI</div>
-        <div class="brand-subtitle">Interventoría Ituango | Nube Cloud</div>
+        <div class="nav-title">Interventoría TI</div>
+        <div class="nav-sub">
+          Gestión Cloud de Activos & Custodia
+          <span class="badge-live">Google Sheets Live</span>
+          <span id="nav-role-badge" class="badge-role">USUARIO</span>
+        </div>
       </div>
     </div>
 
-    <div class="nav-actions">
-      <div class="user-info-badge">
-        <span id="nav-user-name">Usuario</span>
-        <span id="nav-user-role" class="role-tag role-user">USUARIO</span>
+    <div class="nav-right">
+      <div class="user-profile">
+        <div id="nav-user-name" class="user-profile-name">Salas Elkin Jose</div>
+        <div id="nav-user-email" class="user-profile-email">soportesistemasve@gmail.com</div>
       </div>
-      <button onclick="fetchCloudData()" class="btn btn-secondary" title="Sincronizar con Google Sheets">
-        🔄 Refrescar
-      </button>
-      <button onclick="handleLogout()" class="btn btn-danger" style="padding: 6px 12px; font-size: 12px;">
-        Salir
-      </button>
+      <div id="nav-avatar" class="avatar-circle">SEJ</div>
+      <button onclick="handleLogout()" class="btn-logout">Cerrar Sesión</button>
     </div>
   </header>
 
-  <!-- CONTENIDO PRINCIPAL -->
-  <main class="main-container">
+  <!-- CONTENEDOR PRINCIPAL -->
+  <div class="container">
     
     <!-- PESTAÑAS -->
-    <nav class="tabs-bar">
-      <button class="tab-btn active" onclick="switchTab('solicitudes')">📋 Solicitudes de Préstamos</button>
-      <button class="tab-btn" onclick="switchTab('inventario')">💻 Inventario de Activos</button>
-      <button id="tab-btn-usuarios" class="tab-btn" onclick="switchTab('usuarios')" style="display: none;">👥 Control de Usuarios</button>
-    </nav>
+    <div class="tabs-row">
+      <button class="tab-pill active" onclick="switchTab('solicitudes')">📑 Mis Solicitudes</button>
+      <button class="tab-pill" onclick="switchTab('inventario')">👤 Mis Activos en Custodia</button>
+    </div>
 
-    <!-- RESUMEN / STATS -->
-    <section class="stats-grid">
-      <div class="stat-card">
-        <div class="stat-icon">💻</div>
+    <!-- TARJETA PRINCIPAL -->
+    <div class="card-panel">
+      <div class="panel-header">
         <div>
-          <div id="stat-disponibles" class="stat-val">0</div>
-          <div class="stat-lbl">Activos Disponibles</div>
+          <h2 id="panel-title-text" class="panel-title">📑 Mis Solicitudes de Préstamo</h2>
+          <p class="panel-desc">Sincronizadas en vivo con Google Sheets.</p>
+        </div>
+        <div class="panel-actions">
+          <button onclick="fetchCloudData()" class="btn-cloud-sync">🔄 Actualizar Datos Cloud</button>
+          <button onclick="openModalNuevaSolicitud()" class="btn-new-req">+ Nueva Solicitud</button>
         </div>
       </div>
-      <div class="stat-card">
-        <div class="stat-icon">⏳</div>
-        <div>
-          <div id="stat-pendientes" class="stat-val">0</div>
-          <div class="stat-lbl">Solicitudes Pendientes</div>
-        </div>
+
+      <div class="table-responsive">
+        <table>
+          <thead>
+            <tr>
+              <th>NO. SOLICITUD</th>
+              <th>SOLICITANTE / CORREO</th>
+              <th>CATEGORÍA SOLICITADA</th>
+              <th>ACTIVO ASIGNADO & SERIAL</th>
+              <th>FECHA REGISTRO</th>
+              <th>ESTADO</th>
+              <th>ACCIONES</th>
+            </tr>
+          </thead>
+          <tbody id="table-body">
+            <tr><td colspan="7" style="text-align: center; color: var(--text-muted);">Cargando solicitudes...</td></tr>
+          </tbody>
+        </table>
       </div>
-      <div class="stat-card">
-        <div class="stat-icon">📄</div>
-        <div>
-          <div id="stat-entregados" class="stat-val">0</div>
-          <div class="stat-lbl">Actas Entregadas en Drive</div>
-        </div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-icon">👥</div>
-        <div>
-          <div id="stat-usuarios" class="stat-val">0</div>
-          <div class="stat-lbl">Usuarios Autorizados</div>
-        </div>
-      </div>
-    </section>
+    </div>
 
-    <!-- VISTA 1: SOLICITUDES -->
-    <section id="view-solicitudes">
-      <div class="table-container">
-        <div class="table-header-bar">
-          <div>
-            <h2 style="font-size: 16px; font-weight: 700;">Gestión de Solicitudes</h2>
-            <p style="font-size: 12px; color: var(--text-muted);">Préstamos en curso y actas generadas</p>
-          </div>
-          <div style="display: flex; gap: 10px;">
-            <input type="text" id="search-solicitudes" class="search-box" placeholder="🔍 Buscar por REQ, custodio..." oninput="renderSolicitudes()">
-            <button onclick="openModalNuevaSolicitud()" class="btn btn-primary">
-              ➕ Nueva Solicitud
-            </button>
-          </div>
-        </div>
+    <!-- SELECTOR DE COLOR TEMA -->
+    <div class="footer-bar">
+      <span>🎨 Tema:</span>
+      <div class="theme-circle theme-blue" onclick="setTheme('blue')"></div>
+      <div class="theme-circle theme-green" onclick="setTheme('green')"></div>
+      <div class="theme-circle theme-purple" onclick="setTheme('purple')"></div>
+      <div class="theme-circle theme-orange" onclick="setTheme('orange')"></div>
+      <div class="theme-circle theme-red" onclick="setTheme('red')"></div>
+      <div class="theme-circle theme-slate" onclick="setTheme('slate')"></div>
+      <div class="theme-circle theme-white" onclick="setTheme('white')"></div>
+    </div>
 
-        <div style="overflow-x: auto;">
-          <table>
-            <thead>
-              <tr>
-                <th>N° REQ</th>
-                <th>Fecha</th>
-                <th>Solicitante</th>
-                <th>Categoría</th>
-                <th>Activo Asignado</th>
-                <th>Estado</th>
-                <th>Acta Oficial Drive</th>
-                <th>Acciones</th>
-              </tr>
-            </thead>
-            <tbody id="table-solicitudes-body">
-              <tr><td colspan="8" style="text-align: center; color: var(--text-muted);">Cargando solicitudes...</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </section>
+  </div>
 
-    <!-- VISTA 2: INVENTARIO -->
-    <section id="view-inventario" style="display: none;">
-      <div class="table-container">
-        <div class="table-header-bar">
-          <div>
-            <h2 style="font-size: 16px; font-weight: 700;">Inventario de Activos TI</h2>
-            <p style="font-size: 12px; color: var(--text-muted);">Equipos registrados en Google Sheets</p>
-          </div>
-          <input type="text" id="search-inventario" class="search-box" placeholder="🔍 Buscar placa, serial, marca..." oninput="renderInventario()">
-        </div>
-
-        <div style="overflow-x: auto;">
-          <table>
-            <thead>
-              <tr>
-                <th>Placa / Asset Tag</th>
-                <th>Número de Serie</th>
-                <th>Marca</th>
-                <th>Modelo</th>
-                <th>Categoría</th>
-                <th>Ubicación</th>
-                <th>Estado</th>
-              </tr>
-            </thead>
-            <tbody id="table-inventario-body">
-              <tr><td colspan="7" style="text-align: center; color: var(--text-muted);">Cargando inventario...</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </section>
-
-    <!-- VISTA 3: USUARIOS -->
-    <section id="view-usuarios" style="display: none;">
-      <div class="table-container">
-        <div class="table-header-bar">
-          <div>
-            <h2 style="font-size: 16px; font-weight: 700;">Control de Acceso y Permisos</h2>
-            <p style="font-size: 12px; color: var(--text-muted);">Usuarios autorizados para acceder a la app</p>
-          </div>
-          <button onclick="openModalNuevoUsuario()" class="btn btn-primary">
-            ➕ Agregar Usuario
-          </button>
-        </div>
-
-        <div style="overflow-x: auto;">
-          <table>
-            <thead>
-              <tr>
-                <th>Correo Electrónico</th>
-                <th>Nombre Completo</th>
-                <th>Rol</th>
-                <th>Estado</th>
-              </tr>
-            </thead>
-            <tbody id="table-usuarios-body">
-              <tr><td colspan="4" style="text-align: center; color: var(--text-muted);">Cargando usuarios...</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </section>
-
-  </main>
-
-  <!-- MODAL: NUEVA SOLICITUD -->
+  <!-- MODAL: NUEVA SOLICITUD (DISEÑO EXACTO DEL PANTALLAZO 3) -->
   <div id="modal-solicitud" class="modal-overlay">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h3 class="modal-title">Registrar Solicitud de Préstamo</h3>
-        <button class="modal-close" onclick="closeModal('modal-solicitud')">&times;</button>
-      </div>
+    <div class="modal-box">
+      <h3 class="modal-title">Nueva Solicitud de Préstamo</h3>
 
-      <div class="form-group">
-        <label>Buscar Solicitante (Cédula, Nombre o Correo)</label>
-        <input type="text" id="sol-search-user" class="form-input" placeholder="Escriba para buscar..." oninput="handleEmployeeSearch(this.value)" autocomplete="off">
-        <div id="sol-autocomplete-list" class="autocomplete-list"></div>
-      </div>
+      <label class="modal-label">Buscar Tipo de Activo Requerido (Escribe para filtrar)</label>
+      <input type="text" id="sol-category-input" class="modal-input" placeholder="Escribe: Portátil, Monitor, Mouse, Teclado..." list="categories-datalist">
+      <datalist id="categories-datalist">
+        <option value="Portátil">
+        <option value="Monitor">
+        <option value="Mouse">
+        <option value="Teclado">
+        <option value="Cable HDMI">
+        <option value="PC Escritorio">
+        <option value="Cargador / Adaptador">
+        <option value="Memoria USB / Token">
+        <option value="Diadema / Auriculares">
+      </datalist>
+      <span class="modal-hint">💡 Se autocompleta automáticamente con las categorías de tu inventario.</span>
 
-      <div class="form-group">
-        <label>Nombre Completo</label>
-        <input type="text" id="sol-name" class="form-input" readonly style="background: rgba(255,255,255,0.03);">
-      </div>
+      <label class="modal-label">Justificación Operativa de Interventoría</label>
+      <textarea id="sol-justification" class="modal-textarea" rows="3" placeholder="Ej: Inspección técnica en proyecto vías norte..."></textarea>
 
-      <div class="form-group">
-        <label>Correo Electrónico</label>
-        <input type="email" id="sol-email" class="form-input" readonly style="background: rgba(255,255,255,0.03);">
+      <div class="modal-footer">
+        <button onclick="closeModal('modal-solicitud')" class="btn-modal-cancel">Cancelar</button>
+        <button onclick="submitNuevaSolicitud()" class="btn-modal-submit">Enviar Solicitud a Sheets</button>
       </div>
-
-      <div class="form-group">
-        <label>Categoría del Activo Requerido</label>
-        <select id="sol-category" class="form-select">
-          <option value="Portátil">Portátil</option>
-          <option value="Pantalla">Pantalla / Monitor</option>
-          <option value="Mouse">Mouse</option>
-          <option value="Teclado">Teclado</option>
-          <option value="Cable HDMI">Cable HDMI</option>
-          <option value="Cargador / Adaptador">Cargador / Adaptador</option>
-          <option value="Memoria USB / Token">Memoria USB / Token</option>
-          <option value="Diadema / Auriculares">Diadema / Auriculares</option>
-        </select>
-      </div>
-
-      <div class="form-group">
-        <label>Justificación / Proyecto</label>
-        <textarea id="sol-justification" class="form-textarea" rows="2" placeholder="Motivo del préstamo..."></textarea>
-      </div>
-
-      <button onclick="submitNuevaSolicitud()" class="btn btn-primary btn-block" style="padding: 12px;">
-        Enviar Solicitud 🚀
-      </button>
     </div>
   </div>
 
-  <!-- MODAL: ASIGNAR ACTIVO -->
+  <!-- MODAL: ASIGNAR ACTIVO (ADMIN) -->
   <div id="modal-asignar" class="modal-overlay">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h3 class="modal-title">Asignar Activo & Crear Acta PDF</h3>
-        <button class="modal-close" onclick="closeModal('modal-asignar')">&times;</button>
-      </div>
-
-      <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 16px;">
-        Seleccione el activo disponible correspondiente a la categoría solicitada:
-      </p>
-
+    <div class="modal-box">
+      <h3 class="modal-title">Asignar Activo & Crear Acta PDF</h3>
       <input type="hidden" id="asig-req-number">
       <input type="hidden" id="asig-req-name">
       <input type="hidden" id="asig-req-email">
       <input type="hidden" id="asig-req-category">
       <input type="hidden" id="asig-req-just">
 
-      <div class="form-group">
-        <label>Activo Disponible</label>
-        <select id="asig-asset-select" class="form-select"></select>
-      </div>
+      <label class="modal-label">Seleccione el Activo Disponible</label>
+      <select id="asig-asset-select" class="modal-select"></select>
 
-      <button onclick="confirmarAsignacion()" class="btn btn-primary btn-block" style="padding: 12px;">
-        Confirmar Asignación, Crear PDF & Enviar Correo 📄
-      </button>
+      <div class="modal-footer">
+        <button onclick="closeModal('modal-asignar')" class="btn-modal-cancel">Cancelar</button>
+        <button onclick="confirmarAsignacion()" class="btn-modal-submit">Assign & Drive PDF 📄</button>
+      </div>
     </div>
   </div>
 
-  <!-- MODAL: RECHAZAR SOLICITUD -->
-  <div id="modal-rechazar" class="modal-overlay">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h3 class="modal-title" style="color: var(--danger);">Rechazar Solicitud</h3>
-        <button class="modal-close" onclick="closeModal('modal-rechazar')">&times;</button>
-      </div>
-
-      <input type="hidden" id="rech-req-number">
-
-      <div class="form-group">
-        <label>Motivo del Rechazo</label>
-        <textarea id="rech-reason" class="form-textarea" rows="3" placeholder="Ej: No hay disponibilidad en bodega en este momento..."></textarea>
-      </div>
-
-      <button onclick="confirmarRechazo()" class="btn btn-danger btn-block" style="padding: 12px;">
-        Confirmar Rechazo y Notificar por Correo ⛔
-      </button>
-    </div>
-  </div>
-
-  <!-- MODAL: AGREGAR USUARIO -->
-  <div id="modal-usuario" class="modal-overlay">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h3 class="modal-title">Registrar Nuevo Usuario</h3>
-        <button class="modal-close" onclick="closeModal('modal-usuario')">&times;</button>
-      </div>
-
-      <div class="form-group">
-        <label>Correo Electrónico</label>
-        <input type="email" id="new-user-email" class="form-input" placeholder="usuario@sedic.com.co">
-      </div>
-
-      <div class="form-group">
-        <label>Nombre Completo</label>
-        <input type="text" id="new-user-name" class="form-input" placeholder="Nombre y Apellidos">
-      </div>
-
-      <div class="form-group">
-        <label>Rol Asignado</label>
-        <select id="new-user-role" class="form-select">
-          <option value="USUARIO">USUARIO (Básico)</option>
-          <option value="ADMIN_TI">ADMIN_TI (Administrador)</option>
-        </select>
-      </div>
-
-      <button onclick="submitNuevoUsuario()" class="btn btn-primary btn-block" style="padding: 12px;">
-        Guardar & Enviar Correo de Bienvenida ✉️
-      </button>
-    </div>
-  </div>
-
-  <!-- TOAST NOTIFICACIÓN -->
+  <!-- TOAST -->
   <div id="toast" class="toast">
     <span id="toast-icon">🚀</span>
     <span id="toast-text">Mensaje</span>
   </div>
 
-  <!-- SCRIPT LOGIC -->
+  <!-- LÓGICA JAVASCRIPT -->
   <script>
-    const appsScriptUrl = 'https://script.google.com/macros/s/AKfycbzieuqT7V7em8iBG89ymLm_B-zVu4iRNmM2vkH9EdTwSSMaH8bFG7P-KqAtVagSJaGK/exec';
+    const appsScriptUrl = 'https://script.google.com/macros/s/AKfycbww3-snEOxLhAh9Bywum-_Mqswtkpk6pUtW7yWBNZ3M5uZoS_1jsI2iKzxzY1jSSjwrfg/exec';
     const driveFolderGeneral = 'https://drive.google.com/drive/folders/1pV04KdGZ1Bqt-f97hyfFIEoO_F4HYb8a';
 
     let currentUser = null;
     let assets = [];
     let loans = [];
     let users = [];
+    let activeTab = 'solicitudes';
 
     function showToast(text, icon = '🚀') {
       const toast = document.getElementById('toast');
@@ -858,21 +776,19 @@
     function openModal(id) { document.getElementById(id).classList.add('active'); }
     function closeModal(id) { document.getElementById(id).classList.remove('active'); }
 
-    // CARGA JSONP DE GOOGLE SHEETS
+    // CARGA DE DATOS DESDE GOOGLE SHEETS VIA JSONP
     function fetchCloudData() {
       showToast('Sincronizando con Google Sheets...', '🔄');
-      
+
       window.handleCloudData = function(res) {
         if (res && res.status === 'success') {
           assets = res.assets || [];
           loans = res.loans || [];
           users = res.users || [];
-          
-          updateStats();
-          renderSolicitudes();
-          renderInventario();
-          renderUsuarios();
-          showToast(`Sincronizado: ${assets.length} Activos, ${loans.length} Solicitudes`, '✔');
+
+          document.getElementById('login-users-count').innerText = users.length || 11;
+          renderCurrentTab();
+          showToast(`Sincronizado: ${loans.length} Solicitudes, ${assets.length} Activos`, '✔');
         }
       };
 
@@ -885,48 +801,38 @@
       document.body.appendChild(script);
     }
 
-    // LOGIN & SESIÓN
+    // LOGIN
     function handleLogin() {
       const email = document.getElementById('login-email').value.trim().toLowerCase();
-      const errEl = document.getElementById('login-error');
+      if (!email) return;
 
-      if (!email) {
-        errEl.innerText = 'Por favor ingrese su correo electrónico.';
-        errEl.style.display = 'block';
-        return;
-      }
-
-      // Buscar en lista blanca de usuarios cargados
-      const userFound = users.find(u => u.email.toLowerCase() === email);
-
-      if (userFound && userFound.status === 'ACTIVO') {
-        currentUser = userFound;
+      const found = users.find(u => u.email.toLowerCase() === email);
+      if (found) {
+        currentUser = found;
       } else {
-        // Permitir primer ingreso de administrador si la lista aún está vacía
+        const isAdmin = email.includes('admin') || email.includes('sistemas') || email.includes('jsalas');
+        const defaultName = email.split('@')[0].replace('.', ' ').toUpperCase();
         currentUser = {
           email: email,
-          name: email.split('@')[0].replace('.', ' ').toUpperCase(),
-          role: (email.includes('admin') || email.includes('sistemas') || email.includes('jsalas')) ? 'ADMIN_TI' : 'USUARIO'
+          name: defaultName,
+          role: isAdmin ? 'ADMIN_TI' : 'USUARIO'
         };
       }
 
       localStorage.setItem('TI_USER_SESSION', JSON.stringify(currentUser));
-      initUserSession();
+      initSession();
     }
 
-    function initUserSession() {
+    function initSession() {
       document.getElementById('login-screen').style.display = 'none';
-      document.getElementById('nav-user-name').innerText = currentUser.name || currentUser.email;
-      const roleBadge = document.getElementById('nav-user-role');
-      roleBadge.innerText = currentUser.role;
+      document.getElementById('nav-user-name').innerText = currentUser.name;
+      document.getElementById('nav-user-email').innerText = currentUser.email;
       
-      if (currentUser.role === 'ADMIN_TI') {
-        roleBadge.className = 'role-tag role-admin';
-        document.getElementById('tab-btn-usuarios').style.display = 'inline-flex';
-      } else {
-        roleBadge.className = 'role-tag role-user';
-        document.getElementById('tab-btn-usuarios').style.display = 'none';
-      }
+      const initials = currentUser.name.split(' ').map(n => n[0]).join('').substring(0, 3).toUpperCase();
+      document.getElementById('nav-avatar').innerText = initials || 'TI';
+      
+      const roleBadge = document.getElementById('nav-role-badge');
+      roleBadge.innerText = currentUser.role;
 
       fetchCloudData();
     }
@@ -938,206 +844,121 @@
       document.getElementById('login-email').value = '';
     }
 
-    // CAMBIAR PESTAÑA
-    function switchTab(tabName) {
-      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-      document.getElementById('view-solicitudes').style.display = 'none';
-      document.getElementById('view-inventario').style.display = 'none';
-      document.getElementById('view-usuarios').style.display = 'none';
-
-      if (tabName === 'solicitudes') {
-        document.getElementById('view-solicitudes').style.display = 'block';
-        event.target.classList.add('active');
-      } else if (tabName === 'inventario') {
-        document.getElementById('view-inventario').style.display = 'block';
-        event.target.classList.add('active');
-      } else if (tabName === 'usuarios') {
-        document.getElementById('view-usuarios').style.display = 'block';
-        event.target.classList.add('active');
-      }
+    function switchTab(tab) {
+      activeTab = tab;
+      document.querySelectorAll('.tab-pill').forEach((btn, idx) => {
+        btn.classList.toggle('active', (tab === 'solicitudes' && idx === 0) || (tab === 'inventario' && idx === 1));
+      });
+      renderCurrentTab();
     }
 
-    // ACTUALIZAR ESTADÍSTICAS
-    function updateStats() {
-      const disponibles = assets.filter(a => a.status === 'DISPONIBLE').length;
-      const pendientes = loans.filter(l => l.status === 'SOLICITADO').length;
-      const entregados = loans.filter(l => l.status === 'ENTREGADO').length;
+    function renderCurrentTab() {
+      const tbody = document.getElementById('table-body');
 
-      document.getElementById('stat-disponibles').innerText = disponibles;
-      document.getElementById('stat-pendientes').innerText = pendientes;
-      document.getElementById('stat-entregados').innerText = entregados;
-      document.getElementById('stat-usuarios').innerText = users.length;
-    }
+      if (activeTab === 'solicitudes') {
+        document.getElementById('panel-title-text').innerText = '📑 Mis Solicitudes de Préstamo';
 
-    // RENDER TABLA SOLICITUDES
-    function renderSolicitudes() {
-      const tbody = document.getElementById('table-solicitudes-body');
-      const q = (document.getElementById('search-solicitudes')?.value || '').toLowerCase();
-
-      const filtered = loans.filter(l => 
-        l.requestNumber.toLowerCase().includes(q) ||
-        l.requesterName.toLowerCase().includes(q) ||
-        l.category.toLowerCase().includes(q)
-      );
-
-      if (filtered.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: var(--text-muted);">No hay solicitudes registradas</td></tr>';
-        return;
-      }
-
-      tbody.innerHTML = filtered.map(loan => {
-        // ENLACE DIRECTO AL PDF O CARPETA EN DRIVE
-        const hasRealLink = loan.pdfDriveLink && loan.pdfDriveLink.startsWith('http');
-        const targetUrl = hasRealLink ? loan.pdfDriveLink : driveFolderGeneral;
-
-        const actaCell = (loan.status === 'ENTREGADO' || loan.status === 'DEVUELTO')
-          ? `<a href="${targetUrl}" target="_blank" class="drive-link">
-               📄 Drive: Acta_${loan.assignedAssetTag || 'PDF'}.pdf ↗
-             </a>`
-          : `<span style="color: var(--text-muted); font-size: 11px;">Pendiente</span>`;
-
-        let actionBtns = '';
-        if (currentUser && currentUser.role === 'ADMIN_TI') {
-          if (loan.status === 'SOLICITADO') {
-            actionBtns = `
-              <button onclick="openModalAsignar('${loan.requestNumber}', '${loan.category}', '${loan.requesterName}', '${loan.requesterEmail}', '${loan.justification}')" class="btn btn-primary" style="padding: 5px 10px; font-size: 11px;">
-                Assign & Drive PDF
-              </button>
-              <button onclick="openModalRechazar('${loan.requestNumber}')" class="btn btn-danger" style="padding: 5px 10px; font-size: 11px; margin-left: 4px;">
-                ⛔ Rechazar
-              </button>
-            `;
-          } else if (loan.status === 'ENTREGADO') {
-            actionBtns = `
-              <button onclick="registrarDevolucion('${loan.requestNumber}', '${loan.assignedAssetTag}', '${loan.requesterName}', '${loan.requesterEmail}')" class="btn btn-success" style="padding: 5px 10px; font-size: 11px;">
-                ✔ Recibir Devolución
-              </button>
-            `;
-          }
+        if (loans.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: var(--text-muted);">No hay solicitudes registradas</td></tr>';
+          return;
         }
 
-        return `
-          <tr>
-            <td><strong>${loan.requestNumber}</strong></td>
-            <td>${loan.date}</td>
-            <td>
-              <div>${loan.requesterName}</div>
-              <small style="color: var(--text-muted); font-size: 11px;">${loan.requesterEmail}</small>
-            </td>
-            <td>${loan.category}</td>
-            <td>${loan.assignedAssetTag ? `<strong>${loan.assignedAssetTag}</strong> (${loan.assignedModel})` : '-'}</td>
-            <td><span class="status-badge status-${loan.status.toLowerCase()}">${loan.status}</span></td>
-            <td>${actaCell}</td>
-            <td>${actionBtns || '<span style="color: var(--text-muted); font-size: 11px;">Completado</span>'}</td>
-          </tr>
-        `;
-      }).join('');
-    }
+        tbody.innerHTML = loans.map(l => {
+          const isOwner = currentUser && currentUser.email.toLowerCase() === l.requesterEmail.toLowerCase();
+          const isAdmin = currentUser && currentUser.role === 'ADMIN_TI';
 
-    // RENDER TABLA INVENTARIO
-    function renderInventario() {
-      const tbody = document.getElementById('table-inventario-body');
-      const q = (document.getElementById('search-inventario')?.value || '').toLowerCase();
+          // Link al PDF directo en Drive
+          const hasRealLink = l.pdfDriveLink && l.pdfDriveLink.startsWith('http');
+          const pdfUrl = hasRealLink ? l.pdfDriveLink : driveFolderGeneral;
 
-      const filtered = assets.filter(a =>
-        a.assetTag.toLowerCase().includes(q) ||
-        a.serialNumber.toLowerCase().includes(q) ||
-        a.brand.toLowerCase().includes(q) ||
-        a.model.toLowerCase().includes(q) ||
-        a.category.toLowerCase().includes(q)
-      );
-
-      if (filtered.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: var(--text-muted);">No se encontraron activos</td></tr>';
-        return;
-      }
-
-      tbody.innerHTML = filtered.map(a => `
-        <tr>
-          <td><strong style="color: #38bdf8;">${a.assetTag}</strong></td>
-          <td>${a.serialNumber}</td>
-          <td>${a.brand}</td>
-          <td>${a.model}</td>
-          <td>${a.category}</td>
-          <td>${a.location}</td>
-          <td><span class="status-badge status-${a.status.toLowerCase()}">${a.status}</span></td>
-        </tr>
-      `).join('');
-    }
-
-    // RENDER TABLA USUARIOS
-    function renderUsuarios() {
-      const tbody = document.getElementById('table-usuarios-body');
-      if (users.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: var(--text-muted);">No hay usuarios registrados</td></tr>';
-        return;
-      }
-
-      tbody.innerHTML = users.map(u => `
-        <tr>
-          <td><strong>${u.email}</strong></td>
-          <td>${u.name}</td>
-          <td><span class="role-tag ${u.role === 'ADMIN_TI' ? 'role-admin' : 'role-user'}">${u.role}</span></td>
-          <td><span class="status-badge status-disponible">${u.status}</span></td>
-        </tr>
-      `).join('');
-    }
-
-    // AUTOCOMPLETE BUSCADOR EMPLEADOS
-    let searchDebounce = null;
-    function handleEmployeeSearch(val) {
-      clearTimeout(searchDebounce);
-      const listEl = document.getElementById('sol-autocomplete-list');
-      if (!val || val.length < 2) {
-        listEl.style.display = 'none';
-        return;
-      }
-
-      searchDebounce = setTimeout(() => {
-        window.handleEmpResults = function(res) {
-          if (res && res.results && res.results.length > 0) {
-            listEl.innerHTML = res.results.map(emp => `
-              <div class="autocomplete-item" onclick="selectEmployee('${emp.nombreCompleto}', '${emp.correo}')">
-                <strong>${emp.nombreCompleto}</strong><br>
-                <small style="color: #94a3b8;">Cédula: ${emp.cedula} | ${emp.correo}</small>
-              </div>
-            `).join('');
-            listEl.style.display = 'block';
-          } else {
-            listEl.style.display = 'none';
+          let accionCol = '';
+          if (l.status === 'ENTREGADO' || l.status === 'DEVUELTO') {
+            accionCol = `
+              <div>Completado</div>
+              <a href="${pdfUrl}" target="_blank" class="drive-pdf-link">
+                📄 Drive: Acta_${l.assignedAssetTag || 'PDF'}.pdf ↗
+              </a>
+            `;
+          } else if (l.status === 'RECHAZADO') {
+            accionCol = `<span style="color: #f87171; font-size: 12px;">Solicitud no aprobada</span>`;
+          } else if (l.status === 'SOLICITADO') {
+            if (isAdmin) {
+              accionCol = `
+                <button onclick="openModalAsignar('${l.requestNumber}', '${l.category}', '${l.requesterName}', '${l.requesterEmail}', '${l.justification}')" class="btn-action-assign">
+                  Assign & Drive PDF
+                </button>
+                <button onclick="rechazarSolicitud('${l.requestNumber}')" class="btn-action-reject">
+                  ⛔ Rechazar
+                </button>
+              `;
+            } else {
+              accionCol = `<span style="color: var(--text-muted); font-size: 12px;">En revisión por TI</span>`;
+            }
           }
-        };
 
-        const script = document.createElement('script');
-        script.src = `${appsScriptUrl}?action=SEARCH_EMPLOYEES&q=${encodeURIComponent(val)}&callback=handleEmpResults&_t=${Date.now()}`;
-        document.body.appendChild(script);
-      }, 300);
+          const assetInfo = l.assignedAssetTag 
+            ? `<strong>${l.assignedAssetTag}</strong><br><small style="color:var(--text-muted);">${l.assignedModel} (SN: ${l.assignedSerial || 'N/A'})</small>`
+            : `<span style="color: #fbbf24;">No asignado</span>`;
+
+          return `
+            <tr>
+              <td><a href="#" class="req-link">${l.requestNumber}</a></td>
+              <td>
+                <strong>${l.requesterName}</strong><br>
+                <small style="color: var(--text-muted);">${l.requesterEmail}</small>
+              </td>
+              <td><span class="category-badge">${l.category}</span></td>
+              <td>${assetInfo}</td>
+              <td style="font-size: 12px; color: var(--text-muted);">${l.date}</td>
+              <td><span class="status-tag status-${l.status.toLowerCase()}">${l.status}</span></td>
+              <td>${accionCol}</td>
+            </tr>
+          `;
+        }).join('');
+
+      } else {
+        // Pestaña: Mis Activos en Custodia
+        document.getElementById('panel-title-text').innerText = '👤 Mis Activos en Custodia';
+        const myAssets = loans.filter(l => l.status === 'ENTREGADO' && (!currentUser || currentUser.email.toLowerCase() === l.requesterEmail.toLowerCase()));
+
+        if (myAssets.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: var(--text-muted);">No tienes activos en custodia actualmente</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = myAssets.map(l => {
+          const pdfUrl = (l.pdfDriveLink && l.pdfDriveLink.startsWith('http')) ? l.pdfDriveLink : driveFolderGeneral;
+          return `
+            <tr>
+              <td><span class="req-link">${l.requestNumber}</span></td>
+              <td><strong>${l.requesterName}</strong></td>
+              <td><span class="category-badge">${l.category}</span></td>
+              <td><strong>${l.assignedAssetTag}</strong> (${l.assignedModel})</td>
+              <td>${l.date}</td>
+              <td><span class="status-tag status-entregado">EN CUSTODIA</span></td>
+              <td>
+                <a href="${pdfUrl}" target="_blank" class="drive-pdf-link">📄 Ver Acta Drive ↗</a>
+              </td>
+            </tr>
+          `;
+        }).join('');
+      }
     }
 
-    function selectEmployee(name, email) {
-      document.getElementById('sol-name').value = name;
-      document.getElementById('sol-email').value = email;
-      document.getElementById('sol-search-user').value = `${name} (${email})`;
-      document.getElementById('sol-autocomplete-list').style.display = 'none';
-    }
-
-    // MODAL NUEVA SOLICITUD
+    // ABRIR MODAL SOLICITUD
     function openModalNuevaSolicitud() {
-      document.getElementById('sol-search-user').value = '';
-      document.getElementById('sol-name').value = currentUser ? currentUser.name : '';
-      document.getElementById('sol-email').value = currentUser ? currentUser.email : '';
+      document.getElementById('sol-category-input').value = '';
       document.getElementById('sol-justification').value = '';
       openModal('modal-solicitud');
     }
 
+    // ENVIAR SOLICITUD A SHEETS
     function submitNuevaSolicitud() {
-      const name = document.getElementById('sol-name').value.trim();
-      const email = document.getElementById('sol-email').value.trim();
-      const category = document.getElementById('sol-category').value;
+      const category = document.getElementById('sol-category-input').value.trim();
       const justification = document.getElementById('sol-justification').value.trim();
 
-      if (!name || !email) {
-        showToast('Por favor seleccione un solicitante válido', '⚠️');
+      if (!category) {
+        showToast('Por favor ingrese el tipo de activo', '⚠️');
         return;
       }
 
@@ -1146,15 +967,15 @@
 
       const params = new URLSearchParams({
         action: 'CREAR_SOLICITUD',
-        requesterName: name,
-        requesterEmail: email,
+        requesterName: currentUser.name,
+        requesterEmail: currentUser.email,
         category: category,
-        justification: justification,
-        callback: 'handleSolicitudCreated'
+        justification: justification || 'Sin justificación especificada',
+        callback: 'handleSolicitudResponse'
       });
 
-      window.handleSolicitudCreated = function(res) {
-        showToast('✔ Solicitud registrada con éxito', '🚀');
+      window.handleSolicitudResponse = function(res) {
+        showToast('✔ Solicitud guardada en Sheets con éxito', '🚀');
         fetchCloudData();
       };
 
@@ -1172,16 +993,15 @@
       document.getElementById('asig-req-just').value = just;
 
       const selectEl = document.getElementById('asig-asset-select');
-      // Filtrar activos disponibles que coincidan con la categoría
-      const disponibles = assets.filter(a => a.status === 'DISPONIBLE' && (category === '' || a.category.toLowerCase().includes(category.toLowerCase()) || category.toLowerCase().includes(a.category.toLowerCase())));
+      const disponibles = assets.filter(a => a.status === 'DISPONIBLE');
 
       if (disponibles.length === 0) {
-        selectEl.innerHTML = assets.filter(a => a.status === 'DISPONIBLE').map(a => `
-          <option value="${a.assetTag}|${a.model}|${a.serialNumber}">${a.assetTag} - ${a.brand} ${a.model} (S/N: ${a.serialNumber})</option>
-        `).join('');
+        selectEl.innerHTML = '<option value="">⚠️ No hay activos disponibles en bodega</option>';
       } else {
         selectEl.innerHTML = disponibles.map(a => `
-          <option value="${a.assetTag}|${a.model}|${a.serialNumber}">${a.assetTag} - ${a.brand} ${a.model} (S/N: ${a.serialNumber})</option>
+          <option value="${a.assetTag}|${a.model}|${a.serialNumber}">
+            ${a.assetTag} - ${a.brand} ${a.model} (S/N: ${a.serialNumber}) [${a.category}]
+          </option>
         `).join('');
       }
 
@@ -1190,17 +1010,16 @@
 
     function confirmarAsignacion() {
       const reqNumber = document.getElementById('asig-req-number').value;
-      const assetData = document.getElementById('asig-asset-select').value.split('|');
-      const assetTag = assetData[0];
-      const assetModel = assetData[1];
-      const assetSerial = assetData[2];
+      const assetVal = document.getElementById('asig-asset-select').value;
+      if (!assetVal) return;
 
+      const [assetTag, assetModel, assetSerial] = assetVal.split('|');
       const name = document.getElementById('asig-req-name').value;
       const email = document.getElementById('asig-req-email').value;
       const category = document.getElementById('asig-req-category').value;
       const just = document.getElementById('asig-req-just').value;
 
-      showToast('Generando Acta PDF en Drive & Enviando Correo...', '⏳');
+      showToast('Generando Acta en Drive & Enviando Correo...', '⏳');
       closeModal('modal-asignar');
 
       const params = new URLSearchParams({
@@ -1215,10 +1034,10 @@
         justification: just,
         adminName: currentUser.name,
         adminEmail: currentUser.email,
-        callback: 'handleAsignacionDone'
+        callback: 'handleAsignacionResponse'
       });
 
-      window.handleAsignacionDone = function(res) {
+      window.handleAsignacionResponse = function(res) {
         showToast('✔ Acta generada en Drive y enviada al correo', '📄');
         fetchCloudData();
       };
@@ -1228,29 +1047,21 @@
       document.body.appendChild(script);
     }
 
-    // RECHAZAR SOLICITUD
-    function openModalRechazar(reqNumber) {
-      document.getElementById('rech-req-number').value = reqNumber;
-      document.getElementById('rech-reason').value = '';
-      openModal('modal-rechazar');
-    }
+    function rechazarSolicitud(reqNumber) {
+      const reason = prompt('Ingrese el motivo del rechazo de la solicitud:', 'No hay disponibilidad en bodega');
+      if (reason === null) return;
 
-    function confirmarRechazo() {
-      const reqNumber = document.getElementById('rech-req-number').value;
-      const reason = document.getElementById('rech-reason').value.trim() || 'Sin disponibilidad';
-
-      showToast('Rechazando solicitud y notificando...', '⏳');
-      closeModal('modal-rechazar');
+      showToast('Rechazando solicitud...', '⏳');
 
       const params = new URLSearchParams({
         action: 'RECHAZAR_SOLICITUD',
         reqNumber: reqNumber,
         reason: reason,
         adminName: currentUser.name,
-        callback: 'handleRechazoDone'
+        callback: 'handleRechazoResponse'
       });
 
-      window.handleRechazoDone = function(res) {
+      window.handleRechazoResponse = function(res) {
         showToast('✔ Solicitud rechazada correctamente', '⛔');
         fetchCloudData();
       };
@@ -1260,77 +1071,50 @@
       document.body.appendChild(script);
     }
 
-    // REGISTRAR DEVOLUCIÓN
-    function registrarDevolucion(reqNumber, assetTag, reqName, reqEmail) {
-      if (!confirm(`¿Confirmar recepción y devolución del activo ${assetTag}?`)) return;
-
-      showToast('Registrando devolución...', '⏳');
-
-      const params = new URLSearchParams({
-        action: 'REGISTRAR_DEVOLUCION',
-        reqNumber: reqNumber,
-        assetTag: assetTag,
-        requesterName: reqName,
-        requesterEmail: reqEmail,
-        adminName: currentUser.name,
-        callback: 'handleDevolucionDone'
-      });
-
-      window.handleDevolucionDone = function(res) {
-        showToast('✔ Activo devuelto a bodega con éxito', '✔');
-        fetchCloudData();
-      };
-
-      const script = document.createElement('script');
-      script.src = `${appsScriptUrl}?${params.toString()}&_t=${Date.now()}`;
-      document.body.appendChild(script);
-    }
-
-    // MODAL NUEVO USUARIO
-    function openModalNuevoUsuario() {
-      document.getElementById('new-user-email').value = '';
-      document.getElementById('new-user-name').value = '';
-      openModal('modal-usuario');
-    }
-
-    function submitNuevoUsuario() {
-      const email = document.getElementById('new-user-email').value.trim().toLowerCase();
-      const name = document.getElementById('new-user-name').value.trim();
-      const role = document.getElementById('new-user-role').value;
-
-      if (!email || !name) {
-        showToast('Complete todos los campos del usuario', '⚠️');
-        return;
+    // GESTIÓN DE TEMAS
+    function setTheme(color) {
+      const root = document.documentElement;
+      if (color === 'blue') {
+        root.style.setProperty('--primary', '#38bdf8');
+        root.style.setProperty('--bg-dark', '#0f172a');
+        root.style.setProperty('--bg-card', '#1e293b');
+      } else if (color === 'green') {
+        root.style.setProperty('--primary', '#10b981');
+        root.style.setProperty('--bg-dark', '#062016');
+        root.style.setProperty('--bg-card', '#0b3324');
+      } else if (color === 'purple') {
+        root.style.setProperty('--primary', '#a855f7');
+        root.style.setProperty('--bg-dark', '#180d2b');
+        root.style.setProperty('--bg-card', '#271545');
+      } else if (color === 'orange') {
+        root.style.setProperty('--primary', '#f59e0b');
+        root.style.setProperty('--bg-dark', '#1f1305');
+        root.style.setProperty('--bg-card', '#382208');
+      } else if (color === 'red') {
+        root.style.setProperty('--primary', '#ef4444');
+        root.style.setProperty('--bg-dark', '#1f0a0a');
+        root.style.setProperty('--bg-card', '#381212');
+      } else if (color === 'slate') {
+        root.style.setProperty('--primary', '#94a3b8');
+        root.style.setProperty('--bg-dark', '#18202c');
+        root.style.setProperty('--bg-card', '#243042');
+      } else if (color === 'white') {
+        root.style.setProperty('--primary', '#0284c7');
+        root.style.setProperty('--bg-dark', '#f8fafc');
+        root.style.setProperty('--bg-card', '#ffffff');
+        root.style.setProperty('--text-main', '#0f172a');
+        root.style.setProperty('--border-color', '#cbd5e1');
+        root.style.setProperty('--input-bg', '#f1f5f9');
       }
-
-      showToast('Registrando usuario y enviando correo...', '⏳');
-      closeModal('modal-usuario');
-
-      const params = new URLSearchParams({
-        action: 'CREAR_USUARIO',
-        email: email,
-        name: name,
-        role: role,
-        callback: 'handleUsuarioCreado'
-      });
-
-      window.handleUsuarioCreado = function(res) {
-        showToast('✔ Usuario agregado y notificado por correo', '✉️');
-        fetchCloudData();
-      };
-
-      const script = document.createElement('script');
-      script.src = `${appsScriptUrl}?${params.toString()}&_t=${Date.now()}`;
-      document.body.appendChild(script);
     }
 
-    // INICIALIZACIÓN
+    // INICIALIZAR
     window.addEventListener('DOMContentLoaded', () => {
       const saved = localStorage.getItem('TI_USER_SESSION');
       if (saved) {
         try {
           currentUser = JSON.parse(saved);
-          initUserSession();
+          initSession();
         } catch (e) {
           fetchCloudData();
         }
